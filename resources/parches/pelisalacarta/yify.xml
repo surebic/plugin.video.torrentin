@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<channel>
+	<id>yify</id>
+	<name>YIFY Torrents</name>
+	<active>true</active>
+	<adult>false</adult>
+	<language>en</language>
+
+	<fanart></fanart>
+	<thumbnail>http://i.imgur.com/9LWPgxZ.png</thumbnail>
+	<bannermenu></bannermenu>
+
+	<update_url></update_url>
+	<version>2</version>
+	<date>26/01/2016</date>
+	<changes>Adaptado al nuevo dominio yts.ag por cierre de yts.to</changes>
+
+	<categories>
+		<category>torrent</category>
+		<category>movie</category>
+		<category>vos</category>
+	</categories>
+
+	<settings>
+		<include_in_global_search>true</include_in_global_search>
+	</settings>
+</channel>
