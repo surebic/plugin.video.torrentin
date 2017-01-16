@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<channel>
+	<id>estrenosya</id>
+	<name>Estrenos GO</name>
+
+	<active>true</active>
+	<adult>false</adult>
+	<language>es</language>
+	<include_in_global_search>true</include_in_global_search>
+
+	<fanart></fanart>
+	<thumbnail>http://i.imgur.com/CPqv4rz.jpg</thumbnail>
+	<bannermenu></bannermenu>
+
+	<update_url></update_url>
+	<version>2</version>
+	<date>15/01/2017</date>
+	<changes>Arreglado buscador y mejorado</changes>
+
+	<categories>
+		<category>torrent</category>
+		<category>movie</category>
+		<category>serie</category>
+		<category>vos</category>
+	</categories>
+
+</channel>
