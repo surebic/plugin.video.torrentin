@@ -7,6 +7,36 @@ image=pathimage
 ejemplo: plugin://plugin.video.torrentin/?uri=http%3A%2F%2Fwww.elitetorrent.net%2Fget-torrent%2F27233&image=imageurl&player=0'
 
 -------------------------------------------------------------------------------
+Version 0.5.4
+-------------------------------------------------------------------------------
+- Adaptados parches y opciones del menú para el nuevo pelisalacarta 4.2.0 (se mantiene el parche para la 4.1.x
+  detecta la versión y aplica uno u otro).
+- Arreglado nombre tTorrent desde el menú de reproductores/Gestores.
+- Si no hay vídeo dentro del torrent (normalmente comprimido en rar o zip) aparte de mostrar el aviso no muestra
+  reproductores en el menú ya que hoy en día no hay ningún reproductor capaz de reproducirlo.
+- Eliminado el aviso de no funcionamiento al activar Guardar el vídeo reproducido con AceStream en disco/tarjeta
+  en android en la configuración del AceStream, ya que con la ultima actualización 3.1.11.2 del AceStream si
+  funciona esta opción y los guarda sin problema.
+- Ahora al mostrar los torrents o magnets de los directorios principal y secundario indica el tipo.
+- Cambios cosméticos.
+- Solucionado error de la configuracion por los xml de los canales (gracias servidores)
+- Eliminado el aviso coñazo de "Acestream detenido". con la opcion de mostrar estadisticas continuas durante
+  la pausa. (solo sale con las dos ultimas). (rc3).
+- Añadida auto-actualizacion de los canales incluidos en el parche. (rc3).
+
+--- Arreglados los canales del parche que no funcionaban:
+- Arreglado el buscador y mejorado el canal EliteTorrent, posibilidad de obtener el torrent y magnet, muestra
+  la información completa de la película en el enlace magnet y solo argumento en el torrent.
+- Arreglado y mejorado el canal yify con nuevas opciones para listar directamente películas mas votadas y
+  mas descargadas. (ahora hay ciertas películas que se necesita estar registrado en la web para poder descargar
+  el torrent por lo que da error con ellas, se solucionara...)
+- Re-escrito y mejorado el canal DivxTotal, ahora el buscador busca en todo, incluyendo musica, programas, otros, etc.
+  por lo que se puede usar para bajar y descargar musica o cualquier otra cosa de esta web mandando el torrent al
+  gestor de descargas.
+- Arreglados buscadores de los canales para la nueva beta2 del pelis (rc3).
+
+
+-------------------------------------------------------------------------------
 Version 0.5.3
 -------------------------------------------------------------------------------
 - Solucionado problema con algunos torrents que no se arrancan con Quasar.
