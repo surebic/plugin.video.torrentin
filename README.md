@@ -1,10 +1,1 @@
-# plugin.video.torrentin
-Add-On for playing torrent videos in Kodi
-
-Plugin Video Torrentin
-
-Argumentos:
-uri=http://  ó  https://  ó  acestream://  ó  file://  ó  magnet:
-player=0-9 (prevalece sobre el seleccionado en configuración)
-image=pathimage
-ejemplo: plugin://plugin.video.torrentin/?uri=http%3A%2F%2Fwww.elitetorrent.net%2Fget-torrent%2F27233&image=imageurl&player=0'
+Este add-on ejecuta aplicaciones externas de Android para reproducir videos por torrent o magnet, tambien incorpora cliente para el motor Acestream (Android/Windows/Linux) y puede  enlazar con otros plugins.
