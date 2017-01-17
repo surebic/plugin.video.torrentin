@@ -6,24 +6,22 @@
 	<active>true</active>
 	<adult>false</adult>
 	<language>es</language>
-
+	<include_in_global_search>false</include_in_global_search>
+		
 	<fanart></fanart>
-	<thumbnail>http://i.imgur.com/2MM3O7z.jpg</thumbnail>
+	<thumbnail>http://media.tvalacarta.info/pelisalacarta/squares/elitetorrent.png</thumbnail>
 	<bannermenu>http://media.tvalacarta.info/pelisalacarta/bannermenu/elitetorrent.png</bannermenu>
 
-	<update_url></update_url>
-	<version>3</version>
-	<date>26/03/2016</date>
-	<changes>Nuevos menus con listados por fecha, valoracion y popularidad, extrae torrent en vez de magnet y añadido buscador</changes>
+	<update_url>https://raw.githubusercontent.com/tvalacarta/pelisalacarta/master/python/main-classic/channels/</update_url>
+	<version>1</version>
+	<date>01/07/2016</date>
+	<changes>Eliminado cÃ³digo innecesario.</changes>
 
 	<categories>
 		<category>torrent</category>
 		<category>movie</category>
 		<category>serie</category>
 		<category>documentary</category>
+		<category>vos</category>
 	</categories>
-
-	<settings>
-		<include_in_global_search>true</include_in_global_search>
-	</settings>
 </channel>

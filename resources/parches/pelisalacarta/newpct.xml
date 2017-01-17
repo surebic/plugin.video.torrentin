@@ -12,19 +12,23 @@
 	<bannermenu>http://media.tvalacarta.info/pelisalacarta/bannermenu/newpct.png</bannermenu>
 
 	<update_url>https://raw.githubusercontent.com/tvalacarta/pelisalacarta/master/python/main-classic/channels/</update_url>
-	<version>6</version>
-	<date>11/12/2015</date>
-	<changes>Cambios en la paginacion, reestructuracion de los menus y en series ahora muestra capitulos de todas las temporadas</changes>
+	<version>7</version>
+	<date>01/07/2016</date>
+	<changes>Eliminado código innecesario.</changes>
 
 	<categories>
 		<category>movie</category>
 		<category>serie</category>
 		<category>documentary</category>
 		<category>anime</category>
-		<category>torrent</category>
 	</categories>
 
 	<settings>
-		<include_in_global_search>false</include_in_global_search>
+		<id>include_in_global_search</id>
+		<type>bool</type>
+		<label>Incluir en busqueda global</label>
+		<default>false</default>
+		<enabled>true</enabled>
+		<visible>true</visible>
 	</settings>
 </channel>
