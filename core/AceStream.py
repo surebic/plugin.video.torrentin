@@ -519,7 +519,7 @@ class TSengine():
         self._sock.close()
         self.log.out("socket closed")
         if self.progress:self.progress.close()
-        if showstats >= 1: self.sm("                           Detenido")
+        if showstats >= 3: self.sm("                           Detenido")
 
     def __del__(self):
         self.log.out('deleted')
