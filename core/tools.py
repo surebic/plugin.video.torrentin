@@ -131,10 +131,14 @@ def StripTags2(text):
      return text.strip(".")
 
 def pchpelis(tipo):
-	if not chkpelis(): return 3
-	origen = os.path.join(addonspath,"plugin.video.pelisalacarta","platformcode","xbmctools.py")
-	destino = os.path.join(addonspath,"plugin.video.pelisalacarta","platformcode","xbmctools.py.pch")
-	backup = os.path.join(addonspath,"plugin.video.pelisalacarta","platformcode","xbmctools.py.bkp")
+	version = chkpelis()
+	if version == "42": patchedfile = "platformtools"
+	elif version == "41": patchedfile = "xbmctools"
+	else: return 3
+	
+	origen = os.path.join(addonspath,"plugin.video.pelisalacarta","platformcode",patchedfile+".py")
+	destino = os.path.join(addonspath,"plugin.video.pelisalacarta","platformcode",patchedfile+".py.pch")
+	backup = os.path.join(addonspath,"plugin.video.pelisalacarta","platformcode",patchedfile+".py.bkp")
 	parcheado = False
 	try:
 		fo = open(origen,"r")
@@ -151,13 +155,20 @@ def pchpelis(tipo):
 		if tipo == 2:
 			if line.startswith('    if puedes:'):
 				fd.writelines('        if item.server == "torrent":'+'\n')
-				fd.writelines('            xbmc.executebuiltin("XBMC.RunPlugin(" + "plugin://plugin.video.torrentin/?uri=%s&image=%s" % (urllib.quote_plus(item.url) , urllib.quote_plus(item.thumbnail) ) + ")")'+'\n'+'            return'+'\n')
+				if version == "42":
+					fd.writelines('            xbmc.executebuiltin("XBMC.RunPlugin(" + "plugin://plugin.video.torrentin/?uri=%s&image=%s" % (urllib.quote_plus(item.url) , urllib.quote_plus(item.thumbnail) ) + ")")'+'\n'+'            return opciones, video_urls, seleccion, True'+'\n')
+				elif version == "41":
+					fd.writelines('            xbmc.executebuiltin("XBMC.RunPlugin(" + "plugin://plugin.video.torrentin/?uri=%s&image=%s" % (urllib.quote_plus(item.url) , urllib.quote_plus(item.thumbnail) ) + ")")'+'\n'+'            return'+'\n')
 		#elif tipo ==3: #otro tipo de parche, bypass 2º menu, funciona pero no se va a utilizar
 			#if line.startswith('    elif item.server=="torrent":'):
 				#fd.writelines('        xbmc.executebuiltin("XBMC.RunPlugin(" + "plugin://plugin.video.torrentin/?uri=%s&image=%s" % (urllib.quote_plus(item.url) , urllib.quote_plus(item.thumbnail) ) + ")")'+'\n'+'        return'+'\n')
 		elif tipo == 1:
-			if line.startswith('            mediaurl = urllib.quote_plus(item.url)'):
-				fd.writelines('            if "torrentin" in torrent_options[seleccion][1]: xbmc.executebuiltin( "PlayMedia(" + torrent_options[seleccion][1] % mediaurl + urllib.quote_plus( item.thumbnail )+")" )' + '\n            else:')
+			if version == "42":
+				if line.startswith('        mediaurl = urllib.quote_plus(item.url)'):
+					fd.writelines('        if "torrentin" in torrent_options[seleccion][1]: xbmc.executebuiltin( "PlayMedia(" + torrent_options[seleccion][1] % mediaurl + urllib.quote_plus( item.thumbnail )+")" )' + '\n        else:')
+			elif version == "41":
+				if line.startswith('            mediaurl = urllib.quote_plus(item.url)'):
+					fd.writelines('            if "torrentin" in torrent_options[seleccion][1]: xbmc.executebuiltin( "PlayMedia(" + torrent_options[seleccion][1] % mediaurl + urllib.quote_plus( item.thumbnail )+")" )' + '\n            else:')
 	fo.close()
 	fd.close()
 	if not parcheado:
@@ -239,11 +250,12 @@ def chkpelis():
 		AddOnId=f.read()
 		f.close
 	except:
-		return False
-	if 'version="4.0.' in AddOnId  in AddOnId:
-		return False
-	else: return True
-
+		return "0"
+	if '    version="4.2.' in AddOnId: return "42"
+	elif '    version="4.1.' in AddOnId: return "41"
+	elif '    version="4.0.' in AddOnId: return "40"
+	else: return "0"
+    
 def pchlatino():
 	try:
 		f = open(os.path.join(addonspath,"plugin.video.latinototal","addon.xml"), 'r')
