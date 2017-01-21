@@ -411,7 +411,8 @@ def guardar_magnet(uri,player,image,torr_folder,teclado=False):
 
 def guardar_torrent(uri,player,image):
     carat = True
-    if not __addon__.getSetting('parche')=="true":
+    #if not __addon__.getSetting('parche')=="true":
+    if not (__addon__.getSetting('pchpelis') == "On" or __addon__.getSetting('pchpelis2') == "On" ):
         carat = False
         sel = xbmcgui.Dialog().yesno("Torrentin" , "Si no parcheas el pelisalacarta no se guardará la carátula","El parche es reversible desde Configuración/Parches","¿ Parchear ahora Pelisalacarta ?")
         if sel:
@@ -451,6 +452,11 @@ def autoconf(uri="",player="",image=""):
     else: __addon__.setSetting("plexus","false")
 
 def settings(uri="",player="",image=""):
+    if tools.chkps() == 1:  __addon__.setSetting("pchplexusstreams","On")
+    else: __addon__.setSetting("pchplexusstreams","Off")
+    if tools.chkpchpelis() == 0:
+        __addon__.setSetting('pchpelis','Off')
+        __addon__.setSetting('pchpelis2','Off')
     __addon__.openSettings()
     for k,v in addons.iteritems():
         if __addon__.getSetting(v) == "true":
@@ -487,11 +493,13 @@ def lst(uri="",player="",image=""):
     img=os.path.join( __cwd__ ,"resources","images","delete.png")
     li = xbmcgui.ListItem("[B][COLOR red]Borrar todas las listas[/COLOR][/B]",img,img)
     command = '%s?funcion=dellst&%s' % (sys.argv[0], sys.argv[2])
+    li.setProperty('fanart_image',os.path.join(__cwd__,"fanart.jpg"))
     xbmcplugin.addDirectoryItem(int(sys.argv[1]), command, li, True)
     for lista in lst:
         img=os.path.join( __cwd__ ,"resources","images","m3u.png")
         li = xbmcgui.ListItem("[B][COLOR orange]"+lista.replace(".m3u","")+"[/COLOR][/B]",img,img)
         command = '%s?funcion=lst2&uri=%s&%s' % (sys.argv[0], urllib.quote_plus(lista), sys.argv[2])
+        li.setProperty('fanart_image',os.path.join(__cwd__,"fanart.jpg"))
         xbmcplugin.addDirectoryItem(int(sys.argv[1]), command, li, True)
     xbmcplugin.addSortMethod(int(sys.argv[1]), xbmcplugin.SORT_METHOD_LABEL)
     xbmcplugin.endOfDirectory(int(sys.argv[1]))
@@ -502,6 +510,7 @@ def lst2(uri="",player="",image=""):
     for k,v in lista.iteritems():
         li = xbmcgui.ListItem("[B][COLOR orange]"+k+"[/COLOR][/B]",img,img)
         command = '%s?funcion=principal&uri=%s' % (sys.argv[0], urllib.quote_plus(v))
+        li.setProperty('fanart_image',os.path.join(__cwd__,"fanart.jpg"))
         xbmcplugin.addDirectoryItem(int(sys.argv[1]), command, li, False)
     xbmcplugin.addSortMethod(int(sys.argv[1]), xbmcplugin.SORT_METHOD_LABEL)
     xbmcplugin.endOfDirectory(int(sys.argv[1]))
@@ -529,6 +538,7 @@ def browselocal(uri="",player="",image=""):
             if v == "": li = xbmcgui.ListItem("[B][COLOR lime]"+titulo.replace(u'.torrent',u'')+"  [COLOR green][/B](t)[/COLOR]",defimg,defimg)
             else: li = xbmcgui.ListItem("[B][COLOR lime]"+titulo.replace(u'.torrent',u'')+"  [COLOR green][/B](t)[/COLOR]",v,v)
             command = '%s?funcion=principal&uri=%s&image=%s' % (sys.argv[0], urllib.quote_plus("file://"+k),urllib.quote_plus(v))
+        li.setProperty('fanart_image',os.path.join(__cwd__,"fanart.jpg"))
         xbmcplugin.addDirectoryItem(int(sys.argv[1]), command, li, False)
     xbmcplugin.addSortMethod(int(sys.argv[1]), xbmcplugin.SORT_METHOD_LABEL)
     xbmcplugin.endOfDirectory(int(sys.argv[1]))
@@ -542,16 +552,17 @@ def browselocaltvp(uri="",player="",image=""):
         #if v == "": li = xbmcgui.ListItem("[B][COLOR orange]"+titulo.replace(u'.torrent',u'').replace(u'.magnet',u'')+"[/COLOR][/B]",defimg,defimg)
         #else: li = xbmcgui.ListItem("[B][COLOR orange]"+titulo.replace(u'.torrent',u'').replace(u'.magnet',u'')+"[/COLOR][/B]",v,v)
         if k.endswith(".magnet"):
-            if v == "": li = xbmcgui.ListItem("[B][COLOR yellow]"+titulo.replace(u'.magnet',u'')+"  [COLOR orange][/B](m)[/COLOR]",defimg,defimg)
-            else: li = xbmcgui.ListItem("[B][COLOR yellow]"+titulo.replace(u'.magnet',u'')+"  [COLOR orange][/B](m)[/COLOR]",v,v)
+            if v == "": li = xbmcgui.ListItem("[B][COLOR limegreen]"+titulo.replace(u'.magnet',u'')+"  [COLOR forestgreen][/B](m)[/COLOR]",defimg,defimg)
+            else: li = xbmcgui.ListItem("[B][COLOR limegreen]"+titulo.replace(u'.magnet',u'')+"  [COLOR forestgreen][/B](m)[/COLOR]",v,v)
             f = open(k , "rb+")
             magnet_data=f.read()
             f.close()
             command = '%s?funcion=principal&uri=%s&image=%s' % (sys.argv[0], urllib.quote_plus(magnet_data),urllib.quote_plus(v))
         else:
-            if v == "": li = xbmcgui.ListItem("[B][COLOR yellow]"+titulo.replace(u'.torrent',u'')+"  [COLOR orange][/B](t)[/COLOR]",defimg,defimg)
-            else: li = xbmcgui.ListItem("[B][COLOR yellow]"+titulo.replace(u'.torrent',u'')+"  [COLOR orange][/B](t)[/COLOR]",v,v)
+            if v == "": li = xbmcgui.ListItem("[B][COLOR limegreen]"+titulo.replace(u'.torrent',u'')+"  [COLOR forestgreen][/B](t)[/COLOR]",defimg,defimg)
+            else: li = xbmcgui.ListItem("[B][COLOR limegreen]"+titulo.replace(u'.torrent',u'')+"  [COLOR forestgreen][/B](t)[/COLOR]",v,v)
             command = '%s?funcion=principal&uri=%s&image=%s' % (sys.argv[0], urllib.quote_plus("file://"+k),urllib.quote_plus(v))
+        li.setProperty('fanart_image',os.path.join(__cwd__,"fanart.jpg"))
         xbmcplugin.addDirectoryItem(int(sys.argv[1]), command, li, False)
     xbmcplugin.addSortMethod(int(sys.argv[1]), xbmcplugin.SORT_METHOD_LABEL)
     xbmcplugin.endOfDirectory(int(sys.argv[1]))
@@ -604,21 +615,21 @@ def primer(uri,player,image):
     torrent_folder=unicode(__addon__.getSetting('torrent_path'),'utf-8')
     destino = os.path.join( torrent_folder , "torrentin.torrent" ).decode("utf-8")
     destinomag = os.path.join( torrent_folder , "torrentin.magnet" ).decode("utf-8")
+    fanartimage = os.path.join(__cwd__,"fanart.jpg")
     
     if xbmc.getCondVisibility('System.HasAddon("plugin.video.pelisalacarta")'):
         img=xbmc.translatePath(os.path.join('special://home', 'addons', 'plugin.video.pelisalacarta','icon.png')).decode("utf-8")
-        #img="http://media.tvalacarta.info/pelisalacarta/squares/torrent.png"
         if __addon__.getSetting("pelismenu") == "1":
-            li = xbmcgui.ListItem("[B][COLOR aquamarine]Ir a canales torrent de pelisalacarta[/COLOR][/B]",img,img)
+            li = xbmcgui.ListItem("[B][COLOR khaki]Ir a canales torrent de pelisalacarta[/COLOR][/B]",img,img)
             version = tools.chkpelis()
             if version == "42":
                 command = 'plugin://plugin.video.pelisalacarta/?action=filterchannels&category=torrent&channel=channelselector&channel_type=torrent'
             else:
                 command = 'plugin://plugin.video.pelisalacarta/?action=listchannels&category=torrent&channel=channelselector'
         elif __addon__.getSetting("pelismenu") == "0":
-            li = xbmcgui.ListItem("[B][COLOR aquamarine]Ir a pelisalacarta[/COLOR][/B]",img,img)
+            li = xbmcgui.ListItem("[B][COLOR khaki]Ir a pelisalacarta[/COLOR][/B]",img,img)
             command = 'plugin://plugin.video.pelisalacarta'
-#        command = '%s?funcion=runpelis&%s' % (sys.argv[0], sys.argv[2])
+        li.setProperty('fanart_image',fanartimage)
         xbmcplugin.addDirectoryItem(int(sys.argv[1]), command, li, True)        
     
     lst = tools.chklst()
@@ -626,6 +637,7 @@ def primer(uri,player,image):
         img=os.path.join( __cwd__ ,"resources","images","m3u.png")
         li = xbmcgui.ListItem("[B][COLOR orange]Listas AceLive M3U[/COLOR][/B]",img,img)
         command = '%s?funcion=lst&%s' % (sys.argv[0], sys.argv[2])
+        li.setProperty('fanart_image',fanartimage)
         xbmcplugin.addDirectoryItem(int(sys.argv[1]), command, li, True)
 
     if os.path.isfile (destino):
@@ -634,8 +646,9 @@ def primer(uri,player,image):
             f = open(os.path.join( torrent_folder , "torrentin.torrent.img") , "rb+")
             img=f.read()
             f.close()
-        li = xbmcgui.ListItem("[B][COLOR cyan]Reproducir último torrent[/COLOR][/B]",img,img)
+        li = xbmcgui.ListItem("[B][COLOR greenyellow]Reproducir último torrent[/COLOR][/B]",img,img)
         command = '%s?funcion=principal&uri=file://%s&image=%s' % (sys.argv[0], urllib.quote_plus(destino),urllib.quote_plus(img))
+        li.setProperty('fanart_image',fanartimage)
         xbmcplugin.addDirectoryItem(int(sys.argv[1]), command, li, False)
 
     if os.path.isfile (destinomag):
@@ -647,74 +660,112 @@ def primer(uri,player,image):
             f = open(os.path.join( torrent_folder , "torrentin.magnet.img") , "rb+")
             img=f.read()
             f.close()
-        li = xbmcgui.ListItem("[B][COLOR cyan]Reproducir último magnet[/COLOR][/B]",img,img)
+        li = xbmcgui.ListItem("[B][COLOR greenyellow]Reproducir último magnet[/COLOR][/B]",img,img)
         command = '%s?funcion=principal&uri=%s&image=%s' % (sys.argv[0], urllib.quote_plus(magnet_data),urllib.quote_plus(img))
+        li.setProperty('fanart_image',fanartimage)
         xbmcplugin.addDirectoryItem(int(sys.argv[1]), command, li, False)
 
     img=os.path.join( __cwd__ ,"resources","images","torrentloader.png")
-    li = xbmcgui.ListItem("[B][COLOR cyan]Reproducir un torrent local[/COLOR][/B]",img,img)
+    li = xbmcgui.ListItem("[B][COLOR greenyellow]Reproducir un torrent local[/COLOR][/B]",img,img)
     command = '%s?funcion=cargarlocal&%s' % (sys.argv[0], sys.argv[2])
+    li.setProperty('fanart_image',fanartimage)
     xbmcplugin.addDirectoryItem(int(sys.argv[1]), command, li, False)
 
     img=os.path.join( __cwd__ ,"resources","images","torrentfolder.png")
     li = xbmcgui.ListItem("[B][COLOR lime]Directorio Principal[/COLOR][/B]",img,img)
     command = '%s?funcion=browselocal&%s' % (sys.argv[0], sys.argv[2])
+    li.setProperty('fanart_image',fanartimage)
     xbmcplugin.addDirectoryItem(int(sys.argv[1]), command, li, True)
 
     img=os.path.join( __cwd__ ,"resources","images","torrent.png")	
-    li = xbmcgui.ListItem("[B][COLOR yellow]Directorio Secundario[/COLOR][/B]",img,img)
+    li = xbmcgui.ListItem("[B][COLOR limegreen]Directorio Secundario[/COLOR][/B]",img,img)
     command = '%s?funcion=browselocaltvp&%s' % (sys.argv[0], sys.argv[2])
+    li.setProperty('fanart_image',fanartimage)
     xbmcplugin.addDirectoryItem(int(sys.argv[1]), command, li, True)
 
     img=os.path.join( __cwd__ ,"resources","images","settings3d.png")
-    li = xbmcgui.ListItem("[B][COLOR purple]Configuración[/COLOR][/B]",img,img)
+    li = xbmcgui.ListItem("[B][COLOR deepskyblue]Configuración[/COLOR][/B]",img,img)
     command = '%s?funcion=settings&%s' % (sys.argv[0], sys.argv[2])
+    li.setProperty('fanart_image',fanartimage)
     xbmcplugin.addDirectoryItem(int(sys.argv[1]), command, li, False)
 
     xbmcplugin.endOfDirectory(int(sys.argv[1]))
-'''
-def runpelis(uri="",player="",image=""):
-    xbmc.executebuiltin('XBMC.RunAddon("plugin.video.pelisalacarta")')
-'''
+    
 def pchpelis(uri="",player="",image=""):
     parche = tools.pchpelis(2)
-    if parche == 0: xbmcgui.Dialog().ok("Error al parchear" , "El parche no se ha aplicado, No está instalado pelisalacarta","o es una versión antigua o no ha sido posible encontrarle.","Instala la última versión de pelisalacarta y vuelve a parchear.")
-    elif parche == 1: xbmcgui.Dialog().ok("Torrentin" , "[COLOR lime]Pelisalacarta parcheado con éxito,[/COLOR][COLOR yellow] se añadirán las carátulas", "a los videos por torrent y se auto-arrancarán con Torrentin.[/COLOR]", "[COLOR cyan]Añadidos los canales torrent: EliteTorrent(mod), DivxTotal,\nEstrenosDTL, EstrenosGO y Yify-Torrents.[/COLOR]")
-    elif parche == 2: xbmcgui.Dialog().ok("Torrentin" , "[COLOR yellow]        Pelisalacarta ya ha sido parcheado anteriormente,[/COLOR]", "[COLOR lime]        se ha restaurado una copia de seguridad y el parche","        y los canales torrent añadidos han sido eliminados.[/COLOR]")
-    elif parche == 3: xbmcgui.Dialog().ok("Error al parchear" , "El parche no se ha aplicado, esta parche SOLO vale","para las versiones  4.1.x  y  4.2.x  de pelisalacarta,","Instala la última versión de pelisalacarta y vuelve a parchear.")
+    if parche == 0:
+        xbmcgui.Dialog().ok("Error al parchear" , "El parche no se ha aplicado, No está instalado pelisalacarta","o es una versión antigua o no ha sido posible encontrarle.","Instala la última versión de pelisalacarta y vuelve a parchear.")
+        __addon__.setSetting('pchpelis','Off')
+        __addon__.setSetting('pchpelis2','Off')
+    elif parche == 1:
+        xbmcgui.Dialog().ok("Torrentin" , "[COLOR lime]Pelisalacarta parcheado con éxito,[/COLOR][COLOR yellow] se añadirán las carátulas", "a los videos por torrent y se auto-arrancarán con Torrentin.[/COLOR]", "[COLOR cyan]Añadidos los canales torrent: EliteTorrent(mod), DivxTotal,\nEstrenosDTL, EstrenosGO y Yify-Torrents.[/COLOR]")
+        __addon__.setSetting('pchpelis','On')
+        __addon__.setSetting('pchpelis2','Off')
+    elif parche == 2:
+        xbmcgui.Dialog().ok("Torrentin" , "[COLOR yellow]        Pelisalacarta ya ha sido parcheado anteriormente,[/COLOR]", "[COLOR lime]        se ha restaurado una copia de seguridad y el parche","        y los canales torrent añadidos han sido eliminados.[/COLOR]")
+        __addon__.setSetting('pchpelis','Off')
+        __addon__.setSetting('pchpelis2','Off')
+    elif parche == 3:
+        xbmcgui.Dialog().ok("Error al parchear" , "El parche no se ha aplicado, esta parche SOLO vale","para las versiones  4.1.x  y  4.2.x  de pelisalacarta,","Instala la última versión de pelisalacarta y vuelve a parchear.")
+        __addon__.setSetting('pchpelis','Off')
+        __addon__.setSetting('pchpelis2','Off')
 
 def pchpelis2(uri="",player="",image=""):
     parche = tools.pchpelis(1)
-    if parche == 0: xbmcgui.Dialog().ok("Error al parchear" , "El parche no se ha aplicado, No está instalado pelisalacarta","o es una versión antigua o no ha sido posible encontrarle.","Instala la última versión de pelisalacarta y vuelve a parchear.")
-    elif parche == 1: xbmcgui.Dialog().ok("Torrentin" , "[COLOR lime]Pelisalacarta parcheado con éxito,[/COLOR][COLOR yellow] se añadirán las carátulas", "a los torrents reproducidos o guardados con Torrentin.[/COLOR]", "[COLOR cyan]Añadidos los canales torrent: EliteTorrent(mod), DivxTotal,\nEstrenosDTL, EstrenosGO y Yify-Torrents.[/COLOR]")
-    elif parche == 2: xbmcgui.Dialog().ok("Torrentin" , "[COLOR yellow]        Pelisalacarta ya ha sido parcheado anteriormente,[/COLOR]", "[COLOR lime]        se ha restaurado una copia de seguridad y el parche","        y los canales torrent añadidos han sido eliminados.[/COLOR]")
-    elif parche == 3: xbmcgui.Dialog().ok("Error al parchear" , "El parche no se ha aplicado, esta parche SOLO vale","para las versiones  4.1.x  y  4.2.x  de pelisalacarta,","Instala la última versión de pelisalacarta y vuelve a parchear.")
+    if parche == 0:
+        xbmcgui.Dialog().ok("Error al parchear" , "El parche no se ha aplicado, No está instalado pelisalacarta","o es una versión antigua o no ha sido posible encontrarle.","Instala la última versión de pelisalacarta y vuelve a parchear.")
+        __addon__.setSetting('pchpelis2','Off')
+        __addon__.setSetting('pchpelis','Off')
+    elif parche == 1:
+        xbmcgui.Dialog().ok("Torrentin" , "[COLOR lime]Pelisalacarta parcheado con éxito,[/COLOR][COLOR yellow] se añadirán las carátulas", "a los torrents reproducidos o guardados con Torrentin.[/COLOR]", "[COLOR cyan]Añadidos los canales torrent: EliteTorrent(mod), DivxTotal,\nEstrenosDTL, EstrenosGO y Yify-Torrents.[/COLOR]")
+        __addon__.setSetting('pchpelis2','On')
+        __addon__.setSetting('pchpelis','Off')
+    elif parche == 2:
+        xbmcgui.Dialog().ok("Torrentin" , "[COLOR yellow]        Pelisalacarta ya ha sido parcheado anteriormente,[/COLOR]", "[COLOR lime]        se ha restaurado una copia de seguridad y el parche","        y los canales torrent añadidos han sido eliminados.[/COLOR]")
+        __addon__.setSetting('pchpelis2','Off')
+        __addon__.setSetting('pchpelis','Off')
+    elif parche == 3:
+        xbmcgui.Dialog().ok("Error al parchear" , "El parche no se ha aplicado, esta parche SOLO vale","para las versiones  4.1.x  y  4.2.x  de pelisalacarta,","Instala la última versión de pelisalacarta y vuelve a parchear.")
+        __addon__.setSetting('pchpelis2','Off')
+        __addon__.setSetting('pchpelis','Off')
 
 def pchlatino(uri="",player="",image=""):
     parche = tools.pchlatino()
-    if parche: xbmcgui.Dialog().ok("Torrentin" , "Add-On LatinoTotal parcheado con éxito.","Se usará Torrentin para reproducir los videos por torrent.")
-    else: xbmcgui.Dialog().ok("Error al parchear" , "La versión instalada no coincide con la del parche,","o no se han encontrado los ficheros de destino.","¿Esta instalado el Add-On LatinoTotal?")
-
+    if parche:
+        xbmcgui.Dialog().ok("Torrentin" , "Add-On LatinoTotal parcheado con éxito.","Se usará Torrentin para reproducir los videos por torrent.")
+        __addon__.setSetting('pchlatino','On')
+    else:
+        xbmcgui.Dialog().ok("Error al parchear" , "La versión instalada no coincide con la del parche,","o no se han encontrado los ficheros de destino.","¿Esta instalado el Add-On LatinoTotal?")
+        __addon__.setSetting('pchlatino','Off')
+'''
 def pchp2p(uri="",player="",image=""):
     parche = tools.pchp2p()
     if parche: xbmcgui.Dialog().ok("Torrentin" , "Add-On p2p-Streams parcheado con éxito.","Ahora puedes  configurar Torrentin para reproducir los","videos y guardar los enlaces AceLive en las listas.")
     else: xbmcgui.Dialog().ok("Error al parchear" , "La versión instalada no coincide con la del parche,","o no se han encontrado los ficheros de destino.","¿Esta instaladol el Add-On p2p-Streams?")
-
+'''
 def pchplexus(uri="",player="",image=""):
     parche = tools.pchplexus()
-    if parche: xbmcgui.Dialog().ok("Torrentin" , "Add-On plexus parcheado con éxito.","Ahora puedes  configurar Torrentin para reproducir los","videos, guardar los enlaces AceLive en las listas y\nseleccionar el tipo de motor externo (antiguo o nuevo).")
-    else: xbmcgui.Dialog().ok("Error al parchear" , "La versión instalada no coincide con la del parche,","o no se han encontrado los ficheros de destino.","¿Esta instalado el Add-On plexus?")
-
+    if parche:
+        xbmcgui.Dialog().ok("Torrentin" , "Add-On plexus parcheado con éxito.","Ahora puedes  configurar Torrentin para reproducir los","videos, guardar los enlaces AceLive en las listas y\nseleccionar el tipo de motor externo (antiguo o nuevo).")
+        __addon__.setSetting("pchplexus","On")
+    else:
+        xbmcgui.Dialog().ok("Error al parchear" , "La versión instalada no coincide con la del parche,","o no se han encontrado los ficheros de destino.","¿Esta instalado el Add-On plexus?")
+        __addon__.setSetting("pchplexus","Off")
+        
 def pchplexusstreams(uri="",player="",image=""):
     parche = tools.pchplexusstreams()
     if parche == 0:
         xbmcgui.Dialog().ok("Error al parchear" , "El Add-On plexus-streams  no esta instalado","o no se encuentran los ficheros de destino","o no han podido copiarse los ficheros.")
+        __addon__.setSetting("pchplexusstreams","Off")
     elif parche == 1:
         xbmcgui.Dialog().ok("Torrentin" , "Add-On plexus-streams parcheado con éxito.","Ahora puedes  configurar Torrentin o Plexus para ","reproducir los enlaces AceLive y torrents locales.")
+        __addon__.setSetting("pchplexusstreams","On")
     elif parche == 2:
         xbmcgui.Dialog().ok("Torrentin" , "El Add-On plexus-streams ya ha sido parcheado","anteriormente, no es necesario volver a parchearlo.")
+        __addon__.setSetting("pchplexusstreams","On")
     elif parche == 3:
         xbmcgui.Dialog().ok("Error al parchear" , "La versión instalada no coincide con la del parche o han","cambiado los ficheros de destino al actualizarse el add-on.","El parche no se ha aplicado.")
+        __addon__.setSetting("pchplexusstreams","Off")
 
 '''
 0 no esta insalado o no se encuentra o no se copia
@@ -725,8 +776,12 @@ def pchplexusstreams(uri="",player="",image=""):
 
 def pchkmedia(uri="",player="",image=""):
     parche = tools.pchkmedia()
-    if parche: xbmcgui.Dialog().ok("Torrentin" , "Add-On KmediaTorrent parcheado con éxito.","Ahora  puedes  descargar  videos .avi completos antes","de reproducirlos y poner el caché en FAT32")
-    else: xbmcgui.Dialog().ok("Error al parchear" , "La versión instalada no coincide con la del parche,","o no se han encontrado los ficheros de destino.","¿Esta instalado el Add-On KmediaTorrent?")
-
+    if parche:
+        xbmcgui.Dialog().ok("Torrentin" , "Add-On KmediaTorrent parcheado con éxito.","Ahora  puedes  descargar  videos .avi completos antes","de reproducirlos y poner el caché en FAT32")
+        __addon__.setSetting("pchkmedia","On")
+    else:
+        xbmcgui.Dialog().ok("Error al parchear" , "La versión instalada no coincide con la del parche,","o no se han encontrado los ficheros de destino.","¿Esta instalado el Add-On KmediaTorrent?")
+        __addon__.setSetting("pchkmedia","Off")
+        
 # EOF (01-17)
 

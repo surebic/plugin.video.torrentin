@@ -130,6 +130,17 @@ def StripTags2(text):
                  finished = 0
      return text.strip(".")
 
+def chkpchpelis():
+	version = chkpelis()
+	if version == "42": patchedfile = "platformtools"
+	else: patchedfile = "xbmctools"
+	origen = os.path.join(addonspath,"plugin.video.pelisalacarta","platformcode",patchedfile+".py")
+	if os.path.isfile(origen):
+		if __addon__.getSetting('parche') == txtmd5(origen):
+			return 1
+		else: return 0
+	else: return 0
+		
 def pchpelis(tipo):
 	version = chkpelis()
 	if version == "42": patchedfile = "platformtools"
@@ -171,38 +182,44 @@ def pchpelis(tipo):
 					fd.writelines('            if "torrentin" in torrent_options[seleccion][1]: xbmc.executebuiltin( "PlayMedia(" + torrent_options[seleccion][1] % mediaurl + urllib.quote_plus( item.thumbnail )+")" )' + '\n            else:')
 	fo.close()
 	fd.close()
-	if not parcheado:
+	if not parcheado: #No estaba
+		__addon__.setSetting('parche',txtmd5(destino))
 		xbmcvfs.copy(origen , backup)
 		xbmcvfs.copy(destino , origen)
 		os.remove(destino)
 		addchannels()
-		__addon__.setSetting('parche','true')
 		return 1
-	else:
+	else: #Si estaba
+		__addon__.setSetting('parche','')
 		xbmcvfs.copy(backup , origen)
 		os.remove(backup)
 		os.remove(destino)
 		removechannels()
-		__addon__.setSetting('parche','false')
 		return 2
 
 def addchannels():
 	origen = os.path.join(__cwd__ , "resources" , "parches" , "pelisalacarta" )
 	destino = os.path.join(addonspath,"plugin.video.pelisalacarta","channels")
-	xbmcvfs.copy(os.path.join(destino,"elitetorrent.py") , os.path.join(destino,"elitetorrent.py.bkp"))
-	xbmcvfs.copy(os.path.join(destino,"elitetorrent.xml") , os.path.join(destino,"elitetorrent.xml.bkp"))
-	xbmcvfs.copy(os.path.join(destino,"newpct.xml") , os.path.join(destino,"newpct.xml.bkp"))
+	#xbmcvfs.copy(os.path.join(destino,"elitetorrent.py") , os.path.join(destino,"elitetorrent.py.bkp"))
+	#xbmcvfs.copy(os.path.join(destino,"elitetorrent.xml") , os.path.join(destino,"elitetorrent.xml.bkp"))
+	#xbmcvfs.copy(os.path.join(destino,"newpct.xml") , os.path.join(destino,"newpct.xml.bkp"))
 	ciberus_channels = zipfile.ZipFile(os.path.join(origen,"newpct.py" ), 'r')
 	ciberus_channels.extractall(destino)
 
 def removechannels():
 	destino = os.path.join(addonspath,"plugin.video.pelisalacarta","channels")
-	ciberus_channels = [ "divxtotal.py" , "divxtotal.xml" , "elitetorrent.py" , "elitetorrent.xml" , "estrenosdtl.py" , "estrenosdtl.xml" , "estrenosya.py" , "estrenosya.xml" , "newpct.xml" , "yify.py" , "yify.xml" ]
+	ciberus_channels = [ "divxtotal.py" , "divxtotal.xml" , "elite_torrent.py" , "elite_torrent.xml" , "estrenosdtl.py" , "estrenosdtl.xml" , "estrenosya.py" , "estrenosya.xml" , "yify.py" , "yify.xml" ]
 	for f in ciberus_channels:
 		if os.path.isfile(os.path.join(destino,f)): os.remove(os.path.join(destino,f))
-	xbmcvfs.copy(os.path.join(destino,"elitetorrent.py.bkp") , os.path.join(destino,"elitetorrent.py"))
-	xbmcvfs.copy(os.path.join(destino,"elitetorrent.xml.bkp") , os.path.join(destino,"elitetorrent.xml"))
-	xbmcvfs.copy(os.path.join(destino,"newpct.xml.bkp") , os.path.join(destino,"newpct.xml"))
+	if os.path.isfile(os.path.join(destino,"elitetorrent.py.bkp")):
+		xbmcvfs.copy(os.path.join(destino,"elitetorrent.py.bkp") , os.path.join(destino,"elitetorrent.py"))
+		os.remove(os.path.join(destino,"elitetorrent.py.bkp"))
+	if os.path.isfile(os.path.join(destino,"elitetorrent.xml.bkp")):
+		xbmcvfs.copy(os.path.join(destino,"elitetorrent.xml.bkp") , os.path.join(destino,"elitetorrent.xml"))
+		os.remove(os.path.join(destino,"elitetorrent.xml.bkp"))
+	if os.path.isfile(os.path.join(destino,"newpct.xml.bkp")):
+		xbmcvfs.copy(os.path.join(destino,"newpct.xml.bkp") , os.path.join(destino,"newpct.xml"))
+		os.remove(os.path.join(destino,"newpct.xml.bkp"))
 
 def pchpelisold(tipo):
 	try:
@@ -309,6 +326,17 @@ def pchplexus():
 		if not xbmcvfs.copy(os.path.join(__cwd__ , "resources" , "parches" , "plexus" , "acecore.py") , destino) : return False
 	else: return False
 	return True
+
+def chkps():
+	destinoace = os.path.join(addonspath,"plugin.video.plexus-streams","resources","core","acestream.py")
+	if os.path.isfile(destinoace):
+		md5sum = txtmd5(destinoace)
+		if md5sum == "5e06800233f5d49fa2e11353ef33533f":
+			return 0
+		elif md5sum == "63267830d43361a408e8b34695cbb073":
+			return 1
+	else: return 0
+	
 
 def pchplexusstreams():
 	proceso = 0
