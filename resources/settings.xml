@@ -59,21 +59,21 @@
   </category>
 
   <category label="Parches">
-	<setting label="[COLOR orange]Para desparchear pelisalacarta ejecutar el parche de nuevo.[/COLOR]" type="lsep" />
+	<setting label="[COLOR orange]Para desparchear pelisalacarta ejecutar cualquier parche de nuevo.[/COLOR]" type="lsep" />
 
-	<setting label="Parche para pelisalacarta (Automático)" type="lsep" />
-	<setting id="pchpelis" type="action" label="Parchear pelisalacarta para obtener las carátulas y auto-reproducir con Torrentin" action="XBMC.RunPlugin(plugin://plugin.video.torrentin/?funcion=pchpelis)" />
+	<setting label="Parche para pelisalacarta (Automático, envia torrents directamente a Torrentin)" type="lsep" />
+	<setting id="pchpelis" type="action" label="Parchear pelisalacarta para obtener las carátulas y auto-reproducir" action="XBMC.RunPlugin(plugin://plugin.video.torrentin/?funcion=pchpelis)" />
 
 	<setting label="Parche para pelisalacarta (Muestra menús de selección del pelisalacarta)" type="lsep" />
 	<setting id="pchpelis2" type="action" label="Parchear pelisalacarta (NO AUTOMÁTICO) para obtener las carátulas" action="XBMC.RunPlugin(plugin://plugin.video.torrentin/?funcion=pchpelis2)" />
 
 	<setting label="[COLOR orange]Los siguientes parches no tienen vuelta atrás, para desparchear reinstalar.[/COLOR]" type="lsep" />
 
+	<setting label="Parche para plexus-streams" type="lsep" />
+	<setting id="pchplexusstreams" type="action" label="Parchear plexus-streams para reproducir con Torrentin" action="XBMC.RunPlugin(plugin://plugin.video.torrentin/?funcion=pchplexusstreams)" />
+
 	<setting label="Parche para plexus v. 0.1.4" type="lsep" />
 	<setting id="pchplexus" type="action" label="Parchear plexus para reproducir con Torrentin , guardar enlaces AceLive en lista y seleccionar tipo de motor externo" action="XBMC.RunPlugin(plugin://plugin.video.torrentin/?funcion=pchplexus)" />
-
-	<setting label="Parche para plexus-streams" type="lsep" />
-	<setting id="pchplexus" type="action" label="Parchear plexus-streams para reproducir con Torrentin" action="XBMC.RunPlugin(plugin://plugin.video.torrentin/?funcion=pchplexusstreams)" />
 <!--	
 	<setting label="Parche para p2p-Streams v. 1.2.0b" type="lsep" />
 	<setting id="pchp2p" type="action" label="Parchear p2p-Streams para reproducir torrents con Torrentin y guardar enlaces AceLive en lista" action="XBMC.RunPlugin(plugin://plugin.video.torrentin/?funcion=pchp2p)" />
