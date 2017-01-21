@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<channel>
+	<id>elite_torrent</id>
+	<name>EliteTorrent.net</name>
+
+	<active>true</active>
+	<adult>false</adult>
+	<language>es</language>
+	<include_in_global_search>true</include_in_global_search>
+
+	<fanart></fanart>
+	<thumbnail>http://i.imgur.com/2MM3O7z.jpg</thumbnail>
+	<bannermenu>http://media.tvalacarta.info/pelisalacarta/bannermenu/elitetorrent.png</bannermenu>
+
+	<update_url>https://raw.githubusercontent.com/surebic/plugin.video.torrentin/master/resources/parches/pelisalacarta/channels/</update_url>
+	<version>12</version>
+	<date>19/1/2017</date>
+	<changes>Nuevos menus con listados por fecha, valoracion y popularidad, extrae torrent en vez de magnet e incluido buscador, arreglado y mejorado (1-2017)</changes>
+
+	<categories>
+		<category>torrent</category>
+		<category>movie</category>
+		<category>serie</category>
+		<category>documentary</category>
+		<category>vos</category>
+	</categories>
+
+</channel>
