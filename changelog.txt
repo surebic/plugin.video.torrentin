@@ -22,7 +22,12 @@ Version 0.5.4
 - Solucionado error de la configuracion por los xml de los canales (gracias servidores)
 - Eliminado el aviso coñazo de "Acestream detenido". con la opcion de mostrar estadisticas continuas durante
   la pausa. (solo sale con las dos ultimas). (rc3).
-- Añadida auto-actualizacion de los canales incluidos en el parche. (rc3).
+- Añadida auto-actualizacion de mis canales incluidos en el parche (cuando hay alguno que no funcione y lo
+  arregle o lo mejore se actualizara automáticamente al abrirlo sin necesidad de cambiar el torrentin, esto se
+  hace a traves del actualizador del pelisalacarta). (rc3).
+- Ahora se muestra en la configuracion/Parches el estado de los mismos (solo pelis y plexus-streams) si se
+  actualiza el Add-On parcheado a una nueva version volverá a Off para avisar que hay que re-parchear. (rc3).
+- Más cambios cosméticos. (rc3).
 
 --- Arreglados los canales del parche que no funcionaban:
 - Arreglado el buscador y mejorado el canal EliteTorrent, posibilidad de obtener el torrent y magnet, muestra
@@ -34,6 +39,9 @@ Version 0.5.4
   por lo que se puede usar para bajar y descargar musica o cualquier otra cosa de esta web mandando el torrent al
   gestor de descargas.
 - Arreglados buscadores de los canales para la nueva beta2 del pelis (rc3).
+- Estan modificando y renovando algunos canales del pelis, de momento no le ha tocado a EliteTorrent pero por si
+  en un futuro le toca y para no interferir con el original del pelis, se cambia el nombre de mi mod del mismo
+  pasandose a llamar EliteTorrent.net y sera independiente de interno del pelis. (se mostraran los dos) (rc3).
 
 
 -------------------------------------------------------------------------------
