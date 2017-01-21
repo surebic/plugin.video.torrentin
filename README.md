@@ -11,6 +11,6 @@
 - Puede lanzar enlaces AceLive (Video en directo a traves de AceStream) contenidos en listas M3U que esten en el directorio de descarga principal, o guardar en estas listas todos los enlaces que le lleguen para reproducir. (Si no hay listas en el directorio no mostrara esa opcion en el menu).
 
 
-Descargar Version 0.5.3
+## Descargar Version 0.5.3
 
 https://github.com/surebic/plugin.video.torrentin/blob/master/archives/plugin.video.torrentin-0.5.3.zip?raw=true
