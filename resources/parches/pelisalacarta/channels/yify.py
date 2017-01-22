@@ -60,7 +60,7 @@ def mainlist(item):
     return itemlist
 
 def estrenos(item):
-    logger.info("pelisalacarta.channels.YTS latest")
+    logger.info("pelisalacarta.channels.YTS peliculas")
     itemlist=[]
     if item.extra =="1":  data = scrapertools.cache_page(item.url)
     else: data = scrapertools.cache_page(item.url + "?page=" + item.extra)
@@ -68,27 +68,6 @@ def estrenos(item):
     #print data
     logger.info("data="+data)
     pag_sig=str(int(item.extra)+1)
-    '''
-    <div class="browse-movie-wrap col-xs-10 col-sm-4 col-md-5 col-lg-4">
-<a href="https://yts.ag/movie/view-from-a-blue-moon-2015" class="browse-movie-link">
-<figure>
-<img class="img-responsive" style="display:none;visibility:hidden;" data-cfsrc="https://yts.ag/assets/images/movies/view_from_a_blue_moon_2015/medium-cover.jpg" alt="View from a Blue Moon (2015) download" width="170" height="255"><noscript><img class="img-responsive" src="https://yts.ag/assets/images/movies/view_from_a_blue_moon_2015/medium-cover.jpg" alt="View from a Blue Moon (2015) download" width="170" height="255"></noscript>
-<figcaption class="hidden-xs hidden-sm">
-<span class="icon-star"></span>
-<h4 class="rating">7.5 / 10</h4>
-<h4>Action</h4>
-<span class="button-green-download2-big">View Details</span>
-</figcaption>
-</figure>
-</a>
-<div class="browse-movie-bottom">
-<a href="https://yts.ag/movie/view-from-a-blue-moon-2015" class="browse-movie-title">View from a Blue Moon</a>
-<div class="browse-movie-year">2015</div>
-<div class="browse-movie-tags">
-<a href="https://yts.ag/torrent/download/C7341A659660F5BBDA4744107BB35A84F6459010" rel="nofollow" title="Download View from a Blue Moon 720p Torrent">720p</a>
-<a href="https://yts.ag/torrent/download/0D24E23FBD6CCA1316246783F86BE1332649EC82" rel="nofollow" title="Download View from a Blue Moon 1080p Torrent">1080p</a>
-</div>
-    '''
     patron =    'browse-movie-wrap.*?src="(.*?)" alt=' #  thumb
     patron += '.*?rating">(.*?)</h4>.*?<h4>(.*?)</h4>' # rating  genero (mod yts.ag)
     patron += '.*?title">([^<]+)<.*?year">([^<]+)<' # titulo año
@@ -97,6 +76,7 @@ def estrenos(item):
     scrapertools.printMatches(matches)
     for scrapedthumb, scrapedrating, scrapedgenero, scrapedtitulo, scrapedfecha, scrapedlinks, in matches:
         scrapedrating = scrapedrating.replace(" / 10","")
+        fanart,sinopsis = TMDb(scrapedtitulo,scrapedfecha)
         if scrapedlinks.count("download") >=1:
             patron2 = '.*?<a href="(.*?)".*?>(.*?)</a>' #urls
             matches2 = re.compile(patron2,re.DOTALL).findall(scrapedlinks)
@@ -106,9 +86,21 @@ def estrenos(item):
                 elif scrapedcalidad == item.show: pass
                 else: continue
                 titulo = "[B][COLOR yellow]" + scrapertools.htmlclean(scrapedtitulo) + "[/COLOR] [COLOR lime]("+scrapedcalidad+")[/COLOR] [COLOR cyan]("+scrapedfecha+")[/COLOR] [COLOR orange]("+scrapedgenero+")[/COLOR] [COLOR magenta]("+scrapedrating+")[/COLOR][/B]"
-                itemlist.append( Item(channel=__channel__, action="play", server="torrent", title=titulo , fulltitle=titulo, url=scrapedurl , thumbnail=scrapedthumb , fanart=FANARTIMAGE, extra="", folder=False) )
+                itemlist.append( Item(channel=__channel__, action="play", server="torrent", title=titulo , fulltitle=titulo, url=scrapedurl , thumbnail=scrapedthumb , fanart=fanart, plot=sinopsis, extra="", folder=False) )
     if ">Next &raquo;</a>" in data: itemlist.append( Item(channel=__channel__, action="estrenos", title="[B][COLOR brown]>>> Next page[/COLOR][/B]" , show=item.show , url=item.url , extra=pag_sig , thumbnail= NEXTPAGEIMAGE , fanart=FANARTIMAGE, folder=True) )
     return itemlist
+
+def TMDb(title,year):
+	data = re.sub(r"\n|\r|\t|\s{2}|&nbsp;","",scrapertools.cachePage("http://api.themoviedb.org/3/search/movie?api_key=2e2160006592024ba87ccdf78c28f49f&query=" + title.replace(" ","%20").strip() + "&year=" + year + "&language=en&include_adult=false"))
+	try:
+		fanart = "https://image.tmdb.org/t/p/original" + scrapertools.get_match(data,'"page":1,.*?"backdrop_path":"\\\(.*?)"')
+		sinopsis =  scrapertools.get_match(data,'"page":1,.*?"overview":"(.*?)"')
+		puntuacion = scrapertools.get_match(data,'"page":1,.*?"vote_average":(.*?)}')
+	except:
+		fanart = FANARTIMAGE
+		sinopsis = ""
+		puntuacion = ""
+	return fanart,sinopsis + "\n\n[B][COLOR purple]TMDb Rating: [COLOR magenta]" + puntuacion + "[/COLOR][/B]"
 
 def search(item,texto):
 # https://yts.ag/browse-movies/king/720p/comedy/4/seeds?page=1

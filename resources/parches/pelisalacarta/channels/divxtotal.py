@@ -92,9 +92,15 @@ def menupelis(item):
     matches = re.compile(patron,re.DOTALL).findall(listado)
     scrapertools.printMatches(matches)
     for scrapedurl,scrapedtitle,scrapedgen,scrapedfecha,scrapedtam in matches:
-        scrapedfecha=scrapedfecha.replace("\n","")
-        titulo = "[B][COLOR yellow]" + scrapedtitle.strip()+ "[/COLOR][/B] [COLOR cyan]("+scrapedgen+")" + "[/COLOR] [COLOR blue]("+scrapedfecha+")[/COLOR] [COLOR green]("+scrapedtam+")[/COLOR]"
-        itemlist.append( Item(channel=__channel__, action="entraenpeli", title=titulo , fulltitle=titulo, url=scrapedurl , thumbnail=THUMBNAILIMAGE , plot="" , fanart= FANARTIMAGE, extra=scrapedurl, folder=True) )
+        '''
+        anyo = scrapedfecha.split("-")[2]
+        #if scrapedfecha == "29-10-2016" : scrapedfecha = ""
+        #else: scrapedfecha = "[COLOR blue](" + scrapedfecha + ")[/COLOR]"
+        '''
+        fanart,thumbnail,plot,puntuacion = TMDb(scrapedtitle)
+        if puntuacion != "": puntuacion = " [COLOR deeppink](" + puntuacion + ")[/COLOR]"
+        titulo = "[B][COLOR yellow]" + scrapedtitle.strip()+ "[/COLOR][/B] [COLOR cyan]("+scrapedgen+")" + "[/COLOR]" + puntuacion + " [COLOR limegreen]("+scrapedtam+")[/COLOR]"
+        itemlist.append( Item(channel=__channel__, action="entraenpeli", title=titulo , fulltitle=titulo, url=scrapedurl , thumbnail=thumbnail , plot=plot , fanart= fanart, extra=scrapedurl, folder=True) )
     patronvideos  = "pagination.*?class='current'.*?<a href='(.*?)'.*?</div>"
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
     scrapertools.printMatches(matches)
@@ -102,6 +108,22 @@ def menupelis(item):
         next_page_url = matches[0]
         itemlist.append( Item(channel=__channel__, action="menupelis", title="[B][COLOR magenta]>>> Página siguiente[/COLOR][/B]" , url=next_page_url , extra=item.extra , thumbnail= NEXTPAGEIMAGE,fanart= FANARTIMAGE , folder=True) )
     return itemlist
+
+def TMDb(title):
+	url="http://api.themoviedb.org/3/search/movie?api_key=2e2160006592024ba87ccdf78c28f49f&query=" + title.replace(" ","%20").replace("'","").replace(":","").strip() + "&language=es&include_adult=false"
+	data = scrapertools.cachePage(url)
+	data = re.sub(r"\n|\r|\t|\s{2}|&nbsp;","",data)
+	try:
+		fanart = "https://image.tmdb.org/t/p/original" + scrapertools.get_match(data,'"page":1,.*?"backdrop_path":"\\\(.*?)"')
+		caratula =  "https://image.tmdb.org/t/p/original" + scrapertools.get_match(data,'"page":1,.*?"poster_path":"\\\(.*?)"')
+		sinopsis =  scrapertools.get_match(data,'"page":1,.*?"overview":"(.*?)"')
+		puntuacion = scrapertools.get_match(data,'"page":1,.*?"vote_average":(.*?)}')
+	except:
+		fanart = FANARTIMAGE
+		caratula =THUMBNAILIMAGE
+		sinopsis = ""
+		puntuacion = ""
+	return fanart,caratula,sinopsis,puntuacion
 
 def entraenpeli(item):
     logger.info("pelisalacarta.channels.divxtotal entraenpeli")
@@ -245,7 +267,7 @@ def lista(item):
             accion = "entraenserie"
             scrapedtam = "Serie"
         else: accion = "entraenpeli"
-        titulo = "[B][COLOR yellow]" + scrapedtitle + "[/COLOR][/B] [COLOR cyan](" + scrapedgen + ")[/COLOR]"+scrapedfecha+" [COLOR green]("+scrapedtam+")[/COLOR]"
+        titulo = "[B][COLOR yellow]" + scrapedtitle + "[/COLOR][/B] [COLOR cyan](" + scrapedgen + ")[/COLOR]"+scrapedfecha+" [COLOR limegreen]("+scrapedtam+")[/COLOR]"
         itemlist.append( Item(channel=__channel__, action=accion, title=titulo , fulltitle=titulo, url=scrapedurl , thumbnail="" , plot="" , folder=True) )
     patronvideos  = "pagination.*?class='current'.*?<a href='(.*?)'.*?</div>"
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
