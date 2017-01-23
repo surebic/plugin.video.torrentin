@@ -110,18 +110,22 @@ def menupelis(item):
     return itemlist
 
 def TMDb(title):
-	url="http://api.themoviedb.org/3/search/movie?api_key=2e2160006592024ba87ccdf78c28f49f&query=" + title.replace(" ","%20").replace("'","").replace(":","").strip() + "&language=es&include_adult=false"
-	data = scrapertools.cachePage(url)
-	data = re.sub(r"\n|\r|\t|\s{2}|&nbsp;","",data)
+	data = re.sub(r'\n|\r|\t|\s{2}|&nbsp;',"",scrapertools.cachePage("http://api.themoviedb.org/3/search/movie?api_key=f7f51775877e0bb6703520952b3c7840&query=" + title.replace(" ","%20").replace("'","").replace(":","").strip() + "&language=es&include_adult=false"))
 	try:
 		fanart = "https://image.tmdb.org/t/p/original" + scrapertools.get_match(data,'"page":1,.*?"backdrop_path":"\\\(.*?)"')
-		caratula =  "https://image.tmdb.org/t/p/original" + scrapertools.get_match(data,'"page":1,.*?"poster_path":"\\\(.*?)"')
-		sinopsis =  scrapertools.get_match(data,'"page":1,.*?"overview":"(.*?)"')
-		puntuacion = scrapertools.get_match(data,'"page":1,.*?"vote_average":(.*?)}')
 	except:
 		fanart = FANARTIMAGE
+	try:
+		caratula =  "https://image.tmdb.org/t/p/original" + scrapertools.get_match(data,'"page":1,.*?"poster_path":"\\\(.*?)"')
+	except:
 		caratula =THUMBNAILIMAGE
+	try:
+		sinopsis =  scrapertools.get_match(data,'"page":1,.*?"overview":"(.*?)","').replace('\\"','"')
+	except:
 		sinopsis = ""
+	try:
+		puntuacion = scrapertools.get_match(data,'"page":1,.*?"vote_average":(.*?)}')
+	except:
 		puntuacion = ""
 	return fanart,caratula,sinopsis,puntuacion
 
@@ -194,7 +198,7 @@ def menuseries(item):
     matches = re.compile(patron,re.DOTALL).findall(listado)
     scrapertools.printMatches(matches)
     for scrapeddir,scrapedthumb,scrapedtitle,scrapedfecha in matches:
-        title = "[B][COLOR orange]" + scrapedtitle + "[/COLOR] [COLOR blue]("+scrapedfecha+")[/COLOR][/B]"
+        title = "[B][COLOR orange]" + scrapedtitle + "[/COLOR][/B] [COLOR blue]("+scrapedfecha+")[/COLOR]"
         itemlist.append( Item(channel=__channel__, action="entraenserie", title=title , fulltitle = title, url=scrapeddir , thumbnail=scrapedthumb , fanart=FANARTIMAGE, plot=
 "" , folder=True) )
     patronvideos  = "pagination.*?class='current'.*?<a href='(.*?)'.*?</div>"

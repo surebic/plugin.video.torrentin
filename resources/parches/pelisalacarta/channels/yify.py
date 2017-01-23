@@ -85,22 +85,26 @@ def estrenos(item):
                 if item.show == "all": pass
                 elif scrapedcalidad == item.show: pass
                 else: continue
-                titulo = "[B][COLOR yellow]" + scrapertools.htmlclean(scrapedtitulo) + "[/COLOR] [COLOR lime]("+scrapedcalidad+")[/COLOR] [COLOR cyan]("+scrapedfecha+")[/COLOR] [COLOR orange]("+scrapedgenero+")[/COLOR] [COLOR magenta]("+scrapedrating+")[/COLOR][/B]"
+                titulo = "[B][COLOR yellow]" + scrapertools.htmlclean(scrapedtitulo) + "[/COLOR][/B] [COLOR lime]("+scrapedcalidad+")[/COLOR] [COLOR cyan]("+scrapedfecha+")[/COLOR] [COLOR orange]("+scrapedgenero+")[/COLOR] [COLOR magenta]("+scrapedrating+")[/COLOR]"
                 itemlist.append( Item(channel=__channel__, action="play", server="torrent", title=titulo , fulltitle=titulo, url=scrapedurl , thumbnail=scrapedthumb , fanart=fanart, plot=sinopsis, extra="", folder=False) )
     if ">Next &raquo;</a>" in data: itemlist.append( Item(channel=__channel__, action="estrenos", title="[B][COLOR brown]>>> Next page[/COLOR][/B]" , show=item.show , url=item.url , extra=pag_sig , thumbnail= NEXTPAGEIMAGE , fanart=FANARTIMAGE, folder=True) )
     return itemlist
 
 def TMDb(title,year):
-	data = re.sub(r"\n|\r|\t|\s{2}|&nbsp;","",scrapertools.cachePage("http://api.themoviedb.org/3/search/movie?api_key=2e2160006592024ba87ccdf78c28f49f&query=" + title.replace(" ","%20").strip() + "&year=" + year + "&language=en&include_adult=false"))
+	data = re.sub(r"\n|\r|\t|\s{2}|&nbsp;","",scrapertools.cachePage("http://api.themoviedb.org/3/search/movie?api_key=f7f51775877e0bb6703520952b3c7840&query=" + title.replace(" ","%20").strip() + "&year=" + year + "&language=en&include_adult=false"))
 	try:
 		fanart = "https://image.tmdb.org/t/p/original" + scrapertools.get_match(data,'"page":1,.*?"backdrop_path":"\\\(.*?)"')
-		sinopsis =  scrapertools.get_match(data,'"page":1,.*?"overview":"(.*?)"')
-		puntuacion = scrapertools.get_match(data,'"page":1,.*?"vote_average":(.*?)}')
 	except:
 		fanart = FANARTIMAGE
+	try:
+		sinopsis =  scrapertools.get_match(data,'"page":1,.*?"overview":"(.*?)","').replace('\\"','"')
+	except:
 		sinopsis = ""
+	try:
+		puntuacion = scrapertools.get_match(data,'"page":1,.*?"vote_average":(.*?)}')
+	except:
 		puntuacion = ""
-	return fanart,sinopsis + "\n\n[B][COLOR purple]TMDb Rating: [COLOR magenta]" + puntuacion + "[/COLOR][/B]"
+	return fanart,sinopsis + "\n[B][COLOR purple]TMDb Rating: [COLOR magenta]" + puntuacion + "[/COLOR][/B]"
 
 def search(item,texto):
 # https://yts.ag/browse-movies/king/720p/comedy/4/seeds?page=1

@@ -33,8 +33,8 @@ def isGeneric():
 def mainlist(item):
     logger.info("pelisalacarta.channels.EstrenosDTL mainlist")
     itemlist = []
-    itemlist.append( Item(channel=__channel__, action="estrenos" , title="[COLOR yellow]Estrenos   (Todas las calidades)[/COLOR]" , url="http://www.estrenosdtl.com/peliculas-screener.html?pagina=" , extra="1",thumbnail= THUMBNAILIMAGE, fanart=FANARTIMAGE, folder=True))
-    itemlist.append( Item(channel=__channel__, action="search" , title="[COLOR yellow]Buscar Estrenos...[/COLOR]",thumbnail= THUMBNAILIMAGE, fanart=FANARTIMAGE ))
+    itemlist.append( Item(channel=__channel__, action="estrenos" , title="[B][COLOR yellow]Estrenos   (Todas las calidades)[/COLOR][/B]" , url="http://www.estrenosdtl.com/peliculas-screener.html?pagina=" , extra="1",thumbnail= THUMBNAILIMAGE, fanart=FANARTIMAGE, folder=True))
+    itemlist.append( Item(channel=__channel__, action="search" , title="[B][COLOR yellow]Buscar Estrenos...[/COLOR][/B]",thumbnail= THUMBNAILIMAGE, fanart=FANARTIMAGE ))
     return itemlist
 
 # Begin Peliculas
@@ -55,14 +55,32 @@ def estrenos(item):
     matches = re.compile(patron,re.DOTALL).findall(data)
     scrapertools.printMatches(matches)
     for scrapedurl , scrapedtitle , scrapedcalidad , scrapedfecha in matches:
-        titulo = "[COLOR yellow]" + (unicode( scrapedtitle, "iso-8859-1" , errors="replace" ).encode("utf-8")).strip() + "[/COLOR] [COLOR blue]("+scrapedcalidad+")[/COLOR] [COLOR green]("+scrapedfecha+")[/COLOR]"
+        fanart,plot,puntuacion = TMDb(StripTags2(scrapedtitle))
+        if puntuacion =="": puntuacion = "--"
+        titulo = "[B][COLOR yellow]" + (unicode( scrapedtitle, "iso-8859-1" , errors="replace" ).encode("utf-8")).strip() + "[/B] [COLOR blue]("+scrapedcalidad+")[COLOR magenta] (" + puntuacion + ") [COLOR limegreen]("+scrapedfecha+")[/COLOR]"
         numero = scrapertools.find_single_match(scrapedurl,'-(\d+).')
         thumbnail = "http://www.estrenosdtl.com/imagenes/"+numero+".jpg"
         url= "http://www.estrenosdtl.com/"+scrapedurl
-        itemlist.append( Item(channel=__channel__, action="play", title=titulo , fulltitle=titulo, url=url , thumbnail=thumbnail , fanart=os.path.join( config.get_runtime_path(), 'resources' , 'images' ,"estrenosdtlfanart.jpg"), extra="", folder=False) )
+        itemlist.append( Item(channel=__channel__, action="play", title=titulo , fulltitle=titulo, url=url , thumbnail=thumbnail , fanart=fanart, extra="", plot=plot,folder=False) )
     if haymas:
-         itemlist.append( Item(channel=__channel__, action="estrenos", title="[COLOR magenta]>>> Página siguiente[/COLOR]" , url=item.url , extra=pag_sig , fanart=os.path.join( config.get_runtime_path(), 'resources' , 'images' ,"estrenosdtlfanart.jpg"), thumbnail=NEXTPAGEIMAGE, folder=True) )
+         itemlist.append( Item(channel=__channel__, action="estrenos", title="[COLOR magenta]>>> Página siguiente[/COLOR]" , url=item.url , extra=pag_sig , fanart=FANARTIMAGE, thumbnail=NEXTPAGEIMAGE, folder=True) )
     return itemlist
+    
+def TMDb(title):
+	data = re.sub(r'\n|\r|\t|\s{2}|&nbsp;',"",scrapertools.cachePage("http://api.themoviedb.org/3/search/movie?api_key=f7f51775877e0bb6703520952b3c7840&query=" + title.replace(" ","%20").replace("'","").replace(":","") + "&language=es&include_adult=false"))
+	try:
+		fanart = "https://image.tmdb.org/t/p/original" + scrapertools.get_match(data,'"page":1,.*?"backdrop_path":"\\\(.*?)"')
+	except:
+		fanart = FANARTIMAGE
+	try:
+		sinopsis =  scrapertools.get_match(data,'"page":1,.*?"overview":"(.*?)","').replace('\\"','"')
+	except:
+		sinopsis = ""
+	try:
+		puntuacion = scrapertools.get_match(data,'"page":1,.*?"vote_average":(.*?)}')
+	except:
+		puntuacion = ""
+	return fanart,sinopsis,puntuacion
 
 def play(item):
     logger.info("pelisalacarta.channels.EstrenosDTL entraenpeli")
@@ -116,5 +134,16 @@ def lista(item):
     return itemlist
     #Solo da una pagina en las busquedas...
 
+def StripTags2(text):
+     finished = 0
+     while not finished:
+         finished = 1
+         start = text.find("(")
+         if start >= 0:
+             stop = text[start:].find(")")
+             if stop >= 0:
+                 text = text[:start] + text[start+stop+1:]
+                 finished = 0
+     return text.strip()
 
 # Fin, este era facilito.

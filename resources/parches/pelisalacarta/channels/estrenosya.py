@@ -113,7 +113,7 @@ def entraenpeli(item):
         itemlist.append( Item(channel=__channel__, title="[COLOR orange]No hay enlaces torrent para este vídeo...[/COLOR]", thumbnail =item.thumbnail, fanart=item.fanart,folder=False) )
         return itemlist
     for scrapedurl, scrapedtitle in matches:
-        title = "[COLOR lime]Ver: [/COLOR]" + "[COLOR yellow]" + scrapedtitle+ "[/COLOR]" + "[COLOR pink] (Torrent)[/COLOR]"
+        title = "[COLOR yellow]" + scrapedtitle+ "[/COLOR]" + "[COLOR pink] [Torrent][/COLOR]"
         itemlist.append( Item(channel=__channel__, action="play", title=title , fulltitle=item.title, url=scrapedurl , thumbnail=item.thumbnail , plot=item.plot , fanart=item.fanart, folder=False) )
     return itemlist
 
