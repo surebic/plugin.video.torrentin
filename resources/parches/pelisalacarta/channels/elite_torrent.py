@@ -28,7 +28,7 @@ DEBUG = config.get_setting("debug")
 BASE_URL = 'http://www.elitetorrent.net'
 
 FANARTIMAGE = "http://i.imgur.com/O2AmwUX.jpg"
-THUMBNAILIMAGE = "http://i.imgur.com/y1hDx1t.jpg"
+THUMBNAILIMAGE = "http://i.imgur.com/2MM3O7z.jpg"
 SEARCHIMAGE = "http://i.imgur.com/STE2K8O.png"
 NEXTPAGEIMAGE = "http://i.imgur.com/lqt8JcD.png"
 
