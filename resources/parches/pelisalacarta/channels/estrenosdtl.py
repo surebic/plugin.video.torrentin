@@ -55,9 +55,13 @@ def estrenos(item):
     matches = re.compile(patron,re.DOTALL).findall(data)
     scrapertools.printMatches(matches)
     for scrapedurl , scrapedtitle , scrapedcalidad , scrapedfecha in matches:
-        fanart,plot,puntuacion = TMDb(StripTags2(scrapedtitle))
-        if puntuacion =="": puntuacion = "--"
-        titulo = "[B][COLOR yellow]" + (unicode( scrapedtitle, "iso-8859-1" , errors="replace" ).encode("utf-8")).strip() + "[/B] [COLOR blue]("+scrapedcalidad+")[COLOR magenta] (" + puntuacion + ") [COLOR limegreen]("+scrapedfecha+")[/COLOR]"
+        if config.get_setting('modo_grafico', "estrenosdtl"): fanart,plot,puntuacion = TMDb(StripTags2(scrapedtitle))
+        else:
+            fanart = FANARTIMAGE
+            plot = ""
+            puntuacion = ""
+        if puntuacion !="": puntuacion = " [COLOR magenta] (" + puntuacion + ")"
+        titulo = "[B][COLOR yellow]" + (unicode( scrapedtitle, "iso-8859-1" , errors="replace" ).encode("utf-8")).strip() + "[/B] [COLOR blue]("+scrapedcalidad + ")" + puntuacion + " [COLOR limegreen]("+scrapedfecha+")[/COLOR]"
         numero = scrapertools.find_single_match(scrapedurl,'-(\d+).')
         thumbnail = "http://www.estrenosdtl.com/imagenes/"+numero+".jpg"
         url= "http://www.estrenosdtl.com/"+scrapedurl
@@ -68,18 +72,12 @@ def estrenos(item):
     
 def TMDb(title):
 	data = re.sub(r'\n|\r|\t|\s{2}|&nbsp;',"",scrapertools.cachePage("http://api.themoviedb.org/3/search/movie?api_key=f7f51775877e0bb6703520952b3c7840&query=" + title.replace(" ","%20").replace("'","").replace(":","") + "&language=es&include_adult=false"))
-	try:
-		fanart = "https://image.tmdb.org/t/p/original" + scrapertools.get_match(data,'"page":1,.*?"backdrop_path":"\\\(.*?)"')
-	except:
-		fanart = FANARTIMAGE
-	try:
-		sinopsis =  scrapertools.get_match(data,'"page":1,.*?"overview":"(.*?)","').replace('\\"','"')
-	except:
-		sinopsis = ""
-	try:
-		puntuacion = scrapertools.get_match(data,'"page":1,.*?"vote_average":(.*?)}')
-	except:
-		puntuacion = ""
+	try: fanart = "https://image.tmdb.org/t/p/original" + scrapertools.get_match(data,'"page":1,.*?"backdrop_path":"\\\(.*?)"')
+	except: fanart = FANARTIMAGE
+	try: sinopsis =  scrapertools.get_match(data,'"page":1,.*?"overview":"(.*?)","').replace('\\"','"')
+	except: sinopsis = ""
+	try:  puntuacion = scrapertools.get_match(data,'"page":1,.*?"vote_average":(.*?)}')
+	except: puntuacion = ""
 	return fanart,sinopsis,puntuacion
 
 def play(item):

@@ -64,8 +64,6 @@ def estrenos(item):
     itemlist=[]
     if item.extra =="1":  data = scrapertools.cache_page(item.url)
     else: data = scrapertools.cache_page(item.url + "?page=" + item.extra)
-    #print "CACHEADA: " + item.url + "?page=" + item.extra
-    #print data
     logger.info("data="+data)
     pag_sig=str(int(item.extra)+1)
     patron =    'browse-movie-wrap.*?src="(.*?)" alt=' #  thumb
@@ -76,7 +74,11 @@ def estrenos(item):
     scrapertools.printMatches(matches)
     for scrapedthumb, scrapedrating, scrapedgenero, scrapedtitulo, scrapedfecha, scrapedlinks, in matches:
         scrapedrating = scrapedrating.replace(" / 10","")
-        fanart,sinopsis = TMDb(scrapedtitulo,scrapedfecha)
+        if config.get_setting('modo_grafico', "yify"):
+            fanart,sinopsis = TMDb(scrapedtitulo,scrapedfecha)
+        else:
+            fanart = FANARTIMAGE
+            sinopsis =""
         if scrapedlinks.count("download") >=1:
             patron2 = '.*?<a href="(.*?)".*?>(.*?)</a>' #urls
             matches2 = re.compile(patron2,re.DOTALL).findall(scrapedlinks)
@@ -91,19 +93,15 @@ def estrenos(item):
     return itemlist
 
 def TMDb(title,year):
-	data = re.sub(r"\n|\r|\t|\s{2}|&nbsp;","",scrapertools.cachePage("http://api.themoviedb.org/3/search/movie?api_key=f7f51775877e0bb6703520952b3c7840&query=" + title.replace(" ","%20").strip() + "&year=" + year + "&language=en&include_adult=false"))
-	try:
-		fanart = "https://image.tmdb.org/t/p/original" + scrapertools.get_match(data,'"page":1,.*?"backdrop_path":"\\\(.*?)"')
-	except:
-		fanart = FANARTIMAGE
-	try:
-		sinopsis =  scrapertools.get_match(data,'"page":1,.*?"overview":"(.*?)","').replace('\\"','"')
-	except:
-		sinopsis = ""
-	try:
-		puntuacion = scrapertools.get_match(data,'"page":1,.*?"vote_average":(.*?)}')
-	except:
-		puntuacion = ""
+	if config.get_setting('english_sinopsis', "yify"): args = "en"
+	else: args = "es"
+	data = re.sub(r"\n|\r|\t|\s{2}|&nbsp;","",scrapertools.cachePage("http://api.themoviedb.org/3/search/movie?api_key=f7f51775877e0bb6703520952b3c7840&query=" + title.replace(" ","%20").strip() + "&year=" + year + "&language=" + args + "&include_adult=false"))
+	try: fanart = "https://image.tmdb.org/t/p/original" + scrapertools.get_match(data,'"page":1,.*?"backdrop_path":"\\\(.*?)"')
+	except: fanart = FANARTIMAGE
+	try: sinopsis =  scrapertools.get_match(data,'"page":1,.*?"overview":"(.*?)","').replace('\\"','"')
+	except: sinopsis = ""
+	try: puntuacion = scrapertools.get_match(data,'"page":1,.*?"vote_average":(.*?)}')
+	except: puntuacion = ""
 	return fanart,sinopsis + "\n[B][COLOR purple]TMDb Rating: [COLOR magenta]" + puntuacion + "[/COLOR][/B]"
 
 def search(item,texto):
@@ -164,6 +162,7 @@ def advsearch(item,texto):
     if texto == "": texto= "0"
     texto = texto.replace("+","%20").replace(" ","%20")
     #item.url="https://yts.ag/browse-movies/"+texto+"/"+qualityselected+"/"+genreselected+"/"+ratingselected+"/"+orderbyselected
+    # Modificado en Diciembre 2016, ya no admite busquedas por calidades, salen todas y se filtran
     item.url="https://yts.ag/browse-movies/"+texto+"/all/"+genreselected+"/"+ratingselected+"/"+orderbyselected
     item.extra = "1"
     try:

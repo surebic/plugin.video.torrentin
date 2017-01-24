@@ -97,7 +97,13 @@ def menupelis(item):
         #if scrapedfecha == "29-10-2016" : scrapedfecha = ""
         #else: scrapedfecha = "[COLOR blue](" + scrapedfecha + ")[/COLOR]"
         '''
-        fanart,thumbnail,plot,puntuacion = TMDb(scrapedtitle)
+        if config.get_setting('modo_grafico', "divxtotal"):
+            fanart,thumbnail,plot,puntuacion = TMDb(scrapedtitle)
+        else: 
+            fanart = FANARTIMAGE
+            thumbnail =THUMBNAILIMAGE
+            plot = ""
+            puntuacion = ""
         if puntuacion != "": puntuacion = " [COLOR deeppink](" + puntuacion + ")[/COLOR]"
         titulo = "[B][COLOR yellow]" + scrapedtitle.strip()+ "[/COLOR][/B] [COLOR cyan]("+scrapedgen+")" + "[/COLOR]" + puntuacion + " [COLOR limegreen]("+scrapedtam+")[/COLOR]"
         itemlist.append( Item(channel=__channel__, action="entraenpeli", title=titulo , fulltitle=titulo, url=scrapedurl , thumbnail=thumbnail , plot=plot , fanart= fanart, extra=scrapedurl, folder=True) )
@@ -111,22 +117,14 @@ def menupelis(item):
 
 def TMDb(title):
 	data = re.sub(r'\n|\r|\t|\s{2}|&nbsp;',"",scrapertools.cachePage("http://api.themoviedb.org/3/search/movie?api_key=f7f51775877e0bb6703520952b3c7840&query=" + title.replace(" ","%20").replace("'","").replace(":","").strip() + "&language=es&include_adult=false"))
-	try:
-		fanart = "https://image.tmdb.org/t/p/original" + scrapertools.get_match(data,'"page":1,.*?"backdrop_path":"\\\(.*?)"')
-	except:
-		fanart = FANARTIMAGE
-	try:
-		caratula =  "https://image.tmdb.org/t/p/original" + scrapertools.get_match(data,'"page":1,.*?"poster_path":"\\\(.*?)"')
-	except:
-		caratula =THUMBNAILIMAGE
-	try:
-		sinopsis =  scrapertools.get_match(data,'"page":1,.*?"overview":"(.*?)","').replace('\\"','"')
-	except:
-		sinopsis = ""
-	try:
-		puntuacion = scrapertools.get_match(data,'"page":1,.*?"vote_average":(.*?)}')
-	except:
-		puntuacion = ""
+	try: fanart = "https://image.tmdb.org/t/p/original" + scrapertools.get_match(data,'"page":1,.*?"backdrop_path":"\\\(.*?)"')
+	except: fanart = FANARTIMAGE
+	try: caratula =  "https://image.tmdb.org/t/p/original" + scrapertools.get_match(data,'"page":1,.*?"poster_path":"\\\(.*?)"')
+	except: caratula =THUMBNAILIMAGE
+	try: sinopsis =  scrapertools.get_match(data,'"page":1,.*?"overview":"(.*?)","').replace('\\"','"')
+	except: sinopsis = ""
+	try: puntuacion = scrapertools.get_match(data,'"page":1,.*?"vote_average":(.*?)}')
+	except: puntuacion = ""
 	return fanart,caratula,sinopsis,puntuacion
 
 def entraenpeli(item):

@@ -6,15 +6,14 @@
 	<active>true</active>
 	<adult>false</adult>
 	<language>es</language>
-	<include_in_global_search>true</include_in_global_search>
 
 	<fanart></fanart>
 	<thumbnail>http://i.imgur.com/F6qurea.jpg</thumbnail>
 	<bannermenu></bannermenu>
 
 	<update_url>https://raw.githubusercontent.com/surebic/plugin.video.torrentin/master/resources/parches/pelisalacarta/channels/</update_url>
-	<version>5</version>
-	<date>23/1/2017</date>
+	<version>6</version>
+	<date>24/1/2017</date>
 	<changes>Re-escrito al completo para adaptarlo a la nueva web, mejorado buscador y con generos</changes>
 
 	<categories>
@@ -22,5 +21,23 @@
 		<category>movie</category>
 		<category>serie</category>
 	</categories>
+	
+    <settings>
+        <id>include_in_global_search</id>
+        <type>bool</type>
+        <label>Incluir en busqueda global</label>
+        <default>true</default>
+        <enabled>true</enabled>
+        <visible>true</visible>
+    </settings>
 
+	<settings>
+		<id>modo_grafico</id>
+		<type>bool</type>
+		<label>Buscar Poster Fanart Argumento y Puntuacion en TMDb</label>
+ 		<default>true</default>
+ 		<enabled>true</enabled>
+ 		<visible>true</visible>
+ 	</settings>
+ 
 </channel>
