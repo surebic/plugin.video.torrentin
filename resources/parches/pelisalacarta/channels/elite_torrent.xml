@@ -12,8 +12,8 @@
 	<bannermenu>http://media.tvalacarta.info/pelisalacarta/bannermenu/elitetorrent.png</bannermenu>
 
 	<update_url>https://raw.githubusercontent.com/surebic/plugin.video.torrentin/master/resources/parches/pelisalacarta/channels/</update_url>
-	<version>15</version>
-	<date>24/1/2017</date>
+	<version>16</version>
+	<date>25/1/2017</date>
 	<changes>Nuevos menus con listados por fecha, valoracion y popularidad, extrae torrent en vez de magnet e incluido buscador, arreglado y mejorado (1-2017)</changes>
 
 	<categories>
@@ -36,8 +36,17 @@
 	<settings>
 		<id>modo_grafico</id>
 		<type>bool</type>
-		<label>Buscar Poster Fanart y Puntuacion en TMDb</label>
+		<label>Buscar Poster Fanart Argumento y Puntuacion en TMDb</label>
  		<default>true</default>
+ 		<enabled>true</enabled>
+ 		<visible>true</visible>
+ 	</settings>
+
+	<settings>
+		<id>modo_rapido</id>
+		<type>bool</type>
+		<label>Modo una lista con acceso directo al torrent</label>
+ 		<default>false</default>
  		<enabled>true</enabled>
  		<visible>true</visible>
  	</settings>
