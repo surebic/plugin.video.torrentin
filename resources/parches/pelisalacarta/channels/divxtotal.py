@@ -27,6 +27,7 @@ FANARTIMAGE = "http://i.imgur.com/6ETdWOY.jpg"
 THUMBNAILIMAGE = "http://i.imgur.com/F6qurea.jpg"
 SEARCHIMAGE = "http://i.imgur.com/STE2K8O.png"
 NEXTPAGEIMAGE = "http://i.imgur.com/lqt8JcD.png"
+MODO_EXTENDIDO = config.get_setting('modo_grafico', "divxtotal")
 
 def isGeneric():
     return True
@@ -45,7 +46,15 @@ def mainlist(item):
 
     itemlist.append( Item(channel=__channel__, action="search" , title="[COLOR yellow][B]Buscador (General)...[/B][/COLOR]",plot="[B]Busca en todo...[/B]",thumbnail= SEARCHIMAGE,fanart= FANARTIMAGE ))
     itemlist.append( Item(channel=__channel__, action="search" , title="[COLOR orange][B]Buscador (Sólo Series)...[/B][/COLOR]", plot="[B]Busca solamente las Series TV (Se filtran los resultados para mostrar solo las series, por lo que si aparece [COLOR magenta]>>>Página siguiente[/COLOR] picar ahi porque puede haber mas resultados en las siguientes páginas).[/B]",thumbnail= SEARCHIMAGE,fanart= FANARTIMAGE ))
+    itemlist.append( Item(channel=__channel__, action="configuracion", title="[B][COLOR dodgerblue]Configurar canal...[/COLOR][/B]", thumbnail= THUMBNAILIMAGE,fanart= FANARTIMAGE, folder=False))
     return itemlist
+
+def configuracion(item):
+    from platformcode import platformtools
+    platformtools.show_channel_settings()
+    if config.is_xbmc():
+        import xbmc
+        xbmc.executebuiltin("Container.Refresh")
 
 # Begin Peliculas
 
@@ -92,21 +101,25 @@ def menupelis(item):
     matches = re.compile(patron,re.DOTALL).findall(listado)
     scrapertools.printMatches(matches)
     for scrapedurl,scrapedtitle,scrapedgen,scrapedfecha,scrapedtam in matches:
-        '''
+        '''no nos vale, es la fecha en la que pusieron la peli en la web no la del estreno...
+        # 
         anyo = scrapedfecha.split("-")[2]
         #if scrapedfecha == "29-10-2016" : scrapedfecha = ""
         #else: scrapedfecha = "[COLOR blue](" + scrapedfecha + ")[/COLOR]"
         '''
-        if config.get_setting('modo_grafico', "divxtotal"):
-            fanart,thumbnail,plot,puntuacion = TMDb(scrapedtitle)
+        if MODO_EXTENDIDO:
+            fanart,thumbnail,plot,puntuacion,fecha = TMDb(scrapedtitle)
         else: 
             fanart = FANARTIMAGE
             thumbnail =THUMBNAILIMAGE
             plot = ""
             puntuacion = ""
-        if puntuacion != "": puntuacion = " [COLOR deeppink](" + puntuacion + ")[/COLOR]"
-        titulo = "[B][COLOR yellow]" + scrapedtitle.strip()+ "[/COLOR][/B] [COLOR cyan]("+scrapedgen+")" + "[/COLOR]" + puntuacion + " [COLOR limegreen]("+scrapedtam+")[/COLOR]"
-        itemlist.append( Item(channel=__channel__, action="entraenpeli", title=titulo , fulltitle=titulo, url=scrapedurl , thumbnail=thumbnail , plot=plot , fanart= fanart, extra=scrapedurl, folder=True) )
+            fecha = ""
+        if "imgur" in thumbnail and MODO_EXTENDIDO: thumbnail = getthumbnail(scrapedurl)
+        if puntuacion != "": puntuaciontitle = " [COLOR deeppink](" + puntuacion + ")[/COLOR]"
+        else: puntuaciontitle = ""
+        titulo = "[B][COLOR yellow]" + scrapedtitle.strip()+ "[/COLOR][/B] [COLOR cyan]("+scrapedgen+")" + "[/COLOR]" + puntuaciontitle + " [COLOR limegreen]("+scrapedtam+")[/COLOR]"
+        itemlist.append( Item(channel=__channel__, action="entraenpeli", title=titulo , fulltitle=titulo, url=scrapedurl , thumbnail=thumbnail , plot=plot , fanart= fanart, extra=scrapedurl, infoLabels={"rating":puntuacion, "genre":scrapedgen, "year":fecha}, folder=True) )
     patronvideos  = "pagination.*?class='current'.*?<a href='(.*?)'.*?</div>"
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
     scrapertools.printMatches(matches)
@@ -116,17 +129,20 @@ def menupelis(item):
     return itemlist
 
 def TMDb(title):
-	data = re.sub(r'\n|\r|\t|\s{2}|&nbsp;',"",scrapertools.cachePage("http://api.themoviedb.org/3/search/movie?api_key=f7f51775877e0bb6703520952b3c7840&query=" + title.replace(" ","%20").replace("'","").replace(":","").strip() + "&language=es&include_adult=false"))
+	#data = re.sub(r'\n|\r|\t|\s{2}|&nbsp;',"",scrapertools.cachePage("http://api.themoviedb.org/3/search/movie?api_key=f7f51775877e0bb6703520952b3c7840&query=" + title.replace(" ","%20").replace("'","").replace(":","").strip() + "&language=es&include_adult=false"))
+	data = re.sub(r'\n|\r|\t|\s{2}|&nbsp;',"",scrapertools.cachePage("http://api.themoviedb.org/3/search/movie?api_key=f7f51775877e0bb6703520952b3c7840&query=" + title.replace(" ","%20") + "&language=es&include_adult=false"))
 	try: fanart = "https://image.tmdb.org/t/p/original" + scrapertools.get_match(data,'"page":1,.*?"backdrop_path":"\\\(.*?)"')
 	except: fanart = FANARTIMAGE
 	try: caratula =  "https://image.tmdb.org/t/p/original" + scrapertools.get_match(data,'"page":1,.*?"poster_path":"\\\(.*?)"')
 	except: caratula =THUMBNAILIMAGE
 	try: sinopsis =  scrapertools.get_match(data,'"page":1,.*?"overview":"(.*?)","').replace('\\"','"')
-	except: sinopsis = ""
+	except: sinopsis = "No hay datos."
 	try: puntuacion = scrapertools.get_match(data,'"page":1,.*?"vote_average":(.*?)}')
 	except: puntuacion = ""
-	return fanart,caratula,sinopsis,puntuacion
-
+	try: fecha = scrapertools.get_match(data,'"page":1,.*?"release_date":"(.*?)","').split("-")[0]
+	except: fecha = ""
+	return fanart,caratula,sinopsis,puntuacion,fecha
+	
 def entraenpeli(item):
     logger.info("pelisalacarta.channels.divxtotal entraenpeli")
     itemlist=[]
@@ -144,11 +160,10 @@ def entraenpeli(item):
         itemlist.append( Item(channel=__channel__, action="play", server="torrent", title=title , fulltitle=title, url=scrapedurl , thumbnail=scrapedthumb , plot=plot , viewmode="movie_with_plot", fanart=item.fanart , folder=False) )
     return itemlist
 
-def getthumbnail(dir): #No se usa, tarda mucho...
-    url = BASE_URL+dir
+def getthumbnail(url):
     data = scrapertools.cache_page(url)
     thumb = scrapertools.find_single_match(data,'"ficha_img".*?src="(.*?)" alt')
-    return BASE_URL+thumb
+    return thumb
 
 # Begin series
 

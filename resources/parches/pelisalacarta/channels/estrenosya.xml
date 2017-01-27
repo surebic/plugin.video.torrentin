@@ -12,7 +12,7 @@
 	<bannermenu></bannermenu>
 
 	<update_url>https://raw.githubusercontent.com/surebic/plugin.video.torrentin/master/resources/parches/pelisalacarta/channels/</update_url>
-	<version>5</version>
+	<version>6</version>
 	<date>26/01/2017</date>
 	<changes>Arreglado buscador y mejorado</changes>
 
@@ -35,7 +35,7 @@
 	<settings>
 		<id>modo_grafico</id>
 		<type>bool</type>
-		<label>Buscar Poster Fanart Argumento y Puntuacion en TMDb</label>
+		<label>Buscar datos extra en TMDb</label>
  		<default>true</default>
  		<enabled>true</enabled>
  		<visible>true</visible>

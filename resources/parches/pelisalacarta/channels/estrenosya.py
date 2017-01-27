@@ -25,7 +25,7 @@ FANARTIMAGE = "http://i.imgur.com/EmmVJPc.jpg"
 THUMBNAILIMAGE = "http://i.imgur.com/CPqv4rz.jpg"
 SEARCHIMAGE = "http://i.imgur.com/STE2K8O.png"
 NEXTPAGEIMAGE = "http://i.imgur.com/lqt8JcD.png"
-
+MODO_EXTENDIDO = config.get_setting('modo_grafico', "estrenosya")
 DEBUG = config.get_setting("debug")
 
 def isGeneric():
@@ -49,8 +49,15 @@ def mainlist(item):
     itemlist.append( Item(channel=__channel__, action="estrenos" , title="[COLOR orange]Series  (Últimos Capítulos)[/COLOR]" ,  url="http://estrenosya.net/descarga-0-58122-0-0-fx-1-" , extra="1",show="series",thumbnail= THUMBNAILIMAGE, fanart=FANARTIMAGE, folder=True))
     itemlist.append( Item(channel=__channel__, action="categorias" , title="[COLOR orange]Series  (Por Nombre de la serie)[/COLOR]" , url="http://estrenosya.net/descarga-0-58122-0-0-fx-1-" , extra="1",show="series",thumbnail= THUMBNAILIMAGE, fanart=FANARTIMAGE, folder=True))
     itemlist.append( Item(channel=__channel__, action="search" , title="[COLOR lime]Buscar...[/COLOR]",thumbnail= SEARCHIMAGE, fanart=FANARTIMAGE ))
-
+    itemlist.append( Item(channel=__channel__, action="configuracion", title="[B][COLOR dodgerblue]Configurar canal...[/COLOR][/B]", thumbnail= THUMBNAILIMAGE,fanart= FANARTIMAGE, folder=False))
     return itemlist
+    
+def configuracion(item):
+    from platformcode import platformtools
+    platformtools.show_channel_settings()
+    if config.is_xbmc():
+        import xbmc
+        xbmc.executebuiltin("Container.Refresh")
 
 def categorias(item):
     logger.info("pelisalacarta.channels.EstrenosYa estrenos")
@@ -83,7 +90,7 @@ def estrenos(item):
         thumb = urlparse.urljoin(BASE_URL,scrapedthumb)
         torrurl = scrapertools.find_single_match(scrapedurl2,'(/descargar-torrent-.*?)"')
         url = urlparse.urljoin(BASE_URL,torrurl)
-        if item.show == "pelis" and config.get_setting('modo_grafico', "estrenosya"):
+        if item.show == "pelis" and MODO_EXTENDIDO:
             fanart,thumbnail,plot,puntuacion = TMDb(tituloproc.split(" - ")[0].strip(),scrapedtitle.split(" - ")[-1].strip())
             if "imgur" in thumbnail: thumbnail = thumb
             if plot == "": plot = acentos(scrapedplot)
@@ -95,7 +102,7 @@ def estrenos(item):
             thumbnail = thumb
             puntuacion = ""
             plot = acentos(scrapedplot)
-        itemlist.append( Item(channel=__channel__, action="entraenpeli", title= titulo , fulltitle=titulo, url=url , thumbnail=thumbnail , plot=plot , fanart=fanart, extra="", folder=True) )
+        itemlist.append( Item(channel=__channel__, action="entraenpeli", title= titulo , fulltitle=titulo, url=url , thumbnail=thumbnail , plot=plot , fanart=fanart, extra="", folder=True  , infoLabels={'year': scrapedtitle.split(" - ")[-1].strip() , "rating":puntuacion } ) )
     if ">Siguiente &raquo;</a>" in data: itemlist.append( Item(channel=__channel__, action="estrenos", title="[COLOR cyan]>>> Página Siguiente[/COLOR]" , url=item.url , extra=pag_sig , show=item.show, thumbnail= NEXTPAGEIMAGE , fanart=FANARTIMAGE, folder=True) )
     return itemlist
     

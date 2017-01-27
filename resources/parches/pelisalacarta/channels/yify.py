@@ -31,6 +31,8 @@ FANARTIMAGE = "http://i.imgur.com/UKFZyfQ.jpg"
 THUMBNAILIMAGE = "http://i.imgur.com/9LWPgxZ.png"
 SEARCHIMAGE = "http://i.imgur.com/STE2K8O.png"
 NEXTPAGEIMAGE = "http://i.imgur.com/lqt8JcD.png"
+MODO_EXTENDIDO = config.get_setting('modo_grafico', "yify")
+MODO_NATIVO = config.get_setting('english_sinopsis', "yify")
 
 def isGeneric():
     return True
@@ -57,7 +59,16 @@ def mainlist(item):
     itemlist.append( Item(channel=__channel__, action="search" , title="[B][COLOR lime]Search (3D)[/COLOR][/B]",show="3D",thumbnail= SEARCHIMAGE, fanart=FANARTIMAGE ))
 
     itemlist.append( Item(channel=__channel__, action="search" , title="[B][COLOR cyan]Advanced Search[/COLOR][/B]",show="adv",thumbnail= SEARCHIMAGE, fanart=FANARTIMAGE ))
+    
+    itemlist.append( Item(channel=__channel__, action="configuracion", title="[B][COLOR dodgerblue]Configurar canal...[/COLOR][/B]", thumbnail= THUMBNAILIMAGE,fanart= FANARTIMAGE, folder=False))
     return itemlist
+    
+def configuracion(item):
+    from platformcode import platformtools
+    platformtools.show_channel_settings()
+    if config.is_xbmc():
+        import xbmc
+        xbmc.executebuiltin("Container.Refresh")
 
 def estrenos(item):
     logger.info("pelisalacarta.channels.YTS peliculas")
@@ -74,11 +85,12 @@ def estrenos(item):
     scrapertools.printMatches(matches)
     for scrapedthumb, scrapedrating, scrapedgenero, scrapedtitulo, scrapedfecha, scrapedlinks, in matches:
         scrapedrating = scrapedrating.replace(" / 10","")
-        if config.get_setting('modo_grafico', "yify"):
-            fanart,sinopsis = TMDb(scrapedtitulo,scrapedfecha)
+        if MODO_EXTENDIDO:
+            fanart,sinopsis,puntuacion = TMDb(scrapedtitulo,scrapedfecha)
         else:
             fanart = FANARTIMAGE
             sinopsis =""
+            puntuacion = ""
         if scrapedlinks.count("download") >=1:
             patron2 = '.*?<a href="(.*?)".*?>(.*?)</a>' #urls
             matches2 = re.compile(patron2,re.DOTALL).findall(scrapedlinks)
@@ -88,12 +100,12 @@ def estrenos(item):
                 elif scrapedcalidad == item.show: pass
                 else: continue
                 titulo = "[B][COLOR yellow]" + scrapertools.htmlclean(scrapedtitulo) + "[/COLOR][/B] [COLOR lime]("+scrapedcalidad+")[/COLOR] [COLOR cyan]("+scrapedfecha+")[/COLOR] [COLOR orange]("+scrapedgenero+")[/COLOR] [COLOR magenta]("+scrapedrating+")[/COLOR]"
-                itemlist.append( Item(channel=__channel__, action="play", server="torrent", title=titulo , fulltitle=titulo, url=scrapedurl , thumbnail=scrapedthumb , fanart=fanart, plot=sinopsis, extra="", folder=False) )
+                itemlist.append( Item(channel=__channel__, action="play", server="torrent", title=titulo , fulltitle=titulo, url=scrapedurl , thumbnail=scrapedthumb , fanart=fanart, plot=sinopsis, infoLabels={"rating":puntuacion, "year":scrapedfecha,"genre":scrapedgenero }, extra="", folder=False) )
     if ">Next &raquo;</a>" in data: itemlist.append( Item(channel=__channel__, action="estrenos", title="[B][COLOR brown]>>> Next page[/COLOR][/B]" , show=item.show , url=item.url , extra=pag_sig , thumbnail= NEXTPAGEIMAGE , fanart=FANARTIMAGE, folder=True) )
     return itemlist
 
 def TMDb(title,year):
-	if config.get_setting('english_sinopsis', "yify"): args = "en"
+	if MODO_NATIVO: args = "en"
 	else: args = "es"
 	data = re.sub(r"\n|\r|\t|\s{2}|&nbsp;","",scrapertools.cachePage("http://api.themoviedb.org/3/search/movie?api_key=f7f51775877e0bb6703520952b3c7840&query=" + title.replace(" ","%20").strip() + "&year=" + year + "&language=" + args + "&include_adult=false"))
 	try: fanart = "https://image.tmdb.org/t/p/original" + scrapertools.get_match(data,'"page":1,.*?"backdrop_path":"\\\(.*?)"')
@@ -102,7 +114,8 @@ def TMDb(title,year):
 	except: sinopsis = ""
 	try: puntuacion = scrapertools.get_match(data,'"page":1,.*?"vote_average":(.*?)}')
 	except: puntuacion = ""
-	return fanart,sinopsis + "\n[B][COLOR purple]TMDb Rating: [COLOR magenta]" + puntuacion + "[/COLOR][/B]"
+	#return fanart,sinopsis + "\n[B][COLOR purple]TMDb Rating: [COLOR magenta]" + puntuacion + "[/COLOR][/B]"
+	return fanart,sinopsis,puntuacion
 
 def search(item,texto):
 # https://yts.ag/browse-movies/king/720p/comedy/4/seeds?page=1
