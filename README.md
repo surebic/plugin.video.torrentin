@@ -10,6 +10,7 @@
 
 - Puede reproducir enlaces AceLive (Video en directo a traves de AceStream) que le lleguen o contenidos en listas M3U que esten en el directorio de descarga principal, o guardar en estas listas todos los enlaces que le lleguen para reproducir. (Si no hay listas en el directorio no mostrara esa opcion en el menu).
 
+### Para más información visite el foro: http://www.htcmania.com/showthread.php?t=995348
 
 ## Descargar Version 0.5.3
 
