@@ -28,9 +28,10 @@ Version 0.5.4
 - Ahora se muestra en la configuracion/Parches el estado de los mismos (solo pelis y plexus-streams) si se
   actualiza el Add-On parcheado a una nueva version volverá a Off para avisar que hay que re-parchear. (rc3).
 - Más cambios cosméticos. (rc3).
-- Incluida la auto-actualización a través del nuevo botón en la configuracion (rc4).
+- Incluida la auto-actualización del AddOn a través del nuevo botón en la configuracion (rc4).
 
---- Arreglados los canales del parche que no funcionaban:
+--- Modificaciones en los canales incluidos en el parche (DivxTotal, EliteTorrent.net, EstrenosDTL, ExtrenosGO y Yifi):
+- Arreglados los canales que no funcionaban.
 - Arreglado el buscador y mejorado el canal EliteTorrent, posibilidad de obtener el torrent y magnet, muestra
   la información completa de la película en el enlace magnet y solo argumento en el torrent.
 - Arreglado y mejorado el canal yify con nuevas opciones para listar directamente películas mas votadas y
@@ -43,7 +44,13 @@ Version 0.5.4
 - Estan modificando y renovando algunos canales del pelis, de momento no le ha tocado a EliteTorrent pero por si
   en un futuro le toca y para no interferir con el original del pelis, se cambia el nombre de mi mod del mismo
   pasandose a llamar EliteTorrent.net y sera independiente de interno del pelis. (se mostraran los dos) (rc3).
-
+- Incluida la busqueda de fondos, posters, argumentos, puntuacion, año, etc. en TMDb para los 5 canales, esto hace
+  la presentacion de los listados de las peliculas algo mas lenta pero mucho mejor, no obstante esto se puede
+  desconectar en la configuracion del canal y se mostrara solo los datos obtenidos de la web del canal (rc4).
+- Incluida opcion de una lista en el canal Elitetorrent.net con acceso direto al torrent (rc4).
+- Incluida la opcion para mostrar solo el nombre de la pelicula en los listados del canal Yify en vez de 
+  nombre, calidad, genero, año con colores, esto se hace porque con el listado completo con colores no se
+  encuentran los subtitulos em opensubtitles.org y hay que utilizar la cadena de busqueda manual (rc4).
 
 -------------------------------------------------------------------------------
 Version 0.5.3
