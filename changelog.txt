@@ -28,6 +28,7 @@ Version 0.5.4
 - Ahora se muestra en la configuracion/Parches el estado de los mismos (solo pelis y plexus-streams) si se
   actualiza el Add-On parcheado a una nueva version volverá a Off para avisar que hay que re-parchear. (rc3).
 - Más cambios cosméticos. (rc3).
+- Incluida la auto-actualización a través del nuevo botón en la configuracion (rc4).
 
 --- Arreglados los canales del parche que no funcionaban:
 - Arreglado el buscador y mejorado el canal EliteTorrent, posibilidad de obtener el torrent y magnet, muestra
