@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <addon id="plugin.video.torrentin"
   name="Torrentin"
-  version="0.5.4 rc3" 
+  version="0.5.4 rc4" 
   provider-name="ciberus">
   <requires>
     <import addon="xbmc.python" version="2.1.0"/>
