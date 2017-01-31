@@ -731,27 +731,19 @@ def pchpelis2(uri="",player="",image=""):
 
 def pchlatino(uri="",player="",image=""):
     parche = tools.pchlatino()
-    if parche:
-        xbmcgui.Dialog().ok("Torrentin" , "Add-On LatinoTotal parcheado con éxito.","Se usará Torrentin para reproducir los videos por torrent.")
-        __addon__.setSetting('pchlatino','On')
-    else:
-        xbmcgui.Dialog().ok("Error al parchear" , "La versión instalada no coincide con la del parche,","o no se han encontrado los ficheros de destino.","¿Esta instalado el Add-On LatinoTotal?")
-        __addon__.setSetting('pchlatino','Off')
-'''
+    if parche: xbmcgui.Dialog().ok("Torrentin" , "Add-On LatinoTotal parcheado con éxito.","Se usará Torrentin para reproducir los videos por torrent.")
+    else: xbmcgui.Dialog().ok("Error al parchear" , "La versión instalada no coincide con la del parche,","o no se han encontrado los ficheros de destino.","¿Esta instalado el Add-On LatinoTotal?")
+
 def pchp2p(uri="",player="",image=""):
     parche = tools.pchp2p()
     if parche: xbmcgui.Dialog().ok("Torrentin" , "Add-On p2p-Streams parcheado con éxito.","Ahora puedes  configurar Torrentin para reproducir los","videos y guardar los enlaces AceLive en las listas.")
     else: xbmcgui.Dialog().ok("Error al parchear" , "La versión instalada no coincide con la del parche,","o no se han encontrado los ficheros de destino.","¿Esta instaladol el Add-On p2p-Streams?")
-'''
+
 def pchplexus(uri="",player="",image=""):
     parche = tools.pchplexus()
-    if parche:
-        xbmcgui.Dialog().ok("Torrentin" , "Add-On plexus parcheado con éxito.","Ahora puedes  configurar Torrentin para reproducir los","videos, guardar los enlaces AceLive en las listas y\nseleccionar el tipo de motor externo (antiguo o nuevo).")
-        __addon__.setSetting("pchplexus","On")
-    else:
-        xbmcgui.Dialog().ok("Error al parchear" , "La versión instalada no coincide con la del parche,","o no se han encontrado los ficheros de destino.","¿Esta instalado el Add-On plexus?")
-        __addon__.setSetting("pchplexus","Off")
-        
+    if parche: xbmcgui.Dialog().ok("Torrentin" , "Add-On plexus parcheado con éxito.","Ahora puedes  configurar Torrentin para reproducir los","videos, guardar los enlaces AceLive en las listas y\nseleccionar el tipo de motor externo (antiguo o nuevo).")
+    else: xbmcgui.Dialog().ok("Error al parchear" , "La versión instalada no coincide con la del parche,","o no se han encontrado los ficheros de destino.","¿Esta instalado el Add-On plexus?")
+
 def pchplexusstreams(uri="",player="",image=""):
     parche = tools.pchplexusstreams()
     if parche == 0:
@@ -766,22 +758,64 @@ def pchplexusstreams(uri="",player="",image=""):
     elif parche == 3:
         xbmcgui.Dialog().ok("Error al parchear" , "La versión instalada no coincide con la del parche o han","cambiado los ficheros de destino al actualizarse el add-on.","El parche no se ha aplicado.")
         __addon__.setSetting("pchplexusstreams","Off")
-
 '''
 0 no esta insalado o no se encuentra o no se copia
 1 parcheado
 2 ya esta parcheado
 3 no coincide
 '''
-
 def pchkmedia(uri="",player="",image=""):
     parche = tools.pchkmedia()
-    if parche:
-        xbmcgui.Dialog().ok("Torrentin" , "Add-On KmediaTorrent parcheado con éxito.","Ahora  puedes  descargar  videos .avi completos antes","de reproducirlos y poner el caché en FAT32")
-        __addon__.setSetting("pchkmedia","On")
-    else:
-        xbmcgui.Dialog().ok("Error al parchear" , "La versión instalada no coincide con la del parche,","o no se han encontrado los ficheros de destino.","¿Esta instalado el Add-On KmediaTorrent?")
-        __addon__.setSetting("pchkmedia","Off")
-        
+    if parche: xbmcgui.Dialog().ok("Torrentin" , "Add-On KmediaTorrent parcheado con éxito.","Ahora  puedes  descargar  videos .avi completos antes","de reproducirlos y poner el caché en FAT32")
+    else: xbmcgui.Dialog().ok("Error al parchear" , "La versión instalada no coincide con la del parche,","o no se han encontrado los ficheros de destino.","¿Esta instalado el Add-On KmediaTorrent?")
+    
+def chkupdate(uri="",player="",image=""):
+	#url = "https://raw.githubusercontent.com/surebic/plugin.video.torrentin/master/archives/version.txt"
+	urlhtcm = "http://www.htcmania.com/showthread.php?t=995348"
+	url = "https://goo.gl/6iILX9"
+	remote = torrents.url_get(url).replace("\n","")
+	actual = __version__
+	if "beta" in actual or "rc" in actual:
+		actualrc = actual.split(" ")[0]
+		beta = actual.split(" ")[1]
+		actual = actualrc
+		
+		if xbmcgui.Dialog().yesno("Torrentin - Gracias por colaborar !!!" , "Estás usando una versión beta o RC: " + actualrc + " " + beta,"No está disponible la actualización automática de ","versiones beta, ¿ Quieres ir a htcmania para actualizar ?"):
+			if xbmc.getCondVisibility('system.platform.Android'):
+				if xbmcgui.Dialog().yesno("Torrentin" , "¿ Tienes instalado Chrome en tu android ?","Si = Abrir con Google Chrome.","No = Abrir con navegador nativo."):
+					xbmc.executebuiltin('XBMC.StartAndroidActivity("com.android.chrome","android.intent.action.VIEW","","'+urlhtcm+'")')
+				else:
+					xbmc.executebuiltin('XBMC.StartAndroidActivity("com.android.browser","android.intent.action.VIEW","","'+urlhtcm+'")')
+			else: xbmcgui.Dialog().ok("Torrentin" , "Abre tu navegador y visita: ",urlhtcm)
+		
+		if xbmcgui.Dialog().yesno("Torrentin" , "Gracias por colaborar en el desarollo del AddOn.","Quieres cambiar la versión beta por la última","publicada y así poder actualizar automáticamente ?"):
+			actual = "0.0.0"
+		else:
+			return
+	if int(remote.replace(".","")) > int(actual.replace(".","")):
+		if xbmcgui.Dialog().yesno("Torrentin" , "Versión instalada: " + actual,"Actualización disponible: " + remote,"¿ Actualizar Torrentin ?"):
+			try:
+				destino = os.path.join(xbmc.translatePath(os.path.join('special://home', 'addons')).decode("utf-8"),"packages")
+				origen = "https://raw.githubusercontent.com/surebic/plugin.video.torrentin/master/archives/" + "plugin.video.torrentin-" + remote + ".zip?raw=true"
+				bajada = torrents.url_get(origen)
+				f = open(os.path.join( destino , "plugin.video.torrentin-" + remote + ".zip") , "wb+")
+				f.write(bajada)
+				f.close()
+				import zipfile
+				update = zipfile.ZipFile(os.path.join( destino , "plugin.video.torrentin-" + remote + ".zip"), 'r')
+				update.extractall(xbmc.translatePath(os.path.join('special://home', 'addons')).decode("utf-8"))
+				xbmcgui.Dialog().ok("Torrentin" , "Torrentin actualizado a la versión " + remote,"Ya puedes cerrar la ventana de configuración,","También seria conveniente reiniciar KODI.")
+				xbmc.executebuiltin('Container.Refresh')
+			except:
+				if xbmcgui.Dialog().yesno("Torrentin" , "Ha ocurrido un error durante la actualización.","Tienes que instalar manuálmente la nueva versión.","¿ Quieres ir al foro de htcmania para descargarla ?"):
+					if xbmc.getCondVisibility('system.platform.Android'):
+						if xbmcgui.Dialog().yesno("Torrentin" , "¿ Tienes instalado Chrome en tu android ?","Si = Abrir con Google Chrome.","No = Abrir con navegador nativo."):
+							xbmc.executebuiltin('XBMC.StartAndroidActivity("com.android.chrome","android.intent.action.VIEW","","'+urlhtcm+'")')
+						else:
+							xbmc.executebuiltin('XBMC.StartAndroidActivity("com.android.browser","android.intent.action.VIEW","","'+urlhtcm+'")')
+					else: xbmcgui.Dialog().ok("Torrentin" , "Abre tu navegador y visita: ",urlhtcm)
+	elif int(remote.replace(".","")) < int(actual.replace(".","")): xbmcgui.Dialog().ok("Torrentin" , "Versión actual: " + remote,"Versión instalada: " + actual,"Tienes instalada una versión más nueva que la última publicada.")
+	else: xbmcgui.Dialog().ok("Torrentin" , "Versión actual: " + remote,"Versión instalada: " + actual,"Tienes instalada la última versión.")
+
 # EOF (01-17)
 
