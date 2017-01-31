@@ -12,8 +12,13 @@
 	<setting type="sep" />
 	<setting id="saveopt" type="enum" values="Principal|Secundario" label="El botón Guardar Torrent/Magnet lo guarda en el:" default="0"  />
 	<setting id="reopen" type="bool" label="Re-abrir menú despues de Guardar Torrent/Magnet" default="true" />
+	<!--
 	<setting type="sep" />
+	-->
 	<setting id="pelismenu" type="enum" values="El directorio principal|Los canales torrent" label="La opción del menú Ir a pelisalacarta abre:" default="1"  />
+	
+	<setting type="action" label="[COLOR lime]Comprobar actualizaciones[/COLOR]" action="XBMC.RunPlugin(plugin://plugin.video.torrentin/?funcion=chkupdate)" />
+
   </category>
 
  <category label="Reproductores">
