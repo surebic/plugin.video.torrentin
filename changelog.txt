@@ -46,7 +46,8 @@ Version 0.5.4
   pasandose a llamar EliteTorrent.net y sera independiente de interno del pelis. (se mostraran los dos) (rc3).
 - Incluida la busqueda de fondos, posters, argumentos, puntuacion, año, etc. en TMDb para los 5 canales, esto hace
   la presentacion de los listados de las peliculas algo mas lenta pero mucho mejor, no obstante esto se puede
-  desconectar en la configuracion del canal y se mostrara solo los datos obtenidos de la web del canal (rc4).
+  desconectar en la configuracion del canal y se mostrara solo los datos obtenidos de la web del canal, skin
+  recomendado para mejor visualizacion de los listados: "Black Glass Nova" (rc4).
 - Incluida opcion de una lista en el canal Elitetorrent.net con acceso direto al torrent (rc4).
 - Incluida la opcion para mostrar solo el nombre de la pelicula en los listados del canal Yify en vez de 
   nombre, calidad, genero, año con colores, esto se hace porque con el listado completo con colores no se
