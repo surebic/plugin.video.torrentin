@@ -51,7 +51,7 @@
   <category label="AceStream">
     <setting label="Configuración del reproductor AceStream (engine) interno" type="lsep" />
     <setting id="estadisticas" type="enum" values="Nunca|Durante la pausa (1 vez)|Durante la pausa (Continuo)|Durante el OSD (Continuo)|Durante la pausa y el OSD (Continuo)" label="Mostrar Avisos y estadísticas:" default="2"/>
-    <setting id="aceold" type="enum" values="Antiguo 3.0.x|Nuevo 3.1.x" label="Version del motor AceStream (App) instalado" visible="System.Platform.Android" default="1"/>
+    <setting id="aceold" type="enum" values="Antiguo 3.0.x|Nuevo 3.1.x" label="Versión del motor AceStream (App) instalado" visible="System.Platform.Android" default="1"/>
     <setting id="iplocal" type="text" label="IP del servidor AceStream:" default="127.0.0.1" />
     <setting id="portace" type="text" label="Puerto del servidor AceStream:" default="62062" />
     <setting id="prog" type="text" label="Nombre del proceso del motor AceStream (Linux)" default="" />
