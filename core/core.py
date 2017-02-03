@@ -770,53 +770,81 @@ def pchkmedia(uri="",player="",image=""):
     else: xbmcgui.Dialog().ok("Error al parchear" , "La versión instalada no coincide con la del parche,","o no se han encontrado los ficheros de destino.","¿Esta instalado el Add-On KmediaTorrent?")
     
 def chkupdate(uri="",player="",image=""):
+	descarga = xbmcgui.DialogProgress()
+	descarga.create("Torrentin","Actualización del Add-On.")
+	descarga.update(5,"","Espera, No Canceles.","Buscando actualizaciones...")
+	xbmc.sleep(500)
+	actual = __version__
 	try: versionfile = torrents.url_get("https://goo.gl/6iILX9").replace("\n","")
 	except:
-		navegar("Ha ocurrido un error durante la actualización (1).","Tienes que buscar manuálmente la nueva versión.","¿ Quieres ir al foro de htcmania para descargarla ?")
+		descarga.close()
+		navegar("[COLOR red]Ha ocurrido un error durante la actualización (1)","[COLOR orange]Tienes que buscar manuálmente la nueva versión.","[COLOR yellow]¿ Quieres ir al foro de htcmania para descargarla ?[/COLOR]")
 		return
 	remote = versionfile.split("|")[0]
 	origen = versionfile.split("|")[1]
 	if not remote.replace(".","").isdigit():
-		navegar("Ha ocurrido un error durante la actualización (2).","Tienes que buscar manuálmente la nueva versión.","¿ Quieres ir al foro de htcmania para descargarla ?")
+		descarga.close()
+		navegar("[COLOR red]Ha ocurrido un error durante la actualización (2)","[COLOR orange]Tienes que buscar manuálmente la nueva versión.","[COLOR yellow]¿ Quieres ir al foro de htcmania para descargarla ?[/COLOR]")
 		return
-	actual = __version__
-	
+
 	if "beta" in actual or "rc" in actual:
-		actualrc = actual.split(" ")[0]
-		beta = actual.split(" ")[1]
-		actual = actualrc
-		navegar("Estás usando una versión beta o RC:  " + actualrc + " " + beta,"No está disponible la actualización automática de ","versiones beta, ¿ Quieres ir a htcmania para actualizar ?")
-		if xbmcgui.Dialog().yesno("Torrentin" , "Gracias por colaborar en el desarollo del AddOn.","Quieres cambiar la versión beta por la última","publicada y así poder actualizar automáticamente ?"):
+		navegar("[COLOR lime]Estás usando una versión beta o RC:  " + actual ,"[COLOR cyan]No está disponible la actualización automática","de versiones beta, [COLOR yellow]¿ Quieres ir a htcmania para actualizar ?[/COLOR]")
+		if xbmcgui.Dialog().yesno("Torrentin" , "[COLOR lime]Gracias por colaborar en el desarollo del AddOn.","[COLOR yellow]Quieres cambiar la versión beta por la última","publicada y así poder actualizar automáticamente ?\n[COLOR orange](Te aparecerá versión 0.0.0 para que detecte la actualización)[/COLOR]"):
 			actual = "0.0.0"
-		#else:
-			#return
+		else:
+			actual = actual.split("~")[0]
+
 	if int(remote.replace(".","")) > int(actual.replace(".","")):
-		if xbmcgui.Dialog().yesno("Torrentin" , "Versión instalada: " + actual,"Actualización disponible: " + remote,"¿ Actualizar Torrentin ?"):
+		if xbmcgui.Dialog().yesno("Torrentin" , "[COLOR cyan]Versión instalada: " + actual,"[COLOR lime]Actualización disponible: " + remote,"[COLOR yellow]¿ Actualizar Torrentin ?[/COLOR]"):
 			try:
 				destino = os.path.join(xbmc.translatePath(os.path.join('special://home', 'addons')).decode("utf-8"),"packages")
-				bajada = torrents.url_get(origen)
+				descarga.update(10,"","Espera, No Canceles.","Obteniendo enlaces.")
+				xbmc.sleep(500)
+				prebajada = torrents.url_get(origen).replace("\n","")
+				if not prebajada.startswith("http"):
+					descarga.close()
+					navegar("[COLOR red]Ha ocurrido un error durante la actualización (3)","[COLOR orange]Tienes que buscar manuálmente la nueva versión.","[COLOR yellow]¿ Quieres ir al foro de htcmania para descargarla ?[/COLOR]")
+					return
+				descarga.update(20,"","Espera, No Canceles.","Descargando actualización...")
+				xbmc.sleep(500)
+				bajada = torrents.url_get(prebajada)
+				descarga.update(40,"","Espera, No Canceles.","Descargada, grabando...")
+				xbmc.sleep(500)
 				f = open(os.path.join( destino , "plugin.video.torrentin-" + remote + ".zip") , "wb")
 				f.write(bajada)
 				f.close()
 				import zipfile
 				update = zipfile.ZipFile(os.path.join( destino , "plugin.video.torrentin-" + remote + ".zip"), 'r')
+				descarga.update(60,"","Espera, No Canceles.","Extrayendo ficheros...")
+				xbmc.sleep(500)
 				update.extractall(xbmc.translatePath(os.path.join('special://home', 'addons')).decode("utf-8"))
+				descarga.update(80,"","","Actualizando Add-Ons...")
+				xbmc.sleep(500)
 				xbmc.executebuiltin('Container.Refresh')
-				xbmcgui.Dialog().ok("Torrentin" , "Torrentin actualizado a la versión " + remote,"Ya puedes cerrar la ventana de configuración,","También seria conveniente reiniciar KODI.")
+				xbmc.executebuiltin( 'UpdateLocalAddons' )
+				descarga.update(100,"","Espera, No Canceles.","Terminado.")
+				xbmc.sleep(2000)
+				descarga.close()
+				navegar("[COLOR lime]¡¡¡ Torrentin actualizado a la versión " + remote + " !!![/COLOR]","[COLOR yellow]¿ Quieres ir al foro de htcmania para ver la","información del AddOn o los reproductores ?[/COLOR]")
 			except:
-				navegar("Ha ocurrido un error durante la actualización (3).","Tienes que instalar manuálmente la nueva versión.","¿ Quieres ir al foro de htcmania para descargarla ?")
-	elif int(remote.replace(".","")) < int(actual.replace(".","")): xbmcgui.Dialog().ok("Torrentin" , "Versión actual: " + remote,"Versión instalada: " + actual,"Tienes instalada una versión más nueva que la última publicada.")
-	else: xbmcgui.Dialog().ok("Torrentin" , "Versión actual: " + remote,"Versión instalada: " + actual,"Tienes instalada la última versión.")
-
+				descarga.close()
+				navegar("[COLOR red]Ha ocurrido un error durante la actualización (4)","[COLOR orange]Tienes que buscar manuálmente la nueva versión.","[COLOR yellow]¿ Quieres ir al foro de htcmania para descargarla ?[/COLOR]")
+	elif int(remote.replace(".","")) < int(actual.replace(".","")):
+		descarga.close()
+		xbmcgui.Dialog().ok("Torrentin" , "[COLOR cyan]Versión actual: " + remote,"Versión instalada: " + actual,"[COLOR lime]Tu versión es más nueva que la última publicada.[/COLOR]")
+	else:
+		descarga.close()
+		navegar("[COLOR cyan]Versión actual: " + remote,"Versión instalada: " + actual,"[COLOR lime]Tienes instalada la última versión.\n[COLOR yellow]¿ Quieres ir al foro para ver las instrucciones ?[/COLOR]")
+	
 def navegar(uno,dos,tres):
 	urlhtcm = "http://www.htcmania.com/showthread.php?t=995348"
 	if xbmcgui.Dialog().yesno("Torrentin" , uno,dos,tres):
 		if xbmc.getCondVisibility('system.platform.Android'):
-			if xbmcgui.Dialog().yesno("Torrentin" , "¿ Tienes instalado Chrome en tu android ?","Si = Abrir con Google Chrome.","No = Abrir con navegador nativo."):
+			if xbmcgui.Dialog().yesno("Torrentin" , "[COLOR yellow]¿ Tienes instalado Chrome en tu android ?","[COLOR cyan]Si = Abrir con Google Chrome.","No = Abrir con navegador nativo.[/COLOR]"):
 				xbmc.executebuiltin('XBMC.StartAndroidActivity("com.android.chrome","android.intent.action.VIEW","","'+urlhtcm+'")')
 			else:
 				xbmc.executebuiltin('XBMC.StartAndroidActivity("com.android.browser","android.intent.action.VIEW","","'+urlhtcm+'")')
-		else: xbmcgui.Dialog().ok("Torrentin" , "Abre tu navegador y visita: ",urlhtcm,"o busca  torrentin  en Google y ve al primer enlace.")
+		else: xbmcgui.Dialog().ok("Torrentin" , "[COLOR cyan]Abre tu navegador y visita:[COLOR yellow]",urlhtcm,"[COLOR lime]o busca  torrentin  en Google y ve al primer enlace.")
 	
 # EOF (01-2017)
 
