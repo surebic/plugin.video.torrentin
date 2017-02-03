@@ -21,14 +21,14 @@ Version 0.5.4
 - Cambios cosméticos.
 - Solucionado error de la configuracion por los xml de los canales (gracias servidores)
 - Eliminado el aviso coñazo de "Acestream detenido". con la opcion de mostrar estadisticas continuas durante
-  la pausa. (solo sale con las dos ultimas). (rc3).
+  la pausa. (solo sale con las dos ultimas).
 - Añadida auto-actualizacion de mis canales incluidos en el parche (cuando hay alguno que no funcione y lo
   arregle o lo mejore se actualizara automáticamente al abrirlo sin necesidad de cambiar el torrentin, esto se
-  hace a traves del actualizador del pelisalacarta). (rc3).
+  hace a traves del actualizador del pelisalacarta).
 - Ahora se muestra en la configuracion/Parches el estado de los mismos (solo pelis y plexus-streams) si se
   actualiza el Add-On parcheado a una nueva version volverá a Off para avisar que hay que re-parchear. (rc3).
-- Más cambios cosméticos. (rc3).
-- Incluida la auto-actualización del AddOn a través del nuevo botón en la configuracion (rc4).
+- Más cambios cosméticos.
+- Incluida la auto-actualización del AddOn a través del nuevo botón en la configuracion.
 
 --- Modificaciones en los canales incluidos en el parche (DivxTotal, EliteTorrent.net, EstrenosDTL, ExtrenosGO y Yifi):
 - Arreglados los canales que no funcionaban.
@@ -40,18 +40,18 @@ Version 0.5.4
 - Re-escrito y mejorado el canal DivxTotal, ahora el buscador busca en todo, incluyendo musica, programas, otros, etc.
   por lo que se puede usar para bajar y descargar musica o cualquier otra cosa de esta web mandando el torrent al
   gestor de descargas.
-- Arreglados buscadores de los canales para la nueva beta2 del pelis (rc3).
+- Arreglados buscadores de los canales para la nueva beta2 del pelis.
 - Estan modificando y renovando algunos canales del pelis, de momento no le ha tocado a EliteTorrent pero por si
   en un futuro le toca y para no interferir con el original del pelis, se cambia el nombre de mi mod del mismo
   pasandose a llamar EliteTorrent.net y sera independiente de interno del pelis. (se mostraran los dos) (rc3).
 - Incluida la busqueda de fondos, posters, argumentos, puntuacion, año, etc. en TMDb para los 5 canales, esto hace
   la presentacion de los listados de las peliculas algo mas lenta pero mucho mejor, no obstante esto se puede
   desconectar en la configuracion del canal y se mostrara solo los datos obtenidos de la web del canal, skin
-  recomendado para mejor visualizacion de los listados: "Black Glass Nova" (rc4).
-- Incluida opcion de una lista en el canal Elitetorrent.net con acceso direto al torrent (rc4).
+  recomendado para mejor visualizacion de los listados: "Black Glass Nova".
+- Incluida opcion de una lista en el canal Elitetorrent.net con acceso direto al torrent.
 - Incluida la opcion para mostrar solo el nombre de la pelicula en los listados del canal Yify en vez de 
   nombre, calidad, genero, año con colores, esto se hace porque con el listado completo con colores no se
-  encuentran los subtitulos em opensubtitles.org y hay que utilizar la cadena de busqueda manual (rc4).
+  encuentran los subtitulos em opensubtitles.org y hay que utilizar la cadena de busqueda manual.
 
 -------------------------------------------------------------------------------
 Version 0.5.3
