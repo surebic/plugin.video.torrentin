@@ -12,6 +12,5 @@
 
 ### Para más información visite el foro: http://www.htcmania.com/showthread.php?t=995348
 
-## Descargar Version 0.5.3
-
-https://github.com/surebic/plugin.video.torrentin/blob/master/archives/plugin.video.torrentin-0.5.3.zip?raw=true
+## Descargar Version 0.5.4
+https://github.com/surebic/plugin.video.torrentin/blob/master/archives/plugin.video.torrentin-0.5.4.zip?raw=true
