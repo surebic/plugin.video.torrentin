@@ -10,34 +10,22 @@
 # Cambiado el nombre del canal para no interferir con el original de pelisalacarta (19-1-2017)
 # Añadida informacion de TMDb (25-1-2017)
 #------------------------------------------------------------
-import urlparse,urllib2,urllib,re
-import os, sys
+import urlparse,urllib2,urllib,re,xbmc,sys,os
 
 from core import logger
 from core import config
 from core import scrapertools
 from core.item import Item
-#from servers import servertools
 
 __channel__ = "elite_torrent"
-__category__ = "F,S,D,T"
-__type__ = "generic"
-__title__ = "EliteTorrent.net"
-__language__ = "ES"
-
 DEBUG = config.get_setting("debug")
 BASE_URL = 'http://www.elitetorrent.net'
-
 FANARTIMAGE = "http://i.imgur.com/O2AmwUX.jpg"
 THUMBNAILIMAGE = "http://i.imgur.com/2MM3O7z.jpg"
 SEARCHIMAGE = "http://i.imgur.com/STE2K8O.png"
 NEXTPAGEIMAGE = "http://i.imgur.com/lqt8JcD.png"
-
 MODO_EXTENDIDO = config.get_setting('modo_grafico', "elite_torrent")
 MODO_RAPIDO = config.get_setting('modo_rapido', "elite_torrent")
-
-def isGeneric():
-    return True
 
 def mainlist(item):
     logger.info("[elitetorrent.py] mainlist")
@@ -85,7 +73,7 @@ def configuracion(item):
         xbmc.executebuiltin("Container.Refresh")
 
 def peliculas(item):
-    logger.info("[elitetorrent.py] peliculas")
+    logger.info("[elite_torrent.py] peliculas")
     itemlist = []
     data = scrapertools.cachePage(item.url)
     #<meta http-equiv="Refresh" content="0;url=http://www.bajui.com/redi.php?url=/categoria/1/series/modo:mini"/>
@@ -95,15 +83,18 @@ def peliculas(item):
     patron += '<img src="(thumb_fichas/[^"]+)" border="0" title="([^"]+)"[^>]+></a>'
     matches = re.compile(patron,re.DOTALL).findall(data)
     scrapertools.printMatches(matches)
+    cont=0
     for scrapedurl, scrapedthumbnail, scrapedtitle in matches:
         title = "[B][COLOR yellow]"+scrapedtitle.strip()+"[/COLOR][/B]"
         url = urlparse.urljoin(BASE_URL, scrapedurl)
         #thumbnail = urlparse.urljoin(BASE_URL, scrapedthumbnail)
         if item.extra == "pelis" and MODO_EXTENDIDO and MODO_RAPIDO:
+            cont = cont +1
+            if cont == 40: xbmc.sleep(3500)
             fanart,thumbnail,sinopsis,puntuacion,year,genero = TMDb(StripTags(scrapedtitle))
             if "imgur" in thumbnail: thumbnail = urlparse.urljoin(BASE_URL, scrapedthumbnail)
             if puntuacion !="":
-                sinopsis = sinopsis + "\n[B][COLOR purple]Puntuación TMDb: [COLOR magenta]" + puntuacion + "[/COLOR][/B]"
+                sinopsis = sinopsis + "\n[COLOR purple]Puntuación TMDb: [COLOR magenta]" + puntuacion + "[/COLOR]"
         else:
             fanart = FANARTIMAGE
             #thumbnail = item.thumbnail
@@ -127,7 +118,7 @@ def peliculas(item):
     return itemlist
 
 def preplay(item):
-    logger.info("[elitetorrent.py] play")
+    logger.info("[elite_torrent.py] play")
     itemlist = []
     data = scrapertools.cache_page(item.url)
     if data.startswith('<meta http-equiv="Refresh"'):
@@ -169,14 +160,14 @@ def preplay(item):
         plot = sinopsis
         sip = sinopsis
     if puntuacion !="":
-        sip = sip + "\n[B][COLOR purple]Puntuación TMDb: [COLOR magenta]" + puntuacion + "[/COLOR][/B]"
-        plot = plot + "\n[B][COLOR purple]Puntuación TMDb: [COLOR magenta]" + puntuacion + "[/COLOR][/B]"
+        sip = sip + "\n[COLOR purple]Puntuación TMDb: [COLOR magenta]" + puntuacion + "[/COLOR]"
+        plot = plot + "\n[COLOR purple]Puntuación TMDb: [COLOR magenta]" + puntuacion + "[/COLOR]"
     itemlist.append( Item(channel=__channel__, action="play", server="torrent", title=item.title + valoracion + " [COLOR lime][torrent][/COLOR]" , viewmode="movie_with_plot" , url=linkt , thumbnail=thumbnail , plot=sip , fanart=fanart, folder=True , infoLabels={"rating":puntuacion,"year":year,"genre":genero }) )
     itemlist.append( Item(channel=__channel__, action="play", server="torrent", title=item.title + valoracion + " [COLOR limegreen][magnet][/COLOR]" , viewmode="movie_with_plot" , url=linkm , thumbnail=thumbnail , plot=plot ,fanart=fanart, folder=True, infoLabels={"rating":puntuacion,"year":year,"genre":genero }) )
     return itemlist
 
 def play(item):
-    logger.info("[elitetorrent.py] play")
+    logger.info("[elite_torrent.py] play")
     itemlist = []
     if MODO_RAPIDO:
         data = scrapertools.cache_page(item.url)
@@ -188,7 +179,7 @@ def play(item):
     return itemlist
 
 def search(item,texto):
-    logger.info("pelisalacarta.channels.elitetorrent search")
+    logger.info("pelisalacarta.channels.elite_torrent search")
     if item.url=="":
         texto = texto.replace("+","%20").replace(" ","%20")
         item.url="http://www.elitetorrent.net/resultados/"+texto+"/modo:mini"
@@ -219,29 +210,7 @@ def TMDb(title):
 			try: genero += Generos.get(g) + ", "
 			except: pass
 	return fanart,caratula,sinopsis,puntuacion,fecha,genero.strip(", ")
-'''
-Generos = {
-"28" : "Acción",
-"12" : "Aventura",
-"16" : "Animación",
-"35" : "Comedia",
-"80" : "Crimen",
-"99" : "Documental",
-"18" : "Drama",
-"10751" : "Familia",
-"14" : "Fantasía",
-"36" : "Historia",
-"27" : "Terror",
-"10402" : "Música",
-"9648" : "Misterio",
-"10749" : "Romance",
-"878" : "Ciencia ficción",
-"10770" : "película de la televisión",
-"53" : "Suspense",
-"10752" : "Guerra",
-"37" : "Western"
-}
-'''
+
 def StripTags(text):
      finished = 0
      while not finished:
