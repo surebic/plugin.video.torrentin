@@ -26,8 +26,7 @@ Version 0.5.4
   arregle o lo mejore se actualizara automáticamente al abrirlo sin necesidad de cambiar el torrentin, esto se
   hace a traves del actualizador del pelisalacarta).
 - Ahora se muestra en la configuracion/Parches el estado de los mismos (solo pelis y plexus-streams) si se
-  actualiza el Add-On parcheado a una nueva version volverá a Off para avisar que hay que re-parchear. (rc3).
-- Más cambios cosméticos.
+  actualiza el Add-On parcheado a una nueva version volverá a Off para avisar que hay que re-parchear.
 - Incluida la auto-actualización del AddOn a través del nuevo botón en la configuracion.
 
 --- Modificaciones en los canales incluidos en el parche (DivxTotal, EliteTorrent.net, EstrenosDTL, ExtrenosGO y Yifi):
@@ -43,10 +42,10 @@ Version 0.5.4
 - Arreglados buscadores de los canales para la nueva beta2 del pelis.
 - Estan modificando y renovando algunos canales del pelis, de momento no le ha tocado a EliteTorrent pero por si
   en un futuro le toca y para no interferir con el original del pelis, se cambia el nombre de mi mod del mismo
-  pasandose a llamar EliteTorrent.net y sera independiente de interno del pelis. (se mostraran los dos) (rc3).
+  pasandose a llamar EliteTorrent.net y sera independiente de interno del pelis. (se mostraran los dos).
 - Incluida la busqueda de fondos, posters, argumentos, puntuacion, año, etc. en TMDb para los 5 canales, esto hace
   la presentacion de los listados de las peliculas algo mas lenta pero mucho mejor, no obstante esto se puede
-  desconectar en la configuracion del canal y se mostrara solo los datos obtenidos de la web del canal, skin
+  desconectar en la configuracion del canal y se mostrara solo los datos obtenidos de la web del canal, skin de KODI
   recomendado para mejor visualizacion de los listados: "Black Glass Nova".
 - Incluida opcion de una lista en el canal Elitetorrent.net con acceso direto al torrent.
 - Incluida la opcion para mostrar solo el nombre de la pelicula en los listados del canal Yify en vez de 
