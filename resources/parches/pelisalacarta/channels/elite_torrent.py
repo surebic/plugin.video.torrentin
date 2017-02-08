@@ -91,7 +91,7 @@ def peliculas(item):
         if item.extra == "pelis" and MODO_EXTENDIDO and MODO_RAPIDO:
             cont = cont +1
             if cont == 40: xbmc.sleep(3500)
-            fanart,thumbnail,sinopsis,puntuacion,year,genero = TMDb(StripTags(scrapedtitle))
+            fanart,thumbnail,sinopsis,puntuacion,votos,year,genero = TMDb(StripTags(scrapedtitle))
             if "imgur" in thumbnail: thumbnail = urlparse.urljoin(BASE_URL, scrapedthumbnail)
             if puntuacion !="":
                 sinopsis = sinopsis + "\n[COLOR purple]Puntuación TMDb: [COLOR magenta]" + puntuacion + "[/COLOR]"
@@ -101,13 +101,14 @@ def peliculas(item):
             thumbnail = urlparse.urljoin(BASE_URL, scrapedthumbnail)
             sinopsis = ""
             puntuacion = ""
+            votos = ""
             year = ""
             genero = ""
         if MODO_RAPIDO:
             accion = "play"
         else:
             accion = "preplay"
-        itemlist.append( Item(channel=__channel__, action=accion, title=title , url=url , thumbnail=thumbnail , folder=True, viewmode="movie_with_plot" , plot =sinopsis, fanart= fanart, show=scrapedtitle, extra=item.extra, infoLabels={"rating":puntuacion,"year":year,"genre":genero } ) )
+        itemlist.append( Item(channel=__channel__, action=accion, title=title , url=url , thumbnail=thumbnail , folder=True, viewmode="movie_with_plot" , plot =sinopsis, fanart= fanart, show=scrapedtitle, extra=item.extra, infoLabels={"rating":puntuacion,"votes":votos,"year":year,"genre":genero } ) )
     # Extrae el paginador
     patronvideos  = '<a href="([^"]+)" class="pagina pag_sig">Siguiente \&raquo\;</a>'
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
@@ -125,13 +126,14 @@ def preplay(item):
         data = scrapertools.cache_page(item.url)
     logger.info("data="+data)
     if item.extra == "pelis" and MODO_EXTENDIDO:
-        fanart,thumbnail,sinopsis,puntuacion,year,genero = TMDb(StripTags(item.show))
+        fanart,thumbnail,sinopsis,puntuacion,votos,year,genero = TMDb(StripTags(item.show))
         if "imgur" in thumbnail: thumbnail = item.thumbnail
     else:
         fanart = item.fanart
         thumbnail = item.thumbnail
         sinopsis = ""
         puntuacion = ""
+        votos = ""
         year= ""
         genero = ""
     linkt = scrapertools.get_match(data,'<a href="(/get-torrent[^"]+)" class="enlace_torrent[^>]+>Descargar el .torrent</a>')
@@ -162,8 +164,8 @@ def preplay(item):
     if puntuacion !="":
         sip = sip + "\n[COLOR purple]Puntuación TMDb: [COLOR magenta]" + puntuacion + "[/COLOR]"
         plot = plot + "\n[COLOR purple]Puntuación TMDb: [COLOR magenta]" + puntuacion + "[/COLOR]"
-    itemlist.append( Item(channel=__channel__, action="play", server="torrent", title=item.title + valoracion + " [COLOR lime][torrent][/COLOR]" , viewmode="movie_with_plot" , url=linkt , thumbnail=thumbnail , plot=sip , fanart=fanart, folder=True , infoLabels={"rating":puntuacion,"year":year,"genre":genero }) )
-    itemlist.append( Item(channel=__channel__, action="play", server="torrent", title=item.title + valoracion + " [COLOR limegreen][magnet][/COLOR]" , viewmode="movie_with_plot" , url=linkm , thumbnail=thumbnail , plot=plot ,fanart=fanart, folder=True, infoLabels={"rating":puntuacion,"year":year,"genre":genero }) )
+    itemlist.append( Item(channel=__channel__, action="play", server="torrent", title=item.title + valoracion + " [COLOR lime][torrent][/COLOR]" , viewmode="movie_with_plot" , url=linkt , thumbnail=thumbnail , plot=sip , fanart=fanart, folder=True , infoLabels={"rating":puntuacion,"votes":votos,"year":year,"genre":genero }) )
+    itemlist.append( Item(channel=__channel__, action="play", server="torrent", title=item.title + valoracion + " [COLOR limegreen][magnet][/COLOR]" , viewmode="movie_with_plot" , url=linkm , thumbnail=thumbnail , plot=plot ,fanart=fanart, folder=True, infoLabels={"rating":puntuacion,"votes":votos,"year":year,"genre":genero }) )
     return itemlist
 
 def play(item):
@@ -201,15 +203,16 @@ def TMDb(title):
 	except: caratula =THUMBNAILIMAGE
 	sinopsis =  scrapertools.find_single_match(data,'"page":1,.*?"overview":"(.*?)","').replace('\\"','"')
 	puntuacion = scrapertools.find_single_match(data,'"page":1,.*?"vote_average":(.*?)}')
+	votos = scrapertools.find_single_match(data,'"page":1,.*?"vote_count":(.*?),')
 	fecha = scrapertools.find_single_match(data,'"page":1,.*?"release_date":"(.*?)","').split("-")[0]
 	listageneros = scrapertools.find_single_match(data,'"page":1,.*?"genre_ids":\[(.*?)\],"')
 	genero = ""
 	if listageneros != "":
 		listageneros2 = listageneros.split(",")
 		for g in listageneros2:
-			try: genero += Generos.get(g) + ", "
+			try: genero += Generos.get(g) + " / "
 			except: pass
-	return fanart,caratula,sinopsis,puntuacion,fecha,genero.strip(", ")
+	return fanart,caratula,sinopsis,puntuacion,votos,fecha,genero.strip(" / ")
 
 def StripTags(text):
      finished = 0

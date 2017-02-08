@@ -108,18 +108,20 @@ def menupelis(item):
         #else: scrapedfecha = "[COLOR blue](" + scrapedfecha + ")[/COLOR]"
         '''
         if MODO_EXTENDIDO:
-            fanart,thumbnail,plot,puntuacion,fecha = TMDb(scrapedtitle)
+            fanart,thumbnail,plot,puntuacion,votos,fecha,genero = TMDb(scrapedtitle)
         else: 
             fanart = FANARTIMAGE
             thumbnail =THUMBNAILIMAGE
             plot = ""
             puntuacion = ""
+            votos=""
             fecha = ""
+            genero=""
         if "imgur" in thumbnail and MODO_EXTENDIDO: thumbnail = getthumbnail(scrapedurl)
         if puntuacion != "": puntuaciontitle = " [COLOR deeppink](" + puntuacion + ")[/COLOR]"
         else: puntuaciontitle = ""
         titulo = "[B][COLOR yellow]" + scrapedtitle.strip()+ "[/COLOR][/B] [COLOR cyan]("+scrapedgen+")" + "[/COLOR]" + puntuaciontitle + " [COLOR limegreen]("+scrapedtam+")[/COLOR]"
-        itemlist.append( Item(channel=__channel__, action="entraenpeli", title=titulo , fulltitle=titulo, url=scrapedurl , thumbnail=thumbnail , plot=plot , fanart= fanart, extra=scrapedurl, infoLabels={"rating":puntuacion, "genre":scrapedgen, "year":fecha}, folder=True) )
+        itemlist.append( Item(channel=__channel__, action="entraenpeli", title=titulo , fulltitle=titulo, url=scrapedurl , thumbnail=thumbnail , plot=plot , fanart= fanart, extra=scrapedurl, infoLabels={"rating":puntuacion,"votes":votos, "genre":genero, "year":fecha}, folder=True) )
     patronvideos  = "pagination.*?class='current'.*?<a href='(.*?)'.*?</div>"
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
     scrapertools.printMatches(matches)
@@ -129,6 +131,7 @@ def menupelis(item):
     return itemlist
 
 def TMDb(title):
+	Generos = {"28":"Acción","12":"Aventura","16":"Animación","35":"Comedia","80":"Crimen","99":"Documental","18":"Drama","10751":"Familia","14":"Fantasía","36":"Historia","27":"Terror","10402":"Música","9648":"Misterio","10749":"Romance","878":"Ciencia ficción","10770":"película de la televisión","53":"Suspense","10752":"Guerra","37":"Western"}
 	data = re.sub(r'\n|\r|\t|\s{2}|&nbsp;',"",scrapertools.cachePage("http://api.themoviedb.org/3/search/movie?api_key=cc4b67c52acb514bdf4931f7cedfd12b&query=" + title.replace(" ","%20") + "&language=es&include_adult=false"))
 	try: fanart = "https://image.tmdb.org/t/p/original" + scrapertools.get_match(data,'"page":1,.*?"backdrop_path":"\\\(.*?)"')
 	except: fanart = FANARTIMAGE
@@ -136,8 +139,16 @@ def TMDb(title):
 	except: caratula =THUMBNAILIMAGE
 	sinopsis =  scrapertools.find_single_match(data,'"page":1,.*?"overview":"(.*?)","').replace('\\"','"')
 	puntuacion = scrapertools.find_single_match(data,'"page":1,.*?"vote_average":(.*?)}')
+	votos = scrapertools.find_single_match(data,'"page":1,.*?"vote_count":(.*?),')
 	fecha = scrapertools.find_single_match(data,'"page":1,.*?"release_date":"(.*?)","').split("-")[0]
-	return fanart,caratula,sinopsis,puntuacion,fecha
+	listageneros = scrapertools.find_single_match(data,'"page":1,.*?"genre_ids":\[(.*?)\],"')
+	genero = ""
+	if listageneros != "":
+		listageneros2 = listageneros.split(",")
+		for g in listageneros2:
+			try: genero += Generos.get(g) + " / "
+			except: pass
+	return fanart,caratula,sinopsis,puntuacion,votos,fecha,genero.strip(" / ")
 	
 def entraenpeli(item):
     logger.info("pelisalacarta.channels.divxtotal entraenpeli")
@@ -153,7 +164,7 @@ def entraenpeli(item):
         # Añadido por modificacion en la web
         #scrapedplotnew =  scrapedplot[1:scrapedplot.rfind("<script")] + scrapedplot[scrapedplot.rfind("</script")+9:scrapedplot.rfind("/div")]
         plot = re.sub('<[^<]+?>', '', scrapedplot)
-        itemlist.append( Item(channel=__channel__, action="play", server="torrent", title=title , fulltitle=title, url=scrapedurl , thumbnail=scrapedthumb , plot=plot , viewmode="movie_with_plot", fanart=item.fanart , folder=False) )
+        itemlist.append( Item(channel=__channel__, action="play", server="torrent", title=title , fulltitle=title, url=scrapedurl , thumbnail=scrapedthumb , plot=plot , viewmode="movie_with_plot", fanart=item.fanart , infoLabels=item.infoLabels, folder=False) )
     return itemlist
 
 def getthumbnail(url):

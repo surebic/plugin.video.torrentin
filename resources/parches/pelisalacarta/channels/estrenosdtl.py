@@ -63,11 +63,12 @@ def estrenos(item):
     matches = re.compile(patron,re.DOTALL).findall(data)
     scrapertools.printMatches(matches)
     for scrapedurl , scrapedtitle , scrapedcalidad , scrapedfecha in matches:
-        if MODO_EXTENDIDO: fanart,plot,puntuacion,fecha,genero = TMDb(StripTags2(scrapedtitle))
+        if MODO_EXTENDIDO: fanart,plot,puntuacion,votos,fecha,genero = TMDb(StripTags2(scrapedtitle))
         else:
             fanart = FANARTIMAGE
             plot = ""
             puntuacion = ""
+            votos = ""
             fecha = ""
             genero = ""
         if puntuacion !="": puntuaciontitle = " [COLOR magenta](" + puntuacion + ")"
@@ -78,7 +79,7 @@ def estrenos(item):
         numero = scrapertools.find_single_match(scrapedurl,'-(\d+).')
         thumbnail = "http://www.estrenosdtl.com/imagenes/"+numero+".jpg"
         url= "http://www.estrenosdtl.com/"+scrapedurl
-        itemlist.append( Item(channel=__channel__, action="play", title=titulo , fulltitle=titulo, url=url , thumbnail=thumbnail , fanart=fanart, extra="", plot=plot,folder=False, infoLabels={"rating":puntuacion,"year":fecha,"genre":genero }) )
+        itemlist.append( Item(channel=__channel__, action="play", title=titulo , fulltitle=titulo, url=url , thumbnail=thumbnail , fanart=fanart, extra="", plot=plot,folder=False, infoLabels={"rating":puntuacion,"votes":votos,"year":fecha,"genre":genero }) )
     if haymas:
          itemlist.append( Item(channel=__channel__, action="estrenos", title="[COLOR magenta]>>> Página siguiente[/COLOR]" , url=item.url , extra=pag_sig , fanart=FANARTIMAGE, thumbnail=NEXTPAGEIMAGE, folder=True) )
     return itemlist
@@ -90,15 +91,16 @@ def TMDb(title):
 	except: fanart = FANARTIMAGE
 	sinopsis =  scrapertools.find_single_match(data,'"page":1,.*?"overview":"(.*?)","').replace('\\"','"')
 	puntuacion = scrapertools.find_single_match(data,'"page":1,.*?"vote_average":(.*?)}')
+	votos = scrapertools.find_single_match(data,'"page":1,.*?"vote_count":(.*?),')
 	fecha = scrapertools.find_single_match(data,'"page":1,.*?"release_date":"(.*?)","').split("-")[0]
 	listageneros = scrapertools.find_single_match(data,'"page":1,.*?"genre_ids":\[(.*?)\],"')
 	genero = ""
 	if listageneros != "":
 		listageneros2 = listageneros.split(",")
 		for g in listageneros2:
-			try: genero += Generos.get(g) + ", "
+			try: genero += Generos.get(g) + " / "
 			except: pass
-	return fanart,sinopsis,puntuacion,fecha,genero.strip(", ")
+	return fanart,sinopsis,puntuacion,votos,fecha,genero.strip(" / ")
 	
 def play(item):
     logger.info("pelisalacarta.channels.EstrenosDTL entraenpeli")

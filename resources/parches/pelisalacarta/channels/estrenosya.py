@@ -91,7 +91,7 @@ def estrenos(item):
         torrurl = scrapertools.find_single_match(scrapedurl2,'(/descargar-torrent-.*?)"')
         url = urlparse.urljoin(BASE_URL,torrurl)
         if item.show == "pelis" and MODO_EXTENDIDO:
-            fanart,thumbnail,plot,puntuacion,genero = TMDb(tituloproc.split(" - ")[0].strip(),scrapedtitle.split(" - ")[-1].strip())
+            fanart,thumbnail,plot,puntuacion,votos,genero = TMDb(tituloproc.split(" - ")[0].strip(),scrapedtitle.split(" - ")[-1].strip())
             if "imgur" in thumbnail: thumbnail = thumb
             if plot == "": plot = acentos(scrapedplot)
             if puntuacion !="":
@@ -101,9 +101,10 @@ def estrenos(item):
             fanart= FANARTIMAGE
             thumbnail = thumb
             puntuacion = ""
+            votos = ""
             plot = acentos(scrapedplot)
             genero = ""
-        itemlist.append( Item(channel=__channel__, action="entraenpeli", title= titulo , fulltitle=titulo, url=url , thumbnail=thumbnail , plot=plot , fanart=fanart, extra="", folder=True  , infoLabels={'year': scrapedtitle.split(" - ")[-1].strip() , "rating":puntuacion, "genre":genero } ) )
+        itemlist.append( Item(channel=__channel__, action="entraenpeli", title= titulo , fulltitle=titulo, url=url , thumbnail=thumbnail , plot=plot , fanart=fanart, extra="", folder=True  , infoLabels={'year': scrapedtitle.split(" - ")[-1].strip() , "rating":puntuacion, "votes":votos, "genre":genero } ) )
     if ">Siguiente &raquo;</a>" in data: itemlist.append( Item(channel=__channel__, action="estrenos", title="[COLOR cyan]>>> Página Siguiente[/COLOR]" , url=item.url , extra=pag_sig , show=item.show, thumbnail= NEXTPAGEIMAGE , fanart=FANARTIMAGE, folder=True) )
     return itemlist
     
@@ -116,14 +117,15 @@ def TMDb(title,year):
 	except: caratula =THUMBNAILIMAGE
 	sinopsis =  scrapertools.find_single_match(data,'"page":1,.*?"overview":"(.*?)","').replace('\\"','"')
 	puntuacion = scrapertools.find_single_match(data,'"page":1,.*?"vote_average":(.*?)}')
+	votos = scrapertools.find_single_match(data,'"page":1,.*?"vote_count":(.*?),')
 	listageneros = scrapertools.find_single_match(data,'"page":1,.*?"genre_ids":\[(.*?)\],"')
 	genero = ""
 	if listageneros != "":
 		listageneros2 = listageneros.split(",")
 		for g in listageneros2:
-			try: genero += Generos.get(g) + ", "
+			try: genero += Generos.get(g) + " / "
 			except: pass
-	return fanart,caratula,sinopsis,puntuacion,genero.strip(", ")
+	return fanart,caratula,sinopsis,puntuacion,votos,genero.strip(" / ")
 	
 def entraenpeli(item):
     logger.info("pelisalacarta.channels.EstrenosYa entraenpeli")

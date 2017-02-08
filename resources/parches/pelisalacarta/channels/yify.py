@@ -88,11 +88,12 @@ def estrenos(item):
     for scrapedthumb, scrapedrating, scrapedgenero, scrapedtitulo, scrapedfecha, scrapedlinks, in matches:
         scrapedrating = scrapedrating.replace(" / 10","")
         if MODO_EXTENDIDO:
-            fanart,sinopsis,puntuacion,genero = TMDb(scrapedtitulo,scrapedfecha)
+            fanart,sinopsis,puntuacion,votos,genero = TMDb(scrapedtitulo,scrapedfecha)
         else:
             fanart = FANARTIMAGE
             sinopsis =""
             puntuacion = ""
+            votos = ""
             genero  = ""
         if MODO_NATIVO: genero = scrapedgenero
         if scrapedlinks.count("download") >=1:
@@ -105,7 +106,7 @@ def estrenos(item):
                 else: continue
                 if MODO_PLANO: titulo = scrapertools.htmlclean(scrapedtitulo)
                 else: titulo = "[B][COLOR yellow]" + scrapertools.htmlclean(scrapedtitulo) + "[/COLOR][/B] [COLOR lime]("+scrapedcalidad+")[/COLOR] [COLOR cyan]("+scrapedfecha+")[/COLOR] [COLOR orange]("+scrapedgenero+")[/COLOR] [COLOR magenta]("+scrapedrating+")[/COLOR]"
-                itemlist.append( Item(channel=__channel__, action="play", server="torrent", title=titulo , fulltitle=titulo, url=scrapedurl , thumbnail=scrapedthumb , fanart=fanart, plot=sinopsis, infoLabels={"rating":puntuacion, "year":scrapedfecha,"genre":genero }, extra="", folder=False) )
+                itemlist.append( Item(channel=__channel__, action="play", server="torrent", title=titulo , fulltitle=titulo, url=scrapedurl , thumbnail=scrapedthumb , fanart=fanart, plot=sinopsis, infoLabels={"rating":puntuacion,"votes":votos, "year":scrapedfecha,"genre":genero }, extra="", folder=False) )
     if ">Next &raquo;</a>" in data: itemlist.append( Item(channel=__channel__, action="estrenos", title="[B][COLOR brown]>>> Next page[/COLOR][/B]" , show=item.show , url=item.url , extra=pag_sig , thumbnail= NEXTPAGEIMAGE , fanart=FANARTIMAGE, folder=True) )
     return itemlist
 
@@ -120,6 +121,7 @@ def TMDb(title,year):
 	try: sinopsis =  scrapertools.get_match(data,'"page":1,.*?"overview":"(.*?)","').replace('\\"','"')
 	except: sinopsis = "Not found."
 	puntuacion = scrapertools.find_single_match(data,'"page":1,.*?"vote_average":(.*?)}')
+	votos = scrapertools.find_single_match(data,'"page":1,.*?"vote_count":(.*?),')
 	#return fanart,sinopsis + "\n[B][COLOR purple]TMDb Rating: [COLOR magenta]" + puntuacion + "[/COLOR][/B]"
 	genero = ""
 	if not MODO_NATIVO:
@@ -127,9 +129,9 @@ def TMDb(title,year):
 		if listageneros != "":
 			listageneros2 = listageneros.split(",")
 			for g in listageneros2:
-				try: genero += Generos.get(g) + ", "
+				try: genero += Generos.get(g) + " / "
 				except: pass
-	return fanart,sinopsis,puntuacion,genero.strip(", ")
+	return fanart,sinopsis,puntuacion,votos,genero.strip(" / ")
 
 def search(item,texto):
 # https://yts.ag/browse-movies/king/720p/comedy/4/seeds?page=1
