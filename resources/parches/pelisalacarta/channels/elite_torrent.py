@@ -9,9 +9,9 @@
 # Mejorado con descripcion y valoracion de la pelicula (Descipcion completa sale con peli en  torrent y solo la sinopsis con el magnet [26-12-2016].
 # Cambiado el nombre del canal para no interferir con el original de pelisalacarta (19-1-2017)
 # Añadida informacion de TMDb (25-1-2017)
+# Ampliado con numero de votos, eliminado codigo innecesario, etc. (09-02-2017)
 #------------------------------------------------------------
-import urlparse,urllib2,urllib,re,xbmc,sys,os
-
+import urlparse,re,time
 from core import logger
 from core import config
 from core import scrapertools
@@ -39,7 +39,6 @@ def mainlist(item):
 
 def menu(item):
     itemlist =[]
-
     if item.extra =="pelis":
         itemlist.append( Item(channel=__channel__, title="[B][COLOR lime]Estrenos  (Por fecha)[/COLOR][/B]"       , extra=item.extra, action="peliculas", url="http://www.elitetorrent.net/categoria/1/estrenos/modo:mini", thumbnail= THUMBNAILIMAGE, fanart= FANARTIMAGE))
         itemlist.append( Item(channel=__channel__, title="[B][COLOR lime]Estrenos  (Por valoración)[/COLOR][/B]"       ,extra=item.extra, action="peliculas", url="http://www.elitetorrent.net/categoria/1/estrenos/modo:mini/orden:valoracion", thumbnail= THUMBNAILIMAGE, fanart= FANARTIMAGE))
@@ -83,21 +82,22 @@ def peliculas(item):
     patron += '<img src="(thumb_fichas/[^"]+)" border="0" title="([^"]+)"[^>]+></a>'
     matches = re.compile(patron,re.DOTALL).findall(data)
     scrapertools.printMatches(matches)
-    cont=0
+    result=0
+    start = time.time()
     for scrapedurl, scrapedthumbnail, scrapedtitle in matches:
         title = "[B][COLOR yellow]"+scrapedtitle.strip()+"[/COLOR][/B]"
         url = urlparse.urljoin(BASE_URL, scrapedurl)
-        #thumbnail = urlparse.urljoin(BASE_URL, scrapedthumbnail)
         if item.extra == "pelis" and MODO_EXTENDIDO and MODO_RAPIDO:
-            cont = cont +1
-            if cont == 40: xbmc.sleep(3500)
+            result = result +1
+            if result == 40:
+                while time.time()-start < 10:
+                    time.sleep(1)
             fanart,thumbnail,sinopsis,puntuacion,votos,year,genero = TMDb(StripTags(scrapedtitle))
-            if "imgur" in thumbnail: thumbnail = urlparse.urljoin(BASE_URL, scrapedthumbnail)
+            if thumbnail == "": thumbnail = urlparse.urljoin(BASE_URL, scrapedthumbnail)
             if puntuacion !="":
                 sinopsis = sinopsis + "\n[COLOR purple]Puntuación TMDb: [COLOR magenta]" + puntuacion + "[/COLOR]"
         else:
             fanart = FANARTIMAGE
-            #thumbnail = item.thumbnail
             thumbnail = urlparse.urljoin(BASE_URL, scrapedthumbnail)
             sinopsis = ""
             puntuacion = ""
@@ -127,7 +127,7 @@ def preplay(item):
     logger.info("data="+data)
     if item.extra == "pelis" and MODO_EXTENDIDO:
         fanart,thumbnail,sinopsis,puntuacion,votos,year,genero = TMDb(StripTags(item.show))
-        if "imgur" in thumbnail: thumbnail = item.thumbnail
+        if thumbnail =="": thumbnail = item.thumbnail
     else:
         fanart = item.fanart
         thumbnail = item.thumbnail
@@ -200,7 +200,7 @@ def TMDb(title):
 	try: fanart = "https://image.tmdb.org/t/p/original" + scrapertools.get_match(data,'"page":1,.*?"backdrop_path":"\\\(.*?)"')
 	except: fanart = FANARTIMAGE
 	try: caratula =  "https://image.tmdb.org/t/p/original" + scrapertools.get_match(data,'"page":1,.*?"poster_path":"\\\(.*?)"')
-	except: caratula =THUMBNAILIMAGE
+	except: caratula =""
 	sinopsis =  scrapertools.find_single_match(data,'"page":1,.*?"overview":"(.*?)","').replace('\\"','"')
 	puntuacion = scrapertools.find_single_match(data,'"page":1,.*?"vote_average":(.*?)}')
 	votos = scrapertools.find_single_match(data,'"page":1,.*?"vote_count":(.*?),')
@@ -210,9 +210,9 @@ def TMDb(title):
 	if listageneros != "":
 		listageneros2 = listageneros.split(",")
 		for g in listageneros2:
-			try: genero += Generos.get(g) + " / "
+			try: genero += Generos.get(g) + " - "
 			except: pass
-	return fanart,caratula,sinopsis,puntuacion,votos,fecha,genero.strip(" / ")
+	return fanart,caratula,sinopsis,puntuacion,votos,fecha,genero.strip(" - ")
 
 def StripTags(text):
      finished = 0

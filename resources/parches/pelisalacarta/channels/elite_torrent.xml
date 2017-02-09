@@ -12,8 +12,8 @@
 	<bannermenu>http://media.tvalacarta.info/pelisalacarta/bannermenu/elitetorrent.png</bannermenu>
 
 	<update_url>https://raw.githubusercontent.com/surebic/plugin.video.torrentin/master/resources/parches/pelisalacarta/channels/</update_url>
-	<version>19</version>
-	<date>4/2/2017</date>
+	<version>20</version>
+	<date>9/2/2017</date>
 	<changes>Nuevos menus con listados por fecha, valoracion y popularidad, extrae torrent en vez de magnet e incluido buscador, arreglado y mejorado (1-2017)</changes>
 
 	<changes>
@@ -28,7 +28,7 @@
 		<change>
 			<date>08/02/17</date>
 			<autor>ciberus</autor>
-			<description>Incluido numero de votos y barra en vez de comas para separar generos</description>
+			<description>Incluido numero de votos y guion en vez de comas para separar generos</description>
 		</change>
 	</changes>
 
