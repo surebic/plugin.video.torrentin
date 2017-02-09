@@ -8,6 +8,7 @@
 #Lamentablemente yify (yts.to) cerro por denuncia de la MPAA, adaptado para el nuevo dominio yts.ag (01-2016)
 # Arreglado y mejorado (Dec 2016)
 # Incluida busqueda en TMDb y mejoras (Enero 2017)
+# Ajustes en las busquedas para el buscador general (09-02-2017)
 #------------------------------------------------------------
 
 import urlparse,urllib2,urllib,re
@@ -60,7 +61,7 @@ def mainlist(item):
     itemlist.append( Item(channel=__channel__, action="search" , title="[B][COLOR lime]Search (1080p)[/COLOR][/B]",show="1080p",thumbnail= SEARCHIMAGE, fanart=FANARTIMAGE ))
     itemlist.append( Item(channel=__channel__, action="search" , title="[B][COLOR lime]Search (3D)[/COLOR][/B]",show="3D",thumbnail= SEARCHIMAGE, fanart=FANARTIMAGE ))
 
-    itemlist.append( Item(channel=__channel__, action="search" , title="[B][COLOR cyan]Advanced Search[/COLOR][/B]",show="adv",thumbnail= SEARCHIMAGE, fanart=FANARTIMAGE ))
+    itemlist.append( Item(channel=__channel__, action="advsearch" , title="[B][COLOR cyan]Advanced Search[/COLOR][/B]",thumbnail= SEARCHIMAGE, fanart=FANARTIMAGE ))
     
     itemlist.append( Item(channel=__channel__, action="configuracion", title="[B][COLOR dodgerblue]Configure Channel[/COLOR][/B]", thumbnail= THUMBNAILIMAGE,fanart= FANARTIMAGE, folder=False))
     return itemlist
@@ -129,18 +130,21 @@ def TMDb(title,year):
 		if listageneros != "":
 			listageneros2 = listageneros.split(",")
 			for g in listageneros2:
-				try: genero += Generos.get(g) + " / "
+				try: genero += Generos.get(g) + " - "
 				except: pass
-	return fanart,sinopsis,puntuacion,votos,genero.strip(" / ")
+	return fanart,sinopsis,puntuacion,votos,genero.strip(" - ")
 
 def search(item,texto):
 # https://yts.ag/browse-movies/king/720p/comedy/4/seeds?page=1
 # va (12/16) https://yts.ag/browse-movies/sea/all/all/0/latest
     logger.info("pelisalacarta.channels.yts search")
     
-    if item.show == "adv":
-        return advsearch(item,texto)
-    if item.show =="": item.show = "all"
+    if "720p" in item.title: item.show = "720p"
+    elif "1080p" in item.title: item.show="1080p"
+    elif "3D" in item.title: item.show="3D"
+    else: item.show="all"
+    
+    #if item.show =="": item.show = "all"
     
     #if texto == "": texto = "0"
     if texto == "": return []
@@ -157,7 +161,7 @@ def search(item,texto):
             logger.error( "%s" % line )
         return []
 
-def advsearch(item,texto):
+def advsearch(item):
 # https://yts.ag/browse-movies/0/all/all/0/latest
 # texto calidad genero puntuacion orden
     logger.info("pelisalacarta.channels.yts advsearch")
@@ -166,7 +170,14 @@ def advsearch(item,texto):
     Rating = ["0+" , "9+" , "8+" , "7+" , "6+" , "5+" , "4+" , "3+" , "2+" , "1+"]
     OrderBy = ["Latest" , "Oldest" , "Seeds" , "Peers" , "Year" , "Rating" , "Likes" , "Alphabetical" , "Downloads"]
 
-    
+    import xbmc
+    texto = ""
+    keyboard = xbmc.Keyboard(texto)
+    keyboard.doModal()
+    if (keyboard.isConfirmed()):
+        texto = keyboard.getText()
+    else: return []
+
     selquality = xbmcgui.Dialog().select("Select Quality:  (esc = All)", Quality)
     if selquality != -1:
         qualityselected = Quality[selquality].lower()
