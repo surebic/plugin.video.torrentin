@@ -4,37 +4,33 @@
 # Canal para EstrenosDTL
 # http://blog.tvalacarta.info/plugin-xbmc/pelisalacarta/
 # EstrenosDTL   Autor:  ciberus  (06-2015/01-2016)
+# Ultima modificación 02-2017
 #------------------------------------------------------------
-import urlparse,urllib2,urllib,re,xbmcgui
-import os, sys
-
+import urlparse,urllib2,urllib,re
 from core import logger
 from core import config
 from core import scrapertools
 from core.item import Item
-#from servers import servertools
 
 __channel__ = "estrenosdtl"
-__category__ = "F,S"
-__type__ = "generic"
-__title__ = "EstrenosDTL"
-__language__ = "ES"
-
 FANARTIMAGE = "http://imgur.com/fUaeSco.jpg"
 THUMBNAILIMAGE = "http://i.imgur.com/o08O5Ey.jpg"
 SEARCHIMAGE = "http://i.imgur.com/STE2K8O.png"
 NEXTPAGEIMAGE = "http://i.imgur.com/lqt8JcD.png"
 MODO_EXTENDIDO = config.get_setting('modo_grafico', "estrenosdtl")
+MODO_EXTENDIDO_B = config.get_setting('modo_grafico_b', "estrenosdtl")
 DEBUG = config.get_setting("debug")
-
-def isGeneric():
-    return True
 
 def mainlist(item):
     logger.info("pelisalacarta.channels.EstrenosDTL mainlist")
     itemlist = []
-    itemlist.append( Item(channel=__channel__, action="estrenos" , title="[B][COLOR yellow]Estrenos   (Todas las calidades)[/COLOR][/B]" , url="http://www.estrenosdtl.com/peliculas-screener.html?pagina=" , extra="1",thumbnail= THUMBNAILIMAGE, fanart=FANARTIMAGE, folder=True))
-    itemlist.append( Item(channel=__channel__, action="search" , title="[B][COLOR yellow]Buscar Estrenos...[/COLOR][/B]",thumbnail= THUMBNAILIMAGE, fanart=FANARTIMAGE ))
+    itemlist.append( Item(channel=__channel__, action="estrenos" , title="[B][COLOR lime]Estrenos   (Todas las calidades)[/COLOR][/B]" , url="http://www.estrenosdtl.com/peliculas-screener.html?pagina=" , extra="1",thumbnail= THUMBNAILIMAGE, fanart=FANARTIMAGE, folder=True))
+    itemlist.append( Item(channel=__channel__, action="estrenos" , title="[B][COLOR yellow]Estrenos   (DVD-Screener)[/COLOR][/B]" , url="http://www.estrenosdtl.com/peliculas-screener.html?pagina=" , extra="1",show="&calidad=105",thumbnail= THUMBNAILIMAGE, fanart=FANARTIMAGE, folder=True))
+    itemlist.append( Item(channel=__channel__, action="estrenos" , title="[B][COLOR yellow]Estrenos   (Telecine)[/COLOR][/B]" , url="http://www.estrenosdtl.com/peliculas-screener.html?pagina=" , extra="1",show="&calidad=106",thumbnail= THUMBNAILIMAGE, fanart=FANARTIMAGE, folder=True))
+    itemlist.append( Item(channel=__channel__, action="estrenos" , title="[B][COLOR yellow]Estrenos   (TS-Screener)[/COLOR][/B]" , url="http://www.estrenosdtl.com/peliculas-screener.html?pagina=" , extra="1",show="&calidad=107",thumbnail= THUMBNAILIMAGE, fanart=FANARTIMAGE, folder=True))
+    itemlist.append( Item(channel=__channel__, action="estrenos" , title="[B][COLOR yellow]Estrenos   (VHS-Screener)[/COLOR][/B]" , url="http://www.estrenosdtl.com/peliculas-screener.html?pagina=" , extra="1",show="&calidad=108",thumbnail= THUMBNAILIMAGE, fanart=FANARTIMAGE, folder=True))
+    itemlist.append( Item(channel=__channel__, action="estrenos" , title="[B][COLOR yellow]Estrenos   (V.O. Subtituladas)[/COLOR][/B]" , url="http://www.estrenosdtl.com/peliculas-screener.html?pagina=" , extra="1",show="&calidad=110",thumbnail= THUMBNAILIMAGE, fanart=FANARTIMAGE, folder=True))
+    itemlist.append( Item(channel=__channel__, action="search" , title="[B][COLOR magenta]Buscar Estrenos...[/COLOR][/B]",thumbnail= THUMBNAILIMAGE, fanart=FANARTIMAGE ))
     itemlist.append( Item(channel=__channel__, action="configuracion", title="[B][COLOR dodgerblue]Configuración del canal[/COLOR][/B]", thumbnail= THUMBNAILIMAGE,fanart= FANARTIMAGE, folder=False))
     return itemlist
     
@@ -45,12 +41,13 @@ def configuracion(item):
         import xbmc
         xbmc.executebuiltin("Container.Refresh")
 
-# Begin Peliculas
-
 def estrenos(item):
     logger.info("pelisalacarta.channels.EstrenosDTL estrenos")
     itemlist=[]
-    data = scrapertools.cache_page(item.url + item.extra)
+    if not item.show=="":
+        data = scrapertools.cache_page(item.url + item.extra + item.show)
+    else:
+        data = scrapertools.cache_page(item.url + item.extra)
     logger.info("data="+data)
     if ">Siguiente<" in data:
         haymas=True
@@ -73,15 +70,13 @@ def estrenos(item):
             genero = ""
         if puntuacion !="": puntuaciontitle = " [COLOR magenta](" + puntuacion + ")"
         else: puntuaciontitle = ""
-        if genero == "": genero="No datos"
-        
         titulo = "[B][COLOR yellow]" + (unicode( scrapedtitle, "iso-8859-1" , errors="replace" ).encode("utf-8")).strip() + "[/B] [COLOR dodgerblue]("+scrapedcalidad + ")" + puntuaciontitle + " [COLOR limegreen]("+scrapedfecha+")[/COLOR]"
         numero = scrapertools.find_single_match(scrapedurl,'-(\d+).')
         thumbnail = "http://www.estrenosdtl.com/imagenes/"+numero+".jpg"
         url= "http://www.estrenosdtl.com/"+scrapedurl
         itemlist.append( Item(channel=__channel__, action="play", title=titulo , fulltitle=titulo, url=url , thumbnail=thumbnail , fanart=fanart, extra="", plot=plot,folder=False, infoLabels={"rating":puntuacion,"votes":votos,"year":fecha,"genre":genero }) )
     if haymas:
-         itemlist.append( Item(channel=__channel__, action="estrenos", title="[COLOR magenta]>>> Página siguiente[/COLOR]" , url=item.url , extra=pag_sig , fanart=FANARTIMAGE, thumbnail=NEXTPAGEIMAGE, folder=True) )
+         itemlist.append( Item(channel=__channel__, action="estrenos", title="[COLOR magenta]>>> Página siguiente[/COLOR]" , url=item.url , extra=pag_sig , fanart=FANARTIMAGE, thumbnail=NEXTPAGEIMAGE, show=item.show , folder=True) )
     return itemlist
     
 def TMDb(title):
@@ -98,9 +93,9 @@ def TMDb(title):
 	if listageneros != "":
 		listageneros2 = listageneros.split(",")
 		for g in listageneros2:
-			try: genero += Generos.get(g) + " / "
+			try: genero += Generos.get(g) + " - "
 			except: pass
-	return fanart,sinopsis,puntuacion,votos,fecha,genero.strip(" / ")
+	return fanart,sinopsis,puntuacion,votos,fecha,genero.strip(" - ")
 	
 def play(item):
     logger.info("pelisalacarta.channels.EstrenosDTL entraenpeli")
@@ -116,8 +111,6 @@ def play(item):
         itemlist.append( Item(channel=__channel__, action="play", server="torrent", title=item.title , fulltitle=item.title, url=scrapedlink , thumbnail=item.thumbnail , fanart=FANARTIMAGE , plot=plot , folder=False) )
     return itemlist
 
-# Buscador
-
 def search(item,texto):
     logger.info("pelisalacarta.channels.EstrenosDTL search")
     if item.url=="":
@@ -125,7 +118,6 @@ def search(item,texto):
     item.extra = urllib.urlencode({'busqueda':texto})
     try:
         return lista(item)
-    # Se captura la excepción, para no interrumpir al buscador global si un canal falla
     except:
         import sys
         for line in sys.exc_info():
@@ -146,11 +138,20 @@ def lista(item):
     matches = re.compile(patron,re.DOTALL).findall(data)
     scrapertools.printMatches(matches)
     for scrapedurl , scrapedtitle , scrapedcalidad , scrapedfecha in matches:
-        titulo = "[COLOR yellow]" + (unicode( scrapedtitle, "iso-8859-1" , errors="replace" ).encode("utf-8")).strip() + "[/COLOR] [COLOR blue]("+scrapedcalidad+")[/COLOR] [COLOR green]("+scrapedfecha+")[/COLOR]"
+        if MODO_EXTENDIDO_B: fanart,plot,puntuacion,votos,fecha,genero = TMDb(StripTags2(scrapedtitle))
+        else:
+            fanart = FANARTIMAGE
+            plot = ""
+            puntuacion = ""
+            votos = ""
+            fecha = ""
+            genero = ""
+        titulo = "[COLOR yellow]" + (unicode( scrapedtitle, "iso-8859-1" , errors="replace" ).encode("utf-8")).strip() + "[/COLOR] [COLOR dodgerblue]("+scrapedcalidad+")[/COLOR] [COLOR green]("+scrapedfecha+")[/COLOR]"
         numero = scrapertools.find_single_match(scrapedurl,'-(\d+).')
         thumbnail = "http://www.estrenosdtl.com/imagenes/"+numero+".jpg"
         url= "http://www.estrenosdtl.com/"+scrapedurl
-        itemlist.append( Item(channel=__channel__, action="entraenpeli", title=titulo , fulltitle=titulo, url=url , thumbnail=thumbnail , fanart=FANARTIMAGE, extra="", folder=True) )
+        itemlist.append( Item(channel=__channel__, action="play", title=titulo , fulltitle=titulo, url=url , thumbnail=thumbnail , fanart=fanart, extra="", plot=plot,folder=False, infoLabels={"rating":puntuacion,"votes":votos,"year":fecha,"genre":genero }) )
+        #itemlist.append( Item(channel=__channel__, action="play", title=titulo , fulltitle=titulo, url=url , thumbnail=thumbnail , fanart=FANARTIMAGE, extra="", folder=True) )
     return itemlist
     #Solo da una pagina en las busquedas...
 
@@ -166,4 +167,4 @@ def StripTags2(text):
                  finished = 0
      return text.strip()
 
-# Fin, este era facilito.
+# Fin
