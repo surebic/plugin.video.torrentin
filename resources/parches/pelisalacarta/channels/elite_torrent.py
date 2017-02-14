@@ -121,7 +121,7 @@ def peliculas(item):
     scrapertools.printMatches(matches)
     if len(matches)>0:
         scrapedurl = urlparse.urljoin(item.url,matches[0])
-        itemlist.append( Item(channel=__channel__, action="peliculas", title="[COLOR magenta]>>> Página siguiente[/COLOR]" , thumbnail= NEXTPAGEIMAGE , fanart= FANARTIMAGE , url=scrapedurl, extra=item.extra , folder=True) )
+        itemlist.append( Item(channel=__channel__, action="peliculas", title="[COLOR magenta]>>> Página siguiente[/COLOR]" , thumbnail= NEXTPAGEIMAGE , fanart= FANARTIMAGE ,show=item.show, url=scrapedurl, extra=item.extra , folder=True) )
     return itemlist
 
 def preplay(item):
