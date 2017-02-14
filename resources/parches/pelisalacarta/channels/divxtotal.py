@@ -213,7 +213,7 @@ def entraenserie(item):
         if not "imgur" in fanart: scrapedthumb = fanart
         if not "imgur" in thumbnail: item.thumbnail = thumbnail
         puntuacion = puntuacion.split(",")[0]
-        infoLabels={"rating":puntuacion,"votes":votos, "genre":genero}
+        infoLabels={"rating":puntuacion,"votes":votos, "genre":genero, "year":fecha}
     else: infoLabels={}
     plot = re.sub('<[^<]+?>', '', scrapedplot)
     data = scrapertools.find_single_match(data,'CAPITULOS(.*?)id="footer"')
@@ -326,7 +326,8 @@ def TMDb(title,tipo):
 	sinopsis =  scrapertools.find_single_match(data,'"page":1,.*?"overview":"(.*?)","').replace('\\"','"')
 	puntuacion = scrapertools.find_single_match(data,'"page":1,.*?"vote_average":(.*?)}')
 	votos = scrapertools.find_single_match(data,'"page":1,.*?"vote_count":(.*?),')
-	fecha = scrapertools.find_single_match(data,'"page":1,.*?"release_date":"(.*?)","').split("-")[0]
+	if tipo == "movie":fecha = scrapertools.find_single_match(data,'"page":1,.*?"release_date":"(.*?)","').split("-")[0]
+	else: fecha = scrapertools.find_single_match(data,'"page":1,.*?"first_air_date":"(.*?)","').split("-")[0]
 	listageneros = scrapertools.find_single_match(data,'"page":1,.*?"genre_ids":\[(.*?)\],"')
 	genero = ""
 	if listageneros != "":

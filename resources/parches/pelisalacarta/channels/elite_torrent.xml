@@ -12,8 +12,8 @@
 	<bannermenu>http://media.tvalacarta.info/pelisalacarta/bannermenu/elitetorrent.png</bannermenu>
 
 	<update_url>https://raw.githubusercontent.com/surebic/plugin.video.torrentin/master/resources/parches/pelisalacarta/channels/</update_url>
-	<version>20</version>
-	<date>9/2/2017</date>
+	<version>21</version>
+	<date>14/2/2017</date>
 	<changes>Nuevos menus con listados por fecha, valoracion y popularidad, extrae torrent en vez de magnet e incluido buscador, arreglado y mejorado (1-2017)</changes>
 
 	<changes>
@@ -22,13 +22,17 @@
 			<autor>ciberus</autor>
 			<description>Incluido temporizador para la API de TMDb ya que los listados son superiores a 30 items</description>
 		</change>
-	</changes>
 	
-<changes>
 		<change>
 			<date>08/02/17</date>
 			<autor>ciberus</autor>
 			<description>Incluido numero de votos y guion en vez de comas para separar generos</description>
+		</change>
+	
+		<change>
+			<date>14/02/17</date>
+			<autor>ciberus</autor>
+			<description>Incluido busqueda en TMDb para las series y las busquedas (configurable)</description>
 		</change>
 	</changes>
 
@@ -43,12 +47,21 @@
     <settings>
         <id>include_in_global_search</id>
         <type>bool</type>
-        <label>Incluir en busqueda global</label>
+        <label>Incluir en la busqueda global</label>
         <default>true</default>
         <enabled>true</enabled>
         <visible>true</visible>
     </settings>
 
+	<settings>
+		<id>modo_rapido</id>
+		<type>bool</type>
+		<label>Modo una lista con acceso directo al torrent (Mas lento con TMDb activado)</label>
+ 		<default>false</default>
+ 		<enabled>true</enabled>
+ 		<visible>true</visible>
+ 	</settings>
+ 
 	<settings>
 		<id>modo_grafico</id>
 		<type>bool</type>
@@ -59,12 +72,12 @@
  	</settings>
 
 	<settings>
-		<id>modo_rapido</id>
+		<id>modo_grafico_b</id>
 		<type>bool</type>
-		<label>Modo una lista con acceso directo al torrent</label>
- 		<default>false</default>
+		<label>Buscar datos extra en TMDb tambien en las Busquedas (Mas lenta la busqueda global)</label>
+ 		<default>true</default>
  		<enabled>true</enabled>
- 		<visible>true</visible>
+ 		<visible>eq(-1 ,true)</visible>
  	</settings>
 
 </channel>
