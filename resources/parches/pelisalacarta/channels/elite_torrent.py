@@ -89,7 +89,7 @@ def peliculas(item):
     for scrapedurl, scrapedthumbnail, scrapedtitle in matches:
         title = "[B][COLOR yellow]"+scrapedtitle.strip()+"[/COLOR][/B]"
         url = urlparse.urljoin(BASE_URL, scrapedurl)
-        if MODO_EXTENDIDO_B:
+        if item.show=="1" and MODO_EXTENDIDO_B:
             patron = re.compile(r'\d[x]\d{2}')
             if patron.search(scrapedtitle): item.extra="tv"
             else: item.extra="movie"
@@ -191,7 +191,7 @@ def search(item,texto):
     if item.url=="":
         texto = texto.replace("+","%20").replace(" ","%20")
         item.url="http://www.elitetorrent.net/resultados/"+texto+"/modo:mini"
-    item.extra = "1"
+    item.show = "1"
     try:
         return peliculas(item)
     except:
