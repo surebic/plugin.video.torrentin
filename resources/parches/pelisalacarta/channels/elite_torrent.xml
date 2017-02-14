@@ -56,7 +56,7 @@
 	<settings>
 		<id>modo_rapido</id>
 		<type>bool</type>
-		<label>Modo una lista con acceso directo al torrent (Mas lento con TMDb activado)</label>
+		<label>Modo una lista con acceso directo al torrent (mas lento con TMDb activado)</label>
  		<default>false</default>
  		<enabled>true</enabled>
  		<visible>true</visible>
@@ -74,7 +74,7 @@
 	<settings>
 		<id>modo_grafico_b</id>
 		<type>bool</type>
-		<label>Buscar datos extra en TMDb tambien en las Busquedas (Mas lenta la busqueda global)</label>
+		<label>Buscar datos extra en TMDb tambien en las Busquedas (mas lenta la busqueda global)</label>
  		<default>true</default>
  		<enabled>true</enabled>
  		<visible>eq(-1 ,true)</visible>
