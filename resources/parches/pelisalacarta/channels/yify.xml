@@ -24,7 +24,7 @@
     <settings>
         <id>include_in_global_search</id>
         <type>bool</type>
-        <label>Incluir en busqueda global</label>
+        <label>Include in global search</label>
         <default>true</default>
         <enabled>true</enabled>
         <visible>true</visible>
