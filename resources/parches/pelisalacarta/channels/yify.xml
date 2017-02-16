@@ -11,8 +11,8 @@
 	<bannermenu></bannermenu>
 
 	<update_url>https://raw.githubusercontent.com/surebic/plugin.video.torrentin/master/resources/parches/pelisalacarta/channels/</update_url>
-	<version>8</version>
-	<date>24/1/2017</date>
+	<version>9</version>
+	<date>9/2/2017</date>
 	<changes>Adaptado al nuevo dominio yts.ag por cierre de yts.to, arreglado y mejorado (01/2017)</changes>
 
 	<categories>
@@ -21,40 +21,40 @@
 		<category>vos</category>
 	</categories>
 	
-	<settings>
-		<id>include_in_global_search</id>
-		<type>bool</type>
-		<label>Include in global search</label>
-		<default>false</default>
-		<enabled>true</enabled>
-		<visible>true</visible>
-	</settings>
+    <settings>
+        <id>include_in_global_search</id>
+        <type>bool</type>
+        <label>Incluir en busqueda global</label>
+        <default>true</default>
+        <enabled>true</enabled>
+        <visible>true</visible>
+    </settings>
 
 	<settings>
 		<id>modo_grafico</id>
 		<type>bool</type>
 		<label>Search extra data in TMDb</label>
-		<default>true</default>
-		<enabled>true</enabled>
-		<visible>true</visible>
-	</settings>
+ 		<default>true</default>
+ 		<enabled>true</enabled>
+ 		<visible>true</visible>
+ 	</settings>
  
 	<settings>
 		<id>english_sinopsis</id>
 		<type>bool</type>
 		<label>Show genre and argument in English</label>
-		<default>true</default>
-		<enabled>true</enabled>
-		<visible>true</visible>
-	</settings>
+ 		<default>true</default>
+ 		<enabled>true</enabled>
+ 		<visible>true</visible>
+ 	</settings>
  
 	<settings>
 		<id>only_filmname</id>
 		<type>bool</type>
 		<label>Show only the name of the movie in the lists (to find the subtitles more easily)</label>
-		<default>true</default>
-		<enabled>true</enabled>
-		<visible>true</visible>
-	</settings>
+ 		<default>true</default>
+ 		<enabled>true</enabled>
+ 		<visible>true</visible>
+ 	</settings>
  
 </channel>
