@@ -18,7 +18,7 @@ from core import config
 from core import scrapertools
 from core.item import Item
 
-__channel__ = "elite_torrent"
+CHANNEL_NAME = "elite_torrent"
 DEBUG = config.get_setting("debug")
 BASE_URL = 'http://www.elitetorrent.net'
 FANARTIMAGE = "http://i.imgur.com/O2AmwUX.jpg"
@@ -33,38 +33,38 @@ MODO_ENTRA_EN_SERIE = config.get_setting('modo_serie_completa', "elite_torrent")
 def mainlist(item):
     logger.info("[elitetorrent.py] mainlist")
     itemlist = []
-    itemlist.append( Item(channel=__channel__, title="[B][COLOR yellow]Películas[/COLOR][/B]" , action="menu", extra="movie",thumbnail= THUMBNAILIMAGE, fanart= FANARTIMAGE))
-    itemlist.append( Item(channel=__channel__, title="[B][COLOR orange]Series[/COLOR][/B]" , action="menu", extra="tv",thumbnail= THUMBNAILIMAGE, fanart= FANARTIMAGE))
-    itemlist.append( Item(channel=__channel__, title="[B][COLOR lime]Documentales y TV[/COLOR][/B]" , action="menu", extra="docu",thumbnail= THUMBNAILIMAGE, fanart= FANARTIMAGE))
-    itemlist.append( Item(channel=__channel__, action="search" , title="[B][COLOR yellow]Buscar...[/COLOR][/B]", thumbnail= SEARCHIMAGE, fanart= FANARTIMAGE))
-    itemlist.append( Item(channel=__channel__, action="configuracion", title="[B][COLOR dodgerblue]Configuración del canal[/COLOR][/B]", thumbnail= THUMBNAILIMAGE,fanart= FANARTIMAGE, folder=False))
+    itemlist.append( Item(channel=CHANNEL_NAME, title="[B][COLOR yellow]Películas[/COLOR][/B]" , action="menu", extra="movie",thumbnail= THUMBNAILIMAGE, fanart= FANARTIMAGE))
+    itemlist.append( Item(channel=CHANNEL_NAME, title="[B][COLOR orange]Series[/COLOR][/B]" , action="menu", extra="tv",thumbnail= THUMBNAILIMAGE, fanart= FANARTIMAGE))
+    itemlist.append( Item(channel=CHANNEL_NAME, title="[B][COLOR lime]Documentales y TV[/COLOR][/B]" , action="menu", extra="docu",thumbnail= THUMBNAILIMAGE, fanart= FANARTIMAGE))
+    itemlist.append( Item(channel=CHANNEL_NAME, action="search" , title="[B][COLOR yellow]Buscar...[/COLOR][/B]", thumbnail= SEARCHIMAGE, fanart= FANARTIMAGE))
+    itemlist.append( Item(channel=CHANNEL_NAME, action="configuracion", title="[B][COLOR dodgerblue]Configuración del canal[/COLOR][/B]", thumbnail= THUMBNAILIMAGE,fanart= FANARTIMAGE, folder=False))
     return itemlist
 
 def menu(item):
     itemlist =[]
     if item.extra =="movie":
-        itemlist.append( Item(channel=__channel__, title="[B][COLOR lime]Estrenos  (Por fecha)[/COLOR][/B]"       , extra=item.extra, action="peliculas", url="http://www.elitetorrent.net/categoria/1/estrenos/modo:mini", thumbnail= THUMBNAILIMAGE, fanart= FANARTIMAGE))
-        itemlist.append( Item(channel=__channel__, title="[B][COLOR lime]Estrenos  (Por valoración)[/COLOR][/B]"       ,extra=item.extra, action="peliculas", url="http://www.elitetorrent.net/categoria/1/estrenos/modo:mini/orden:valoracion", thumbnail= THUMBNAILIMAGE, fanart= FANARTIMAGE))
-        itemlist.append( Item(channel=__channel__, title="[B][COLOR lime]Estrenos  (Por popularidad)[/COLOR][/B]"       ,extra=item.extra, action="peliculas", url="http://www.elitetorrent.net/categoria/1/estrenos/modo:mini/orden:popularidad", thumbnail= THUMBNAILIMAGE, fanart= FANARTIMAGE))
-        itemlist.append( Item(channel=__channel__, title="[B][COLOR yellow]Películas  (Por fecha)[/COLOR][/B]"      ,extra=item.extra, action="peliculas", url="http://www.elitetorrent.net/categoria/2/peliculas/modo:mini", thumbnail= THUMBNAILIMAGE, fanart= FANARTIMAGE))
-        itemlist.append( Item(channel=__channel__, title="[B][COLOR yellow]Películas  (Por valoración)[/COLOR][/B]"      ,extra=item.extra, action="peliculas", url="http://www.elitetorrent.net/categoria/2/peliculas/modo:mini/orden:valoracion", thumbnail= THUMBNAILIMAGE, fanart= FANARTIMAGE))
-        itemlist.append( Item(channel=__channel__, title="[B][COLOR yellow]Películas  (Por popularidad)[/COLOR][/B]"      ,extra=item.extra, action="peliculas", url="http://www.elitetorrent.net/categoria/2/peliculas/modo:mini/orden:popularidad", thumbnail= THUMBNAILIMAGE, fanart= FANARTIMAGE))
-        itemlist.append( Item(channel=__channel__, title="[B][COLOR lime]Peliculas HDRip  (Por fecha)[/COLOR][/B]",extra=item.extra, action="peliculas", url="http://www.elitetorrent.net/categoria/13/peliculas-hdrip/modo:mini", thumbnail= THUMBNAILIMAGE, fanart= FANARTIMAGE))
-        itemlist.append( Item(channel=__channel__, title="[B][COLOR lime]Peliculas HDRip  (Por valoración)[/COLOR][/B]",extra=item.extra, action="peliculas", url="http://www.elitetorrent.net/categoria/13/peliculas-hdrip/modo:mini/orden:valoracion", thumbnail= THUMBNAILIMAGE, fanart= FANARTIMAGE))
-        itemlist.append( Item(channel=__channel__, title="[B][COLOR lime]Peliculas HDRip  (Por popularidad)[/COLOR][/B]",extra=item.extra, action="peliculas", url="http://www.elitetorrent.net/categoria/13/peliculas-hdrip/modo:mini/orden:popularidad", thumbnail= THUMBNAILIMAGE, fanart= FANARTIMAGE))
-        itemlist.append( Item(channel=__channel__, title="[B][COLOR yellow]Peliculas MicroHD  (Por fecha)[/COLOR][/B]",extra=item.extra, action="peliculas", url="http://www.elitetorrent.net/categoria/17/peliculas-microhd/modo:mini", thumbnail= THUMBNAILIMAGE, fanart= FANARTIMAGE))
-        itemlist.append( Item(channel=__channel__, title="[B][COLOR yellow]Peliculas MicroHD  (Por valoración)[/COLOR][/B]", action="peliculas",extra=item.extra, url="http://www.elitetorrent.net/categoria/17/peliculas-microhd/modo:mini/orden:valoracion", thumbnail= THUMBNAILIMAGE, fanart= FANARTIMAGE))
-        itemlist.append( Item(channel=__channel__, title="[B][COLOR yellow]Peliculas MicroHD  (Por popularidad)[/COLOR][/B]", action="peliculas",extra=item.extra, url="http://www.elitetorrent.net/categoria/17/peliculas-microhd/modo:mini/orden:popularidad", thumbnail= THUMBNAILIMAGE, fanart= FANARTIMAGE))
-        itemlist.append( Item(channel=__channel__, title="[B][COLOR cyan]Peliculas V.O.S.E.[/COLOR][/B]" , action="peliculas",extra=item.extra, url="http://www.elitetorrent.net/categoria/14/peliculas-vose/modo:mini", thumbnail= THUMBNAILIMAGE, fanart= FANARTIMAGE))
+        itemlist.append( Item(channel=CHANNEL_NAME, title="[B][COLOR lime]Estrenos  (Por fecha)[/COLOR][/B]"       , extra=item.extra, action="peliculas", url="http://www.elitetorrent.net/categoria/1/estrenos/modo:mini", thumbnail= THUMBNAILIMAGE, fanart= FANARTIMAGE))
+        itemlist.append( Item(channel=CHANNEL_NAME, title="[B][COLOR lime]Estrenos  (Por valoración)[/COLOR][/B]"       ,extra=item.extra, action="peliculas", url="http://www.elitetorrent.net/categoria/1/estrenos/modo:mini/orden:valoracion", thumbnail= THUMBNAILIMAGE, fanart= FANARTIMAGE))
+        itemlist.append( Item(channel=CHANNEL_NAME, title="[B][COLOR lime]Estrenos  (Por popularidad)[/COLOR][/B]"       ,extra=item.extra, action="peliculas", url="http://www.elitetorrent.net/categoria/1/estrenos/modo:mini/orden:popularidad", thumbnail= THUMBNAILIMAGE, fanart= FANARTIMAGE))
+        itemlist.append( Item(channel=CHANNEL_NAME, title="[B][COLOR yellow]Películas  (Por fecha)[/COLOR][/B]"      ,extra=item.extra, action="peliculas", url="http://www.elitetorrent.net/categoria/2/peliculas/modo:mini", thumbnail= THUMBNAILIMAGE, fanart= FANARTIMAGE))
+        itemlist.append( Item(channel=CHANNEL_NAME, title="[B][COLOR yellow]Películas  (Por valoración)[/COLOR][/B]"      ,extra=item.extra, action="peliculas", url="http://www.elitetorrent.net/categoria/2/peliculas/modo:mini/orden:valoracion", thumbnail= THUMBNAILIMAGE, fanart= FANARTIMAGE))
+        itemlist.append( Item(channel=CHANNEL_NAME, title="[B][COLOR yellow]Películas  (Por popularidad)[/COLOR][/B]"      ,extra=item.extra, action="peliculas", url="http://www.elitetorrent.net/categoria/2/peliculas/modo:mini/orden:popularidad", thumbnail= THUMBNAILIMAGE, fanart= FANARTIMAGE))
+        itemlist.append( Item(channel=CHANNEL_NAME, title="[B][COLOR lime]Peliculas HDRip  (Por fecha)[/COLOR][/B]",extra=item.extra, action="peliculas", url="http://www.elitetorrent.net/categoria/13/peliculas-hdrip/modo:mini", thumbnail= THUMBNAILIMAGE, fanart= FANARTIMAGE))
+        itemlist.append( Item(channel=CHANNEL_NAME, title="[B][COLOR lime]Peliculas HDRip  (Por valoración)[/COLOR][/B]",extra=item.extra, action="peliculas", url="http://www.elitetorrent.net/categoria/13/peliculas-hdrip/modo:mini/orden:valoracion", thumbnail= THUMBNAILIMAGE, fanart= FANARTIMAGE))
+        itemlist.append( Item(channel=CHANNEL_NAME, title="[B][COLOR lime]Peliculas HDRip  (Por popularidad)[/COLOR][/B]",extra=item.extra, action="peliculas", url="http://www.elitetorrent.net/categoria/13/peliculas-hdrip/modo:mini/orden:popularidad", thumbnail= THUMBNAILIMAGE, fanart= FANARTIMAGE))
+        itemlist.append( Item(channel=CHANNEL_NAME, title="[B][COLOR yellow]Peliculas MicroHD  (Por fecha)[/COLOR][/B]",extra=item.extra, action="peliculas", url="http://www.elitetorrent.net/categoria/17/peliculas-microhd/modo:mini", thumbnail= THUMBNAILIMAGE, fanart= FANARTIMAGE))
+        itemlist.append( Item(channel=CHANNEL_NAME, title="[B][COLOR yellow]Peliculas MicroHD  (Por valoración)[/COLOR][/B]", action="peliculas",extra=item.extra, url="http://www.elitetorrent.net/categoria/17/peliculas-microhd/modo:mini/orden:valoracion", thumbnail= THUMBNAILIMAGE, fanart= FANARTIMAGE))
+        itemlist.append( Item(channel=CHANNEL_NAME, title="[B][COLOR yellow]Peliculas MicroHD  (Por popularidad)[/COLOR][/B]", action="peliculas",extra=item.extra, url="http://www.elitetorrent.net/categoria/17/peliculas-microhd/modo:mini/orden:popularidad", thumbnail= THUMBNAILIMAGE, fanart= FANARTIMAGE))
+        itemlist.append( Item(channel=CHANNEL_NAME, title="[B][COLOR cyan]Peliculas V.O.S.E.[/COLOR][/B]" , action="peliculas",extra=item.extra, url="http://www.elitetorrent.net/categoria/14/peliculas-vose/modo:mini", thumbnail= THUMBNAILIMAGE, fanart= FANARTIMAGE))
     elif item.extra=="docu":
-        itemlist.append( Item(channel=__channel__, title="[B][COLOR lime]Docus y TV  (Por fecha)[/COLOR][/B]" , action="peliculas",extra=item.extra, url="http://www.elitetorrent.net/categoria/6/docus-y-tv/modo:mini", thumbnail= THUMBNAILIMAGE, fanart= FANARTIMAGE))
-        itemlist.append( Item(channel=__channel__, title="[B][COLOR lime]Docus y TV  (Por valoración)[/COLOR][/B]" , action="peliculas", extra=item.extra, url="http://www.elitetorrent.net/categoria/6/docus-y-tv/modo:mini/orden:valoracion", thumbnail= THUMBNAILIMAGE, fanart= FANARTIMAGE))
-        itemlist.append( Item(channel=__channel__, title="[B][COLOR lime]Docus y TV  (Por popularidad)[/COLOR][/B]" , action="peliculas",extra=item.extra, url="http://www.elitetorrent.net/categoria/6/docus-y-tv/modo:mini/orden:popularidad", thumbnail= THUMBNAILIMAGE, fanart= FANARTIMAGE))
+        itemlist.append( Item(channel=CHANNEL_NAME, title="[B][COLOR lime]Docus y TV  (Por fecha)[/COLOR][/B]" , action="peliculas",extra=item.extra, url="http://www.elitetorrent.net/categoria/6/docus-y-tv/modo:mini", thumbnail= THUMBNAILIMAGE, fanart= FANARTIMAGE))
+        itemlist.append( Item(channel=CHANNEL_NAME, title="[B][COLOR lime]Docus y TV  (Por valoración)[/COLOR][/B]" , action="peliculas", extra=item.extra, url="http://www.elitetorrent.net/categoria/6/docus-y-tv/modo:mini/orden:valoracion", thumbnail= THUMBNAILIMAGE, fanart= FANARTIMAGE))
+        itemlist.append( Item(channel=CHANNEL_NAME, title="[B][COLOR lime]Docus y TV  (Por popularidad)[/COLOR][/B]" , action="peliculas",extra=item.extra, url="http://www.elitetorrent.net/categoria/6/docus-y-tv/modo:mini/orden:popularidad", thumbnail= THUMBNAILIMAGE, fanart= FANARTIMAGE))
     elif item.extra=="tv":
-        itemlist.append( Item(channel=__channel__, title="[B][COLOR orange]Series  (Por fecha)[/COLOR][/B]" , action="peliculas",extra=item.extra, show="2",url="http://www.elitetorrent.net/categoria/4/series/modo:mini", thumbnail= THUMBNAILIMAGE, fanart= FANARTIMAGE))
-        itemlist.append( Item(channel=__channel__, title="[B][COLOR orange]Series  (Por valoración)[/COLOR][/B]" , action="peliculas",extra=item.extra, show="2", url="http://www.elitetorrent.net/categoria/4/series/modo:mini/orden:valoracion", thumbnail= THUMBNAILIMAGE, fanart= FANARTIMAGE))
-        itemlist.append( Item(channel=__channel__, title="[B][COLOR orange]Series  (Por popularidad)[/COLOR][/B]" , action="peliculas", extra=item.extra, show="2", url="http://www.elitetorrent.net/categoria/4/series/modo:mini/orden:popularidad", thumbnail= THUMBNAILIMAGE, fanart= FANARTIMAGE))
-        itemlist.append( Item(channel=__channel__, title="[B][COLOR cyan]Series V.O.S.E.[/COLOR][/B]" , action="peliculas",extra=item.extra, show="2", url="http://www.elitetorrent.net/categoria/16/series-vose/modo:mini", thumbnail= THUMBNAILIMAGE, fanart= FANARTIMAGE))
+        itemlist.append( Item(channel=CHANNEL_NAME, title="[B][COLOR orange]Series  (Por fecha)[/COLOR][/B]" , action="peliculas",extra=item.extra, show="2",url="http://www.elitetorrent.net/categoria/4/series/modo:mini", thumbnail= THUMBNAILIMAGE, fanart= FANARTIMAGE))
+        itemlist.append( Item(channel=CHANNEL_NAME, title="[B][COLOR orange]Series  (Por valoración)[/COLOR][/B]" , action="peliculas",extra=item.extra, show="2", url="http://www.elitetorrent.net/categoria/4/series/modo:mini/orden:valoracion", thumbnail= THUMBNAILIMAGE, fanart= FANARTIMAGE))
+        itemlist.append( Item(channel=CHANNEL_NAME, title="[B][COLOR orange]Series  (Por popularidad)[/COLOR][/B]" , action="peliculas", extra=item.extra, show="2", url="http://www.elitetorrent.net/categoria/4/series/modo:mini/orden:popularidad", thumbnail= THUMBNAILIMAGE, fanart= FANARTIMAGE))
+        itemlist.append( Item(channel=CHANNEL_NAME, title="[B][COLOR cyan]Series V.O.S.E.[/COLOR][/B]" , action="peliculas",extra=item.extra, show="2", url="http://www.elitetorrent.net/categoria/16/series-vose/modo:mini", thumbnail= THUMBNAILIMAGE, fanart= FANARTIMAGE))
     return itemlist
     
 def configuracion(item):
@@ -78,7 +78,6 @@ def peliculas(item):
     logger.info("[elite_torrent.py] peliculas")
     itemlist = []
     data = scrapertools.cachePage(item.url)
-    #<meta http-equiv="Refresh" content="0;url=http://www.bajui.com/redi.php?url=/categoria/1/series/modo:mini"/>
     if data.startswith('<meta http-equiv="Refresh"'):
         data = scrapertools.cache_page(item.url)
     patron =  '<a href="(/torrent/[^"]+)">'
@@ -92,12 +91,10 @@ def peliculas(item):
     for scrapedurl, scrapedthumbnail, scrapedtitle in matches:
         title = "[B][COLOR yellow]"+scrapedtitle.strip()+"[/COLOR][/B]"
         url = urlparse.urljoin(BASE_URL, scrapedurl)
-        # Si venimos de la busqueda y esta activado TMDb hay que identificar si es serie o pelicula antes de buscarlo
         if (item.show=="1" or item.show=="3") and MODO_EXTENDIDO_B:
             patron = re.compile(r'\d[x]\d{2}')
             if patron.search(scrapedtitle): item.extra="tv"
             else: item.extra="movie"
-        #Optimiza la velocidad de los listados de series, si el anterior es igual y ya se busco en TMDb no le busca.
         if item.extra=="tv":
             if scrapedtitle.split("-")[0] != buscado:
                 buscado = scrapedtitle.split("-")[0]
@@ -107,18 +104,15 @@ def peliculas(item):
         else:
             buscado=""
             yaesta=False
-        # Buscamos (si se cumplen las condiciones)
         if (item.extra == "movie" or item.extra == "tv") and MODO_EXTENDIDO and MODO_RAPIDO and not yaesta:
-            # Contador de tiempo para la API si buscamos mas de 40 en menos de 10" hay que esperar
             result = result +1
             if result == 40:
                 while time.time()-start < 10:
                     time.sleep(1)
-            # Buscamos
             fanart,thumbnail,sinopsis,puntuacion,votos,year,genero = TMDb(StripTags(scrapedtitle),item.extra)
             if thumbnail == "": thumbnail = urlparse.urljoin(BASE_URL, scrapedthumbnail)
-            if puntuacion !="":
-                sinopsis = sinopsis + "\n[COLOR purple]Puntuación TMDb: [COLOR magenta]" + puntuacion + "[/COLOR]"
+            #if puntuacion !="":
+                #sinopsis = sinopsis + "\n[COLOR purple]Puntuación TMDb: [COLOR magenta]" + puntuacion + "[/COLOR]"
         elif not yaesta:
             fanart = FANARTIMAGE
             thumbnail = urlparse.urljoin(BASE_URL, scrapedthumbnail)
@@ -128,24 +122,20 @@ def peliculas(item):
             year = ""
             genero = ""
         if MODO_RAPIDO:
-            #accion = "play"
             if item.extra=="tv":
                 if item.show=="1" or item.show=="2" and MODO_ENTRA_EN_SERIE:
-                    #Venimos de la busqueda (1) o menus (2)
-                    itemlist.append( Item(channel=__channel__, action="peliculas", server="torrent", title="[COLOR cyan][Serie] [B][COLOR orange]" +scrapedtitle.split("-")[0] +"[/B][COLOR limegreen](últ:" +  scrapedtitle.split("-")[1] + ")[/COLOR]" , viewmode="movie_with_plot" , plot =sinopsis, url="http://www.elitetorrent.net/resultados/"+scrapedtitle.split("-")[0].strip().replace(" ","%20")+"/modo:mini" , thumbnail=thumbnail , extra="tv",show="3" ,fanart=fanart, folder=True, infoLabels={"rating":puntuacion,"votes":votos,"year":year,"genre":genero } ) )
-                else: itemlist.append( Item(channel=__channel__, action="play", title=title , url=url , thumbnail=thumbnail , folder=True, viewmode="movie_with_plot" , plot =sinopsis, fanart= fanart, show=scrapedtitle, extra=item.extra, infoLabels={"rating":puntuacion,"votes":votos,"year":year,"genre":genero } ) )
-            else: #es peli o docu
-                itemlist.append( Item(channel=__channel__, action="play", title=title , url=url , thumbnail=thumbnail , folder=True, viewmode="movie_with_plot" , plot =sinopsis, fanart= fanart, show=scrapedtitle, extra=item.extra, infoLabels={"rating":puntuacion,"votes":votos,"year":year,"genre":genero } ) )
-        else: #modo 2 listas
-            #accion = "preplay"
-            itemlist.append( Item(channel=__channel__, action="preplay", title=title , url=url , thumbnail=thumbnail , folder=True, viewmode="movie_with_plot" , plot =sinopsis, fanart= fanart, show=scrapedtitle, extra=item.extra, ya=item.ya,infoLabels={"rating":puntuacion,"votes":votos,"year":year,"genre":genero } ) )
-    # Extrae el paginador
+                    if not yaesta:itemlist.append( Item(channel=CHANNEL_NAME, action="peliculas", server="torrent", title="[COLOR cyan][Serie]  [B][COLOR orange]" +scrapedtitle.split("-")[0] +"[/B][COLOR midnightblue] (" +  scrapedtitle.split("-")[1].strip() + ")[/COLOR]" , viewmode="movie_with_plot" , plot =sinopsis, url="http://www.elitetorrent.net/resultados/"+scrapedtitle.split("-")[0].strip().replace(" ","%20")+"/modo:mini" , thumbnail=thumbnail , extra="tv",show="3" ,fanart=fanart, folder=True, infoLabels={"rating":puntuacion,"votes":votos,"year":year,"genre":genero } ) )
+                else: itemlist.append( Item(channel=CHANNEL_NAME, action="play", title=title , url=url , thumbnail=thumbnail , folder=True, viewmode="movie_with_plot" , plot =sinopsis, fanart= fanart, show=scrapedtitle, extra=item.extra, infoLabels={"rating":puntuacion,"votes":votos,"year":year,"genre":genero } ) )
+            else:
+                itemlist.append( Item(channel=CHANNEL_NAME, action="play", title=title , url=url , thumbnail=thumbnail , folder=True, viewmode="movie_with_plot" , plot =sinopsis, fanart= fanart, show=scrapedtitle, extra=item.extra, infoLabels={"rating":puntuacion,"votes":votos,"year":year,"genre":genero } ) )
+        else:
+            itemlist.append( Item(channel=CHANNEL_NAME, action="preplay", title=title , url=url , thumbnail=thumbnail , folder=True, viewmode="movie_with_plot" , plot =sinopsis, fanart= fanart, show=scrapedtitle, extra=item.extra, ya=item.ya,infoLabels={"rating":puntuacion,"votes":votos,"year":year,"genre":genero } ) )
     patronvideos  = '<a href="([^"]+)" class="pagina pag_sig">Siguiente \&raquo\;</a>'
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
     scrapertools.printMatches(matches)
     if len(matches)>0:
         scrapedurl = urlparse.urljoin(item.url,matches[0])
-        itemlist.append( Item(channel=__channel__, action="peliculas", title="[COLOR magenta]>>> Página siguiente[/COLOR]" , thumbnail= NEXTPAGEIMAGE , fanart= FANARTIMAGE , show=item.show , url=scrapedurl, extra=item.extra , folder=True) )
+        itemlist.append( Item(channel=CHANNEL_NAME, action="peliculas", title="[COLOR magenta]>>> Página siguiente[/COLOR]" , thumbnail= NEXTPAGEIMAGE , fanart= FANARTIMAGE , show=item.show , url=scrapedurl, extra=item.extra , folder=True) )
     return itemlist
 
 def preplay(item):
@@ -194,10 +184,10 @@ def preplay(item):
     if puntuacion !="":
         sip = sip + "\n[COLOR purple]Puntuación TMDb: [COLOR magenta]" + puntuacion + "[/COLOR]"
         plot = plot + "\n[COLOR purple]Puntuación TMDb: [COLOR magenta]" + puntuacion + "[/COLOR]"
-    itemlist.append( Item(channel=__channel__, action="play", server="torrent", title=item.title + valoracion + " [COLOR lime][torrent][/COLOR]" , viewmode="movie_with_plot" , url=linkt , thumbnail=thumbnail , plot=sip , fanart=fanart, folder=True , infoLabels={"rating":puntuacion,"votes":votos,"year":year,"genre":genero }) )
-    itemlist.append( Item(channel=__channel__, action="play", server="torrent", title=item.title + valoracion + " [COLOR limegreen][magnet][/COLOR]" , viewmode="movie_with_plot" , url=linkm , thumbnail=thumbnail , plot=plot ,fanart=fanart, folder=True, infoLabels={"rating":puntuacion,"votes":votos,"year":year,"genre":genero }) )
+    itemlist.append( Item(channel=CHANNEL_NAME, action="play", server="torrent", title=item.title + valoracion + " [COLOR lime][torrent][/COLOR]" , viewmode="movie_with_plot" , url=linkt , thumbnail=thumbnail , plot=sip , fanart=fanart, folder=True , infoLabels={"rating":puntuacion,"votes":votos,"year":year,"genre":genero }) )
+    itemlist.append( Item(channel=CHANNEL_NAME, action="play", server="torrent", title=item.title + valoracion + " [COLOR limegreen][magnet][/COLOR]" , viewmode="movie_with_plot" , url=linkm , thumbnail=thumbnail , plot=plot ,fanart=fanart, folder=True, infoLabels={"rating":puntuacion,"votes":votos,"year":year,"genre":genero }) )
     if item.extra=="tv":
-        if not item.ya=="1": itemlist.append( Item(channel=__channel__, action="peliculas", server="torrent", title="[B][COLOR cyan]Entrar en la serie completa[/COLOR][/B]" , url="http://www.elitetorrent.net/resultados/"+item.show.split("-")[0].strip().replace(" ","%20")+"/modo:mini" , thumbnail=thumbnail , extra="tv",show="1",ya="1",fanart=fanart, folder=True) )
+        if not item.ya=="1": itemlist.append( Item(channel=CHANNEL_NAME, action="peliculas", server="torrent", title="[B][COLOR cyan]Entrar en la serie completa[/COLOR][/B]" , url="http://www.elitetorrent.net/resultados/"+item.show.split("-")[0].strip().replace(" ","%20")+"/modo:mini" , thumbnail=thumbnail , extra="tv",show="1",ya="1",fanart=fanart, folder=True) )
     return itemlist
 
 def play(item):
@@ -209,7 +199,7 @@ def play(item):
             data = scrapertools.cache_page(item.url)
         linkt = scrapertools.get_match(data,'<a href="(/get-torrent[^"]+)" class="enlace_torrent[^>]+>Descargar el .torrent</a>')
         item.url = urlparse.urljoin(item.url,linkt)
-    itemlist.append( Item(channel=__channel__, action="play", server="torrent", title=item.title , url=item.url , thumbnail=item.thumbnail , folder=False) )
+    itemlist.append( Item(channel=CHANNEL_NAME, action="play", server="torrent", title=item.title , url=item.url , thumbnail=item.thumbnail , folder=False) )
     return itemlist
 
 def search(item,texto):
@@ -273,5 +263,4 @@ def StripTags2(text):
                  text = text[:start] + text[start+stop+1:]
                  finished = 0
      return text
-
-
+     
