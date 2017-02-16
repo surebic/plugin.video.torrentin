@@ -6,8 +6,7 @@
 # EstrenosYa   Autor: ciberus  (06-2015/01-2016/01-2017)
 #------------------------------------------------------------
 
-import urlparse,urllib2,urllib,re
-import os, sys
+import urlparse,urllib2,urllib,re,xbmcgui
 
 from core import logger
 from core import config
@@ -15,12 +14,7 @@ from core import scrapertools
 from core.item import Item
 
 __channel__ = "estrenosya"
-__category__ = "F,S,VOS"
-__type__ = "generic"
-__title__ = "EstrenosYa"
-__language__ = "ES"
-
-BASE_URL = "http://www.estrenosya.net"
+BASE_URL = "http://www.estrenosli.org"
 FANARTIMAGE = "http://i.imgur.com/EmmVJPc.jpg"
 THUMBNAILIMAGE = "http://i.imgur.com/CPqv4rz.jpg"
 SEARCHIMAGE = "http://i.imgur.com/STE2K8O.png"
@@ -28,26 +22,24 @@ NEXTPAGEIMAGE = "http://i.imgur.com/lqt8JcD.png"
 MODO_EXTENDIDO = config.get_setting('modo_grafico', "estrenosya")
 DEBUG = config.get_setting("debug")
 
-def isGeneric():
-    return True
-
 def mainlist(item):
     logger.info("pelisalacarta.channels.EstrenosYa mainlist")
     itemlist = []
 
-    itemlist.append( Item(channel=__channel__, action="estrenos" , title="[COLOR yellow]Cartelera  (Últimas)[/COLOR]", url="http://estrenosya.net/descarga-0-58126-0-0-fx-1-" , extra="1",show="pelis",thumbnail= THUMBNAILIMAGE, fanart=FANARTIMAGE, folder=True))
-    itemlist.append( Item(channel=__channel__, action="categorias" , title="[COLOR yellow]Cartelera  (Por Géneros)[/COLOR]", url="http://estrenosya.net/descarga-0-58126-0-0-fx-1-" , extra="1",show="pelis",thumbnail= THUMBNAILIMAGE, fanart=FANARTIMAGE, folder=True))
-    itemlist.append( Item(channel=__channel__, action="estrenos" , title="[COLOR orange]Películas DVD Rip  (Últimas)[/COLOR]", url="http://estrenosya.net/descarga-0-581210-0-0-fx-1-" , extra="1",show="pelis",thumbnail= THUMBNAILIMAGE, fanart=FANARTIMAGE, folder=True))
-    itemlist.append( Item(channel=__channel__, action="categorias" , title="[COLOR orange]Películas DVD Rip  (Por Géneros)[/COLOR]", url="http://estrenosya.net/descarga-0-581210-0-0-fx-1-" , extra="1",show="pelis",thumbnail= THUMBNAILIMAGE, fanart=FANARTIMAGE, folder=True))
-    itemlist.append( Item(channel=__channel__, action="estrenos" , title="[COLOR yellow]Películas HD Rip  (Últimas)[/COLOR]" ,  url="http://estrenosya.net/descarga-0-58128-0-0-fx-1-" , extra="1",show="pelis",thumbnail= THUMBNAILIMAGE, fanart=FANARTIMAGE, folder=True))
-    itemlist.append( Item(channel=__channel__, action="categorias" , title="[COLOR yellow]Películas HD Rip  (Por Géneros)[/COLOR]" ,  url="http://estrenosya.net/descarga-0-58128-0-0-fx-1-" , extra="1",show="pelis",thumbnail= THUMBNAILIMAGE, fanart=FANARTIMAGE, folder=True))
-    itemlist.append( Item(channel=__channel__, action="estrenos" , title="[COLOR orange]Películas subtituladas  (Últimas)[/COLOR]" ,  url="http://estrenosya.net/descarga-0-58127-0-0-fx-1-" , extra="1",show="pelis",thumbnail= THUMBNAILIMAGE, fanart=FANARTIMAGE, folder=True))
-    itemlist.append( Item(channel=__channel__, action="categorias" , title="[COLOR orange]Películas subtituladas  (Por Géneros)[/COLOR]" ,  url="http://estrenosya.net/descarga-0-58127-0-0-fx-1-" , extra="1",show="pelis",thumbnail= THUMBNAILIMAGE, fanart=FANARTIMAGE, folder=True))
-    itemlist.append( Item(channel=__channel__, action="estrenos" , title="[COLOR yellow]Películas V.O.  (Últimas)[/COLOR]" ,  url="http://estrenosya.net/descarga-0-5812255-0-0-fx-1-" , extra="1",show="pelis",thumbnail= THUMBNAILIMAGE, fanart=FANARTIMAGE, folder=True))
-    itemlist.append( Item(channel=__channel__, action="categorias" , title="[COLOR yellow]Películas V.O.  (Por Géneros)[/COLOR]" ,  url="http://estrenosya.net/descarga-0-5812255-0-0-fx-1-" , extra="1",show="pelis",thumbnail= THUMBNAILIMAGE, fanart=FANARTIMAGE, folder=True))
+    itemlist.append( Item(channel=__channel__, action="estrenos" , title="[COLOR yellow]Cartelera  (Últimas)[/COLOR]", url="http://estrenosya.net/descarga-0-58126-0-0-fx-1-" , extra="1",show="movie",thumbnail= THUMBNAILIMAGE, fanart=FANARTIMAGE, folder=True))
+    itemlist.append( Item(channel=__channel__, action="categorias" , title="[COLOR yellow]Cartelera  (Por Géneros)[/COLOR]", url="http://estrenosya.net/descarga-0-58126-0-0-fx-1-" , extra="1",show="movie",thumbnail= THUMBNAILIMAGE, fanart=FANARTIMAGE, folder=True))
+    itemlist.append( Item(channel=__channel__, action="estrenos" , title="[COLOR orange]Películas DVD Rip  (Últimas)[/COLOR]", url="http://estrenosya.net/descarga-0-581210-0-0-fx-1-" , extra="1",show="movie",thumbnail= THUMBNAILIMAGE, fanart=FANARTIMAGE, folder=True))
+    itemlist.append( Item(channel=__channel__, action="categorias" , title="[COLOR orange]Películas DVD Rip  (Por Géneros)[/COLOR]", url="http://estrenosya.net/descarga-0-581210-0-0-fx-1-" , extra="1",show="movie",thumbnail= THUMBNAILIMAGE, fanart=FANARTIMAGE, folder=True))
+    itemlist.append( Item(channel=__channel__, action="estrenos" , title="[COLOR yellow]Películas HD Rip  (Últimas)[/COLOR]" ,  url="http://estrenosya.net/descarga-0-58128-0-0-fx-1-" , extra="1",show="movie",thumbnail= THUMBNAILIMAGE, fanart=FANARTIMAGE, folder=True))
+    itemlist.append( Item(channel=__channel__, action="categorias" , title="[COLOR yellow]Películas HD Rip  (Por Géneros)[/COLOR]" ,  url="http://estrenosya.net/descarga-0-58128-0-0-fx-1-" , extra="1",show="movie",thumbnail= THUMBNAILIMAGE, fanart=FANARTIMAGE, folder=True))
+    itemlist.append( Item(channel=__channel__, action="estrenos" , title="[COLOR orange]Películas subtituladas  (Últimas)[/COLOR]" ,  url="http://estrenosya.net/descarga-0-58127-0-0-fx-1-" , extra="1",show="movie",thumbnail= THUMBNAILIMAGE, fanart=FANARTIMAGE, folder=True))
+    itemlist.append( Item(channel=__channel__, action="categorias" , title="[COLOR orange]Películas subtituladas  (Por Géneros)[/COLOR]" ,  url="http://estrenosya.net/descarga-0-58127-0-0-fx-1-" , extra="1",show="movie",thumbnail= THUMBNAILIMAGE, fanart=FANARTIMAGE, folder=True))
+    itemlist.append( Item(channel=__channel__, action="estrenos" , title="[COLOR yellow]Películas V.O.  (Últimas)[/COLOR]" ,  url="http://estrenosya.net/descarga-0-5812255-0-0-fx-1-" , extra="1",show="movie",thumbnail= THUMBNAILIMAGE, fanart=FANARTIMAGE, folder=True))
+    itemlist.append( Item(channel=__channel__, action="categorias" , title="[COLOR yellow]Películas V.O.  (Por Géneros)[/COLOR]" ,  url="http://estrenosya.net/descarga-0-5812255-0-0-fx-1-" , extra="1",show="movie",thumbnail= THUMBNAILIMAGE, fanart=FANARTIMAGE, folder=True))
 
-    itemlist.append( Item(channel=__channel__, action="estrenos" , title="[COLOR orange]Series  (Últimos Capítulos)[/COLOR]" ,  url="http://estrenosya.net/descarga-0-58122-0-0-fx-1-" , extra="1",show="series",thumbnail= THUMBNAILIMAGE, fanart=FANARTIMAGE, folder=True))
-    itemlist.append( Item(channel=__channel__, action="categorias" , title="[COLOR orange]Series  (Por Nombre de la serie)[/COLOR]" , url="http://estrenosya.net/descarga-0-58122-0-0-fx-1-" , extra="1",show="series",thumbnail= THUMBNAILIMAGE, fanart=FANARTIMAGE, folder=True))
+    itemlist.append( Item(channel=__channel__, action="estrenos" , title="[COLOR orange]Series  (Últimos Capítulos)[/COLOR]" ,  url="http://estrenosya.net/descarga-0-58122-0-0-fx-1-" , extra="1",show="tv",thumbnail= THUMBNAILIMAGE, fanart=FANARTIMAGE, folder=True))
+    itemlist.append( Item(channel=__channel__, action="categoriasaz" , title="[COLOR orange]Series  (Últimos Capítulos Por Letra)[/COLOR]" ,  url="http://estrenosya.net/descarga-0-58122-0-0-fx-1-" , extra="1",show="tv",thumbnail= THUMBNAILIMAGE, fanart=FANARTIMAGE, folder=True))
+    itemlist.append( Item(channel=__channel__, action="categorias" , title="[COLOR orange]Series  (Por Nombre de la Serie)[/COLOR]" , url="http://estrenosya.net/descarga-0-58122-0-0-fx-1-" , extra="1",show="tv",plot="Opcion muy lenta >1.100 Series",thumbnail= THUMBNAILIMAGE, fanart=FANARTIMAGE, folder=True))
     itemlist.append( Item(channel=__channel__, action="search" , title="[COLOR lime]Buscar...[/COLOR]",thumbnail= SEARCHIMAGE, fanart=FANARTIMAGE ))
     itemlist.append( Item(channel=__channel__, action="configuracion", title="[B][COLOR dodgerblue]Configuración del canal[/COLOR][/B]", thumbnail= THUMBNAILIMAGE,fanart= FANARTIMAGE, folder=False))
     return itemlist
@@ -60,7 +52,7 @@ def configuracion(item):
         xbmc.executebuiltin("Container.Refresh")
 
 def categorias(item):
-    logger.info("pelisalacarta.channels.EstrenosYa estrenos")
+    logger.info("pelisalacarta.channels.EstrenosYa categorias")
     itemlist=[]
     data = scrapertools.cache_page(item.url + item.extra + "-.fx")
     logger.info("data="+data)
@@ -70,6 +62,21 @@ def categorias(item):
     scrapertools.printMatches(matches)
     for scrapedurl , scrapedcat in matches:
         itemlist.append( Item(channel=__channel__, action="estrenos", title="[COLOR lime]"+scrapedcat+"[/COLOR]"  , url=scrapedurl , thumbnail= THUMBNAILIMAGE, fanart=FANARTIMAGE, extra=item.extra, show=item.show, folder=True) )
+    return itemlist
+
+def categoriasaz(item):
+    logger.info("pelisalacarta.channels.EstrenosYa categoriasaz")
+    itemlist=[]
+    data = scrapertools.cache_page(item.url + item.extra + "-.fx")
+    logger.info("data="+data)
+    data = scrapertools.find_single_match(data,'Letra: (.*?)</p>')
+    patron =    '<a href="(.*?)1-.fx.*?>(.*?)<' #  url  cat
+    matches = re.compile(patron,re.DOTALL).findall(data)
+    scrapertools.printMatches(matches)
+    for scrapedurl , scrapedcat in matches:
+        url = urlparse.urljoin(BASE_URL,scrapedurl)
+        #xbmcgui.Dialog().ok("Torrentin" ,scrapedurl , url )
+        itemlist.append( Item(channel=__channel__, action="estrenos", title="[COLOR lime]Letra: "+scrapedcat+"[/COLOR]"  , url=url , thumbnail= THUMBNAILIMAGE, fanart=FANARTIMAGE, extra=item.extra, show=item.show, folder=True) )
     return itemlist
 
 def estrenos(item):
@@ -90,7 +97,7 @@ def estrenos(item):
         thumb = urlparse.urljoin(BASE_URL,scrapedthumb)
         torrurl = scrapertools.find_single_match(scrapedurl2,'(/descargar-torrent-.*?)"')
         url = urlparse.urljoin(BASE_URL,torrurl)
-        if item.show == "pelis" and MODO_EXTENDIDO:
+        if item.show == "movie" and MODO_EXTENDIDO:
             fanart,thumbnail,plot,puntuacion,votos,genero = TMDb(tituloproc.split(" - ")[0].strip(),scrapedtitle.split(" - ")[-1].strip())
             if "imgur" in thumbnail: thumbnail = thumb
             if plot == "": plot = acentos(scrapedplot)
@@ -104,7 +111,7 @@ def estrenos(item):
             votos = ""
             plot = acentos(scrapedplot)
             genero = ""
-        itemlist.append( Item(channel=__channel__, action="entraenpeli", title= titulo , fulltitle=titulo, url=url , thumbnail=thumbnail , plot=plot , fanart=fanart, extra="", folder=True  , infoLabels={'year': scrapedtitle.split(" - ")[-1].strip() , "rating":puntuacion, "votes":votos, "genre":genero } ) )
+        itemlist.append( Item(channel=__channel__, action="entraenpeli", title= titulo , fulltitle=titulo, url=url , thumbnail=thumbnail , plot=plot , fanart=fanart, extra="",show=item.show, folder=True  , infoLabels={'year': scrapedtitle.split(" - ")[-1].strip() , "rating":puntuacion, "votes":votos, "genre":genero } ) )
     if ">Siguiente &raquo;</a>" in data: itemlist.append( Item(channel=__channel__, action="estrenos", title="[COLOR cyan]>>> Página Siguiente[/COLOR]" , url=item.url , extra=pag_sig , show=item.show, thumbnail= NEXTPAGEIMAGE , fanart=FANARTIMAGE, folder=True) )
     return itemlist
     
@@ -140,6 +147,18 @@ def entraenpeli(item):
         return itemlist
     for scrapedurl, scrapedtitle in matches:
         title = "[COLOR yellow]" + scrapedtitle+ "[/COLOR]" + "[COLOR pink] [Torrent][/COLOR]"
+        '''
+        if item.show=="tv":
+            #<div class="linkMoreMovies">
+            	#<div class="linkMore"><a href="http://estrenosli.org/descargar-torrent-0-58121361-0-0-0-0-fx-1-1-.fx">M&aacute;s peliculas de Marvels Agents of S.H.I.E.L.D</a></div>
+            patron2 = 'linkMoreMovies.*?a href="(.*?)1-.fx">.*?peliculas de (.*?)<'
+            matches2 = re.compile(patron2,re.DOTALL).findall(data)
+            for serie, seriename in matches2:
+                serieurl = urlparse.urljoin(BASE_URL,serie)
+                xbmcgui.Dialog().ok("Torrentin" ,serie , serieurl, seriename )
+                itemlist.append( Item(channel=__channel__, action="estrenos", title="[COLOR lime]Ir a la Serie "+seriename+"[/COLOR]" , url=serie , extra="1", show=item.show , thumbnail=item.thumbnail  , fanart=item.fanart, folder=True) )
+                #itemlist.append( Item(channel=__channel__, action="estrenos", title="[COLOR lime]"+scrapedcat+"[/COLOR]"  , url=scrapedurl , thumbnail= THUMBNAILIMAGE, fanart=FANARTIMAGE, extra=item.extra, show=item.show, folder=True) )
+        '''
         itemlist.append( Item(channel=__channel__, action="play", title=title , fulltitle=title, url=scrapedurl , thumbnail=item.thumbnail , plot=item.plot , fanart=item.fanart, folder=False, infoLabels=item.infoLabels) )
     return itemlist
 

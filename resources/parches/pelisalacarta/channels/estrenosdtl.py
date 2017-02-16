@@ -60,7 +60,7 @@ def estrenos(item):
     matches = re.compile(patron,re.DOTALL).findall(data)
     scrapertools.printMatches(matches)
     for scrapedurl , scrapedtitle , scrapedcalidad , scrapedfecha in matches:
-        if MODO_EXTENDIDO: fanart,plot,puntuacion,votos,fecha,genero = TMDb(StripTags2(scrapedtitle))
+        if MODO_EXTENDIDO: fanart,plot,puntuacion,votos,fecha,genero = TMDb(StripTags(scrapedtitle))
         else:
             fanart = FANARTIMAGE
             plot = ""
@@ -138,7 +138,7 @@ def lista(item):
     matches = re.compile(patron,re.DOTALL).findall(data)
     scrapertools.printMatches(matches)
     for scrapedurl , scrapedtitle , scrapedcalidad , scrapedfecha in matches:
-        if MODO_EXTENDIDO_B: fanart,plot,puntuacion,votos,fecha,genero = TMDb(StripTags2(scrapedtitle))
+        if MODO_EXTENDIDO_B: fanart,plot,puntuacion,votos,fecha,genero = TMDb(StripTags(scrapedtitle))
         else:
             fanart = FANARTIMAGE
             plot = ""
@@ -155,6 +155,19 @@ def lista(item):
     return itemlist
     #Solo da una pagina en las busquedas...
 
+def StripTags(text):
+     finished = 0
+     while not finished:
+         finished = 1
+         start = text.find("[")
+         if start >= 0:
+             stop = text[start:].find("]")
+             if stop >= 0:
+                 text = text[:start] + text[start+stop+1:]
+                 finished = 0
+     text = StripTags2(text)
+     return text.strip()
+
 def StripTags2(text):
      finished = 0
      while not finished:
@@ -165,6 +178,8 @@ def StripTags2(text):
              if stop >= 0:
                  text = text[:start] + text[start+stop+1:]
                  finished = 0
-     return text.strip()
+     return text
+
+
 
 # Fin

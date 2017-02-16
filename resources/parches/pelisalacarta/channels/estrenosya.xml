@@ -23,22 +23,22 @@
 		<category>vos</category>
 	</categories>
 	
-    <settings>
-        <id>include_in_global_search</id>
-        <type>bool</type>
-        <label>Incluir en busqueda global</label>
-        <default>true</default>
-        <enabled>true</enabled>
-        <visible>true</visible>
-    </settings>
+	<settings>
+		<id>include_in_global_search</id>
+		<type>bool</type>
+		<label>Incluir en la búsqueda global</label>
+		<default>true</default>
+		<enabled>true</enabled>
+		<visible>true</visible>
+	</settings>
 
 	<settings>
 		<id>modo_grafico</id>
 		<type>bool</type>
 		<label>Buscar datos extra en TMDb</label>
- 		<default>true</default>
- 		<enabled>true</enabled>
- 		<visible>true</visible>
- 	</settings>
+		<default>true</default>
+		<enabled>true</enabled>
+		<visible>true</visible>
+	</settings>
 
 </channel>
