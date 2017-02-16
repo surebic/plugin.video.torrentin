@@ -11,23 +11,14 @@
 # Ajustes en las busquedas para el buscador general (09-02-2017)
 #------------------------------------------------------------
 
-import urlparse,urllib2,urllib,re
-import os, sys
-
-import xbmcgui
+import urlparse,urllib2,urllib,re,xbmcgui
 
 from core import logger
 from core import config
 from core import scrapertools
 from core.item import Item
-#from servers import servertools
 
 __channel__ = "yify"
-__category__ = "F,S"
-__type__ = "generic"
-__title__ = "YifiTorrents"
-__language__ = "EN"
-
 DEBUG = config.get_setting("debug")
 FANARTIMAGE = "http://i.imgur.com/UKFZyfQ.jpg"
 THUMBNAILIMAGE = "http://i.imgur.com/9LWPgxZ.png"
@@ -36,9 +27,6 @@ NEXTPAGEIMAGE = "http://i.imgur.com/lqt8JcD.png"
 MODO_EXTENDIDO = config.get_setting('modo_grafico', "yify")
 MODO_NATIVO = config.get_setting('english_sinopsis', "yify")
 MODO_PLANO = config.get_setting('only_filmname', "yify")
-
-def isGeneric():
-    return True
 
 def mainlist(item):
     logger.info("pelisalacarta.channels.YTS mainlist")
@@ -123,7 +111,6 @@ def TMDb(title,year):
 	except: sinopsis = "Not found."
 	puntuacion = scrapertools.find_single_match(data,'"page":1,.*?"vote_average":(.*?)}')
 	votos = scrapertools.find_single_match(data,'"page":1,.*?"vote_count":(.*?),')
-	#return fanart,sinopsis + "\n[B][COLOR purple]TMDb Rating: [COLOR magenta]" + puntuacion + "[/COLOR][/B]"
 	genero = ""
 	if not MODO_NATIVO:
 		listageneros = scrapertools.find_single_match(data,'"page":1,.*?"genre_ids":\[(.*?)\],"')
