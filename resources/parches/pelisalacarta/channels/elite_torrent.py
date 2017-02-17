@@ -92,7 +92,7 @@ def peliculas(item):
         title = "[B][COLOR yellow]"+scrapedtitle.strip()+"[/COLOR][/B]"
         url = urlparse.urljoin(BASE_URL, scrapedurl)
         if (item.show=="1" or item.show=="3") and MODO_EXTENDIDO_B:
-            patron = re.compile(r'\d[x]\d{2}')
+            patron = re.compile(r'\d{1,2}[x]\d{2}')
             if patron.search(scrapedtitle): item.extra="tv"
             else: item.extra="movie"
         if item.extra=="tv":
