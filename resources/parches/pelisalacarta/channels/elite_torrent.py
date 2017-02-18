@@ -87,13 +87,13 @@ def peliculas(item):
     yaesta=False
     buscado=""
     result=0
+    estv = re.compile(r'\d{1,2}[x]\d{2}')
     start = time.time()
     for scrapedurl, scrapedthumbnail, scrapedtitle in matches:
         title = "[B][COLOR yellow]"+scrapedtitle.strip()+"[/COLOR][/B]"
         url = urlparse.urljoin(BASE_URL, scrapedurl)
         if (item.show=="1" or item.show=="3") and MODO_EXTENDIDO_B:
-            patron = re.compile(r'\d{1,2}[x]\d{2}')
-            if patron.search(scrapedtitle): item.extra="tv"
+            if estv.search(scrapedtitle): item.extra="tv"
             else: item.extra="movie"
         if item.extra=="tv":
             if scrapedtitle.split("-")[0] != buscado:
@@ -181,9 +181,9 @@ def preplay(item):
     if "No hay detalles" in plot and sinopsis != "": 
         plot = sinopsis
         sip = sinopsis
-    if puntuacion !="":
-        sip = sip + "\n[COLOR purple]Puntuación TMDb: [COLOR magenta]" + puntuacion + "[/COLOR]"
-        plot = plot + "\n[COLOR purple]Puntuación TMDb: [COLOR magenta]" + puntuacion + "[/COLOR]"
+    #if puntuacion !="":
+        #sip = sip + "\n[COLOR purple]Puntuación TMDb: [COLOR magenta]" + puntuacion + "[/COLOR]"
+        #plot = plot + "\n[COLOR purple]Puntuación TMDb: [COLOR magenta]" + puntuacion + "[/COLOR]"
     itemlist.append( Item(channel=CHANNEL_NAME, action="play", server="torrent", title=item.title + valoracion + " [COLOR lime][torrent][/COLOR]" , viewmode="movie_with_plot" , url=linkt , thumbnail=thumbnail , plot=sip , fanart=fanart, folder=True , infoLabels={"rating":puntuacion,"votes":votos,"year":year,"genre":genero }) )
     itemlist.append( Item(channel=CHANNEL_NAME, action="play", server="torrent", title=item.title + valoracion + " [COLOR limegreen][magnet][/COLOR]" , viewmode="movie_with_plot" , url=linkm , thumbnail=thumbnail , plot=plot ,fanart=fanart, folder=True, infoLabels={"rating":puntuacion,"votes":votos,"year":year,"genre":genero }) )
     if item.extra=="tv":

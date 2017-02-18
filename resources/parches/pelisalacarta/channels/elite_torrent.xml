@@ -12,7 +12,7 @@
 	<bannermenu>http://media.tvalacarta.info/pelisalacarta/bannermenu/elitetorrent.png</bannermenu>
 
 	<update_url>https://raw.githubusercontent.com/surebic/plugin.video.torrentin/master/resources/parches/pelisalacarta/channels/</update_url>
-	<version>25</version>
+	<version>26</version>
 	<date>17/2/2017</date>
 	<changes>Nuevos menus con listados por fecha, valoracion y popularidad, extrae torrent en vez de magnet e incluido buscador, arreglado y mejorado (1-2017)</changes>
 
@@ -63,7 +63,7 @@
 		<id>modo_rapido</id>
 		<type>bool</type>
 		<label>Modo lista única con acceso directo al torrent (listados más lentos con TMDb activado)</label>
-		<default>false</default>
+		<default>true</default>
 		<enabled>true</enabled>
 		<visible>true</visible>
 	</settings>
