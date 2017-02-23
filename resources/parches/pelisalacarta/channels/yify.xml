@@ -34,27 +34,27 @@
 		<id>modo_grafico</id>
 		<type>bool</type>
 		<label>Search extra data in TMDb</label>
- 		<default>true</default>
- 		<enabled>true</enabled>
- 		<visible>true</visible>
+		<default>true</default>
+		<enabled>true</enabled>
+		<visible>true</visible>
  	</settings>
  
 	<settings>
 		<id>english_sinopsis</id>
 		<type>bool</type>
 		<label>Show genre and argument in English</label>
- 		<default>true</default>
- 		<enabled>true</enabled>
- 		<visible>true</visible>
+		<default>true</default>
+		<enabled>true</enabled>
+		<visible>true</visible>
  	</settings>
  
 	<settings>
 		<id>only_filmname</id>
 		<type>bool</type>
 		<label>Show only the name of the movie in the lists (to find the subtitles more easily)</label>
- 		<default>true</default>
- 		<enabled>true</enabled>
- 		<visible>true</visible>
+		<default>true</default>
+		<enabled>true</enabled>
+		<visible>true</visible>
  	</settings>
  
 </channel>

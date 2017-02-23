@@ -35,9 +35,9 @@
 		<id>modo_grafico</id>
 		<type>bool</type>
 		<label>Buscar datos extra en TMDb</label>
- 		<default>true</default>
- 		<enabled>true</enabled>
- 		<visible>true</visible>
+		<default>true</default>
+		<enabled>true</enabled>
+		<visible>true</visible>
  	</settings>
  
 </channel>
