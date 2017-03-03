@@ -12,8 +12,8 @@
 	<bannermenu></bannermenu>
 
 	<update_url>https://raw.githubusercontent.com/surebic/plugin.video.torrentin/master/resources/parches/pelisalacarta/channels/</update_url>
-	<version>7</version>
-	<date>12/02/2017</date>
+	<version>8</version>
+	<date>02/03/2017</date>
 	<changes>Primera version publica</changes>
 
 	<categories>
@@ -48,5 +48,14 @@
 		<enabled>true</enabled>
 		<visible>true</visible>
 	</settings>
- 
+
+	<settings>
+		<id>only_filmname</id>
+		<type>bool</type>
+		<label>Mostrar sólo el nombre de la película en las listas (para Extended Info AddOn)</label>
+		<default>false</default>
+		<enabled>true</enabled>
+		<visible>true</visible>
+ 	</settings>
+
 </channel>

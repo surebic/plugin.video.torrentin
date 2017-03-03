@@ -11,8 +11,8 @@
 	<bannermenu></bannermenu>
 
 	<update_url>https://raw.githubusercontent.com/surebic/plugin.video.torrentin/master/resources/parches/pelisalacarta/channels/</update_url>
-	<version>10</version>
-	<date>16/2/2017</date>
+	<version>11</version>
+	<date>02/03/2017</date>
 	<changes>Adaptado al nuevo dominio yts.ag por cierre de yts.to, arreglado y mejorado (01/2017)</changes>
 
 	<categories>
@@ -51,7 +51,7 @@
 	<settings>
 		<id>only_filmname</id>
 		<type>bool</type>
-		<label>Show only the name of the movie in the lists (to find the subtitles more easily)</label>
+		<label>Show only the name of the movie in the lists (to find subtitles more easily or Extended Info)</label>
 		<default>true</default>
 		<enabled>true</enabled>
 		<visible>true</visible>

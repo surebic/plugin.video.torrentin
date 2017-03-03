@@ -20,7 +20,9 @@ NEXTPAGEIMAGE = "http://i.imgur.com/lqt8JcD.png"
 MODO_EXTENDIDO = config.get_setting('modo_grafico', "estrenosdtl")
 MODO_EXTENDIDO_B = config.get_setting('modo_grafico_b', "estrenosdtl")
 DEBUG = config.get_setting("debug")
-
+MODO_PLANO = config.get_setting('only_filmname', "estrenosdtl")
+Generos = {"28":"Acción","12":"Aventura","16":"Animación","35":"Comedia","80":"Crimen","99":"Documental","18":"Drama","10751":"Familia","14":"Fantasía","36":"Historia","27":"Terror","10402":"Música","9648":"Misterio","10749":"Romance","878":"Ciencia ficción","10770":"película de la televisión","53":"Suspense","10752":"Guerra","37":"Western"}
+	
 def mainlist(item):
     logger.info("pelisalacarta.channels.EstrenosDTL mainlist")
     itemlist = []
@@ -36,10 +38,9 @@ def mainlist(item):
     
 def configuracion(item):
     from platformcode import platformtools
-    platformtools.show_channel_settings()
-    if config.is_xbmc():
-        import xbmc
-        xbmc.executebuiltin("Container.Refresh")
+    ret = platformtools.show_channel_settings()
+    platformtools.itemlist_refresh()
+    return ret
 
 def estrenos(item):
     logger.info("pelisalacarta.channels.EstrenosDTL estrenos")
@@ -70,17 +71,19 @@ def estrenos(item):
             genero = ""
         if puntuacion !="": puntuaciontitle = " [COLOR magenta](" + puntuacion + ")"
         else: puntuaciontitle = ""
-        titulo = "[B][COLOR yellow]" + (unicode( scrapedtitle, "iso-8859-1" , errors="replace" ).encode("utf-8")).strip() + "[/B] [COLOR dodgerblue]("+scrapedcalidad + ")" + puntuaciontitle + " [COLOR limegreen]("+scrapedfecha+")[/COLOR]"
+        contentTitle=StripTags((unicode( scrapedtitle, "iso-8859-1" , errors="replace" ).encode("utf-8")))
+        contentType="movie"
+        if not MODO_PLANO: titulo = "[B][COLOR yellow]" + (unicode( scrapedtitle, "iso-8859-1" , errors="replace" ).encode("utf-8")).strip() + "[/B] [COLOR dodgerblue]("+scrapedcalidad + ")" + puntuaciontitle + " [COLOR limegreen]("+scrapedfecha+")[/COLOR]"
+        else: titulo = contentTitle
         numero = scrapertools.find_single_match(scrapedurl,'-(\d+).')
         thumbnail = "http://www.estrenosdtl.com/imagenes/"+numero+".jpg"
         url= "http://www.estrenosdtl.com/"+scrapedurl
-        itemlist.append( Item(channel=__channel__, action="play", title=titulo , fulltitle=titulo, url=url , thumbnail=thumbnail , fanart=fanart, extra="", plot=plot,folder=False, infoLabels={"rating":puntuacion,"votes":votos,"year":fecha,"genre":genero }) )
+        itemlist.append( Item(channel=__channel__, action="play", title=titulo , fulltitle=titulo, contentType=contentType , contentTitle=contentTitle , url=url , thumbnail=thumbnail , fanart=fanart, extra="", plot=plot,folder=False, infoLabels={"rating":puntuacion,"votes":votos,"year":fecha,"genre":genero }) )
     if haymas:
          itemlist.append( Item(channel=__channel__, action="estrenos", title="[COLOR magenta]>>> Página siguiente[/COLOR]" , url=item.url , extra=pag_sig , fanart=FANARTIMAGE, thumbnail=NEXTPAGEIMAGE, show=item.show , folder=True) )
     return itemlist
     
 def TMDb(title):
-	Generos = {"28":"Acción","12":"Aventura","16":"Animación","35":"Comedia","80":"Crimen","99":"Documental","18":"Drama","10751":"Familia","14":"Fantasía","36":"Historia","27":"Terror","10402":"Música","9648":"Misterio","10749":"Romance","878":"Ciencia ficción","10770":"película de la televisión","53":"Suspense","10752":"Guerra","37":"Western"}
 	data = re.sub(r'\n|\r|\t|\s{2}|&nbsp;',"",scrapertools.cachePage("http://api.themoviedb.org/3/search/movie?api_key=cc4b67c52acb514bdf4931f7cedfd12b&query=" + title.replace(" ","%20").replace("'","").replace(":","") + "&language=es&include_adult=false"))
 	try: fanart = "https://image.tmdb.org/t/p/original" + scrapertools.get_match(data,'"page":1,.*?"backdrop_path":"\\\(.*?)"')
 	except: fanart = FANARTIMAGE
@@ -98,7 +101,7 @@ def TMDb(title):
 	return fanart,sinopsis,puntuacion,votos,fecha,genero.strip(" - ")
 	
 def play(item):
-    logger.info("pelisalacarta.channels.EstrenosDTL entraenpeli")
+    logger.info("pelisalacarta.channels.EstrenosDTL play")
     itemlist=[]
     data = scrapertools.cache_page(item.url)
     logger.info("data="+data)
@@ -146,12 +149,14 @@ def lista(item):
             votos = ""
             fecha = ""
             genero = ""
-        titulo = "[COLOR yellow]" + (unicode( scrapedtitle, "iso-8859-1" , errors="replace" ).encode("utf-8")).strip() + "[/COLOR] [COLOR dodgerblue]("+scrapedcalidad+")[/COLOR] [COLOR green]("+scrapedfecha+")[/COLOR]"
+        contentTitle=StripTags((unicode( scrapedtitle, "iso-8859-1" , errors="replace" ).encode("utf-8")))
+        contentType="movie"
+        if not MODO_PLANO: titulo = "[COLOR yellow]" + (unicode( scrapedtitle, "iso-8859-1" , errors="replace" ).encode("utf-8")).strip() + "[/COLOR] [COLOR dodgerblue]("+scrapedcalidad+")[/COLOR] [COLOR green]("+scrapedfecha+")[/COLOR]"
+        else: titulo = contentTitle
         numero = scrapertools.find_single_match(scrapedurl,'-(\d+).')
         thumbnail = "http://www.estrenosdtl.com/imagenes/"+numero+".jpg"
         url= "http://www.estrenosdtl.com/"+scrapedurl
-        itemlist.append( Item(channel=__channel__, action="play", title=titulo , fulltitle=titulo, url=url , thumbnail=thumbnail , fanart=fanart, extra="", plot=plot,folder=False, infoLabels={"rating":puntuacion,"votes":votos,"year":fecha,"genre":genero }) )
-        #itemlist.append( Item(channel=__channel__, action="play", title=titulo , fulltitle=titulo, url=url , thumbnail=thumbnail , fanart=FANARTIMAGE, extra="", folder=True) )
+        itemlist.append( Item(channel=__channel__, action="play", title=titulo , fulltitle=titulo, contentType=contentType , contentTitle=contentTitle , url=url , thumbnail=thumbnail , fanart=fanart, extra="", plot=plot,folder=False, infoLabels={"rating":puntuacion,"votes":votos,"year":fecha,"genre":genero }) )
     return itemlist
     #Solo da una pagina en las busquedas...
 

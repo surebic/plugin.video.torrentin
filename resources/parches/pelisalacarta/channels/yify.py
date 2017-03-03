@@ -56,10 +56,9 @@ def mainlist(item):
     
 def configuracion(item):
     from platformcode import platformtools
-    platformtools.show_channel_settings()
-    if config.is_xbmc():
-        import xbmc
-        xbmc.executebuiltin("Container.Refresh")
+    ret = platformtools.show_channel_settings()
+    platformtools.itemlist_refresh()
+    return ret
 
 def estrenos(item):
     logger.info("pelisalacarta.channels.YTS peliculas")
@@ -95,7 +94,7 @@ def estrenos(item):
                 else: continue
                 if MODO_PLANO: titulo = scrapertools.htmlclean(scrapedtitulo)
                 else: titulo = "[B][COLOR yellow]" + scrapertools.htmlclean(scrapedtitulo) + "[/COLOR][/B] [COLOR lime]("+scrapedcalidad+")[/COLOR] [COLOR cyan]("+scrapedfecha+")[/COLOR] [COLOR orange]("+scrapedgenero+")[/COLOR] [COLOR magenta]("+scrapedrating+")[/COLOR]"
-                itemlist.append( Item(channel=__channel__, action="play", server="torrent", title=titulo , fulltitle=titulo, url=scrapedurl , thumbnail=scrapedthumb , fanart=fanart, plot=sinopsis, infoLabels={"rating":puntuacion,"votes":votos, "year":scrapedfecha,"genre":genero }, extra="", folder=False) )
+                itemlist.append( Item(channel=__channel__, action="play", server="torrent", title=titulo , fulltitle=titulo, contetType="movie" , contentTitle=scrapertools.htmlclean(scrapedtitulo) , url=scrapedurl , thumbnail=scrapedthumb , fanart=fanart, plot=sinopsis, infoLabels={"rating":puntuacion,"votes":votos, "year":scrapedfecha,"genre":genero }, extra="", folder=False) )
     if ">Next &raquo;</a>" in data: itemlist.append( Item(channel=__channel__, action="estrenos", title="[B][COLOR brown]>>> Next page[/COLOR][/B]" , show=item.show , url=item.url , extra=pag_sig , thumbnail= NEXTPAGEIMAGE , fanart=FANARTIMAGE, folder=True) )
     return itemlist
 

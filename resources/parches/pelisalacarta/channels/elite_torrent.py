@@ -11,8 +11,8 @@
 # Añadida informacion de TMDb (25-1-2017)
 # Ampliado con numero de votos, eliminado codigo innecesario, etc. (09-02-2017)
 # Incluida busqueda en TMDb para series y busquedas (14-02-2017)
-#------------------------------------------------------------
-import urlparse,re,time
+#--------------------------------------------------------------
+import urlparse,re,time,xbmcgui
 from core import logger
 from core import config
 from core import scrapertools
@@ -29,7 +29,9 @@ MODO_EXTENDIDO = config.get_setting('modo_grafico', "elite_torrent")
 MODO_EXTENDIDO_B = config.get_setting('modo_grafico_b', "elite_torrent")
 MODO_RAPIDO = config.get_setting('modo_rapido', "elite_torrent")
 MODO_ENTRA_EN_SERIE = config.get_setting('modo_serie_completa', "elite_torrent")
-
+MODO_PLANO = config.get_setting('only_filmname', "elite_torrent")
+Generos = {"28":"Acción","12":"Aventura","16":"Animación","35":"Comedia","80":"Crimen","99":"Documental","18":"Drama","10751":"Familia","14":"Fantasía","36":"Historia","27":"Terror","10402":"Música","9648":"Misterio","10749":"Romance","878":"Ciencia ficción","10770":"película de la televisión","53":"Suspense","10752":"Guerra","37":"Western"}
+	
 def mainlist(item):
     logger.info("[elitetorrent.py] mainlist")
     itemlist = []
@@ -66,14 +68,13 @@ def menu(item):
         itemlist.append( Item(channel=CHANNEL_NAME, title="[B][COLOR orange]Series  (Por popularidad)[/COLOR][/B]" , action="peliculas", extra=item.extra, show="2", url="http://www.elitetorrent.net/categoria/4/series/modo:mini/orden:popularidad", thumbnail= THUMBNAILIMAGE, fanart= FANARTIMAGE))
         itemlist.append( Item(channel=CHANNEL_NAME, title="[B][COLOR cyan]Series V.O.S.E.[/COLOR][/B]" , action="peliculas",extra=item.extra, show="2", url="http://www.elitetorrent.net/categoria/16/series-vose/modo:mini", thumbnail= THUMBNAILIMAGE, fanart= FANARTIMAGE))
     return itemlist
-    
+
 def configuracion(item):
     from platformcode import platformtools
-    platformtools.show_channel_settings()
-    if config.is_xbmc():
-        import xbmc
-        xbmc.executebuiltin("Container.Refresh")
-
+    ret = platformtools.show_channel_settings()
+    platformtools.itemlist_refresh()
+    return ret
+    
 def peliculas(item):
     logger.info("[elite_torrent.py] peliculas")
     itemlist = []
@@ -95,15 +96,23 @@ def peliculas(item):
         if (item.show=="1" or item.show=="3") and MODO_EXTENDIDO_B:
             if estv.search(scrapedtitle): item.extra="tv"
             else: item.extra="movie"
+            
         if item.extra=="tv":
-            if scrapedtitle.split("-")[0] != buscado:
-                buscado = scrapedtitle.split("-")[0]
+            contentSerieName=StripTags(scrapedtitle.split("-")[0].strip())
+            contentTitle=contentSerieName
+            contentType="tvshow"
+            if contentSerieName != buscado:
+                buscado = contentSerieName
                 yaesta=False
             else: 
                 yaesta=True
         else:
+            contentTitle=StripTags(scrapedtitle)
+            contentType="movie"
             buscado=""
             yaesta=False
+            if MODO_PLANO:  title = contentTitle
+            
         if (item.extra == "movie" or item.extra == "tv") and MODO_EXTENDIDO and MODO_RAPIDO and not yaesta:
             result = result +1
             if result == 40:
@@ -119,17 +128,22 @@ def peliculas(item):
             sinopsis = ""
             puntuacion = ""
             votos = ""
-            year = ""
+            year = "0"
             genero = ""
         if MODO_RAPIDO:
             if item.extra=="tv":
                 if item.show=="1" or item.show=="2" and MODO_ENTRA_EN_SERIE:
-                    if not yaesta:itemlist.append( Item(channel=CHANNEL_NAME, action="peliculas", server="torrent", title="[COLOR cyan][Serie]  [B][COLOR orange]" +scrapedtitle.split("-")[0] +"[/B][COLOR midnightblue] (" +  scrapedtitle.split("-")[1].strip() + ")[/COLOR]" , viewmode="movie_with_plot" , plot =sinopsis, url="http://www.elitetorrent.net/resultados/"+scrapedtitle.split("-")[0].strip().replace(" ","%20")+"/modo:mini" , thumbnail=thumbnail , extra="tv",show="3" ,fanart=fanart, folder=True, infoLabels={"rating":puntuacion,"votes":votos,"year":year,"genre":genero } ) )
-                else: itemlist.append( Item(channel=CHANNEL_NAME, action="play", title=title , url=url , thumbnail=thumbnail , folder=True, viewmode="movie_with_plot" , plot =sinopsis, fanart= fanart, show=scrapedtitle, extra=item.extra, infoLabels={"rating":puntuacion,"votes":votos,"year":year,"genre":genero } ) )
+                    if not yaesta:itemlist.append( Item(channel=CHANNEL_NAME, action="peliculas",contentType=contentType, contentSerieName=contentSerieName  , server="torrent", title="[COLOR cyan][Serie]  [B][COLOR orange]" +scrapedtitle.split("-")[0] +"[/B][COLOR midnightblue] (" +  scrapedtitle.split("-")[1].strip() + ")[/COLOR]" , viewmode="movie_with_plot" , plot =sinopsis, url="http://www.elitetorrent.net/resultados/"+scrapedtitle.split("-")[0].strip().replace(" ","%20")+"/modo:mini" , thumbnail=thumbnail , extra="tv",show="3" ,fanart=fanart, folder=True, infoLabels={"rating":puntuacion,"votes":votos,"year":year,"genre":genero } ) )
+                else: itemlist.append( Item(channel=CHANNEL_NAME, action="play",contentType=contentType,  contentSerieName=contentSerieName , title=title , url=url , thumbnail=thumbnail , folder=True, viewmode="movie_with_plot" , plot =sinopsis, fanart= fanart, show=scrapedtitle, extra=item.extra, infoLabels={"rating":puntuacion,"votes":votos,"year":year,"genre":genero } ) )
             else:
-                itemlist.append( Item(channel=CHANNEL_NAME, action="play", title=title , url=url , thumbnail=thumbnail , folder=True, viewmode="movie_with_plot" , plot =sinopsis, fanart= fanart, show=scrapedtitle, extra=item.extra, infoLabels={"rating":puntuacion,"votes":votos,"year":year,"genre":genero } ) )
+                itemlist.append( Item(channel=CHANNEL_NAME, action="play", title=title ,contentType=contentType , contentTitle=contentTitle, url=url , thumbnail=thumbnail , folder=True, viewmode="movie_with_plot" , plot =sinopsis, fanart= fanart, show=scrapedtitle, extra=item.extra, infoLabels={"rating":puntuacion,"votes":votos,"year":year,"genre":genero } ) )
         else:
-            itemlist.append( Item(channel=CHANNEL_NAME, action="preplay", title=title , url=url , thumbnail=thumbnail , folder=True, viewmode="movie_with_plot" , plot =sinopsis, fanart= fanart, show=scrapedtitle, extra=item.extra, ya=item.ya,infoLabels={"rating":puntuacion,"votes":votos,"year":year,"genre":genero } ) )
+            #xbmcgui.Dialog().ok ("debug", scrapedtitle )
+            if item.extra=="tv":
+                itemlist.append( Item(channel=CHANNEL_NAME, action="preplay", title=title , contentType=contentType  , contentSerieName=contentSerieName , url=url , thumbnail=thumbnail  , folder=True, viewmode="movie_with_plot" , plot =sinopsis, fanart= fanart, show=scrapedtitle, extra=item.extra, ya=item.ya ) )
+            else:
+                itemlist.append( Item(channel=CHANNEL_NAME, action="preplay", title=title , url=url , thumbnail=thumbnail  , folder=True, viewmode="movie_with_plot" , plot =sinopsis, fanart= fanart, show=scrapedtitle, extra=item.extra, ya=item.ya  ) )
+
     patronvideos  = '<a href="([^"]+)" class="pagina pag_sig">Siguiente \&raquo\;</a>'
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
     scrapertools.printMatches(matches)
@@ -146,6 +160,8 @@ def preplay(item):
         data = scrapertools.cache_page(item.url)
     logger.info("data="+data)
     if (item.extra == "movie" or item.extra == "tv") and MODO_EXTENDIDO:
+        import xbmcgui
+        xbmcgui.Dialog().ok ("debug", StripTags(item.show) )
         fanart,thumbnail,sinopsis,puntuacion,votos,year,genero = TMDb(StripTags(item.show),item.extra)
         if thumbnail =="": thumbnail = item.thumbnail
     else:
@@ -184,9 +200,10 @@ def preplay(item):
     #if puntuacion !="":
         #sip = sip + "\n[COLOR purple]Puntuación TMDb: [COLOR magenta]" + puntuacion + "[/COLOR]"
         #plot = plot + "\n[COLOR purple]Puntuación TMDb: [COLOR magenta]" + puntuacion + "[/COLOR]"
-    itemlist.append( Item(channel=CHANNEL_NAME, action="play", server="torrent", title=item.title + valoracion + " [COLOR lime][torrent][/COLOR]" , viewmode="movie_with_plot" , url=linkt , thumbnail=thumbnail , plot=sip , fanart=fanart, folder=True , infoLabels={"rating":puntuacion,"votes":votos,"year":year,"genre":genero }) )
-    itemlist.append( Item(channel=CHANNEL_NAME, action="play", server="torrent", title=item.title + valoracion + " [COLOR limegreen][magnet][/COLOR]" , viewmode="movie_with_plot" , url=linkm , thumbnail=thumbnail , plot=plot ,fanart=fanart, folder=True, infoLabels={"rating":puntuacion,"votes":votos,"year":year,"genre":genero }) )
+    itemlist.append( Item(channel=CHANNEL_NAME, action="play", server="torrent", title=item.title + valoracion + " [COLOR lime][torrent][/COLOR]" , viewmode="movie_with_plot" , url=linkt , thumbnail=thumbnail , plot=sip , fanart=fanart, folder=True , show=item.show , infoLabels={"rating":puntuacion,"votes":votos,"year":year,"genre":genero }) )
+    itemlist.append( Item(channel=CHANNEL_NAME, action="play", server="torrent", title=item.title + valoracion + " [COLOR limegreen][magnet][/COLOR]" , viewmode="movie_with_plot" , url=linkm , thumbnail=thumbnail , plot=plot ,fanart=fanart, folder=True, show=item.show, infoLabels={"rating":puntuacion,"votes":votos,"year":year,"genre":genero }) )
     if item.extra=="tv":
+        #info
         if not item.ya=="1": itemlist.append( Item(channel=CHANNEL_NAME, action="peliculas", server="torrent", title="[B][COLOR cyan]Entrar en la serie completa[/COLOR][/B]" , url="http://www.elitetorrent.net/resultados/"+item.show.split("-")[0].strip().replace(" ","%20")+"/modo:mini" , thumbnail=thumbnail , extra="tv",show="1",ya="1",fanart=fanart, folder=True) )
     return itemlist
 
@@ -218,7 +235,6 @@ def search(item,texto):
         
 def TMDb(title,tipo):
 	if tipo == "tv": title = title.split("-")[0].strip()
-	Generos = {"28":"Acción","12":"Aventura","16":"Animación","35":"Comedia","80":"Crimen","99":"Documental","18":"Drama","10751":"Familia","14":"Fantasía","36":"Historia","27":"Terror","10402":"Música","9648":"Misterio","10749":"Romance","878":"Ciencia ficción","10770":"película de la televisión","53":"Suspense","10752":"Guerra","37":"Western"}
 	data = re.sub(r'\n|\r|\t|\s{2}|&nbsp;',"",scrapertools.cachePage("http://api.themoviedb.org/3/search/" + tipo + "?api_key=cc4b67c52acb514bdf4931f7cedfd12b&query=" + title.replace(" ","%20").replace("'","").replace(":","") + "&language=es&include_adult=false"))
 	try: fanart = "https://image.tmdb.org/t/p/original" + scrapertools.get_match(data,'"page":1,.*?"backdrop_path":"\\\(.*?)"')
 	except: fanart = FANARTIMAGE
