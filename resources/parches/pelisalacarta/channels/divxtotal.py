@@ -160,7 +160,7 @@ def menuserieslistado(item):
     scrapertools.printMatches(matches)
     for scrapedurl,scrapedtitle in matches:
         titulo = "[COLOR orange]" + scrapedtitle.capitalize().replace("-"," ") + "[/COLOR]"
-        itemlist.append( Item(channel=CHANNEL_NAME, action="entraenserie", title=titulo , fulltitle=titulo, url=scrapedurl , thumbnail="" , plot="" , folder=True) )
+        itemlist.append( Item(channel=CHANNEL_NAME, action="entraenserie", title=titulo , fulltitle=titulo, contentSerieName=scrapedtitle, contenType="tvshow" ,  url=scrapedurl , thumbnail="" , plot="" , folder=True) )
     return itemlist
 
 def menuseriesaz(item):
