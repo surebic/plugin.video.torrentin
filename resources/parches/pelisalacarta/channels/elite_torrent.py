@@ -12,7 +12,7 @@
 # Ampliado con numero de votos, eliminado codigo innecesario, etc. (09-02-2017)
 # Incluida busqueda en TMDb para series y busquedas (14-02-2017)
 #--------------------------------------------------------------
-import urlparse,re,time,xbmcgui
+import urlparse,re,time
 from core import logger
 from core import config
 from core import scrapertools
@@ -138,7 +138,7 @@ def peliculas(item):
             else:
                 itemlist.append( Item(channel=CHANNEL_NAME, action="play", title=title ,contentType=contentType , contentTitle=contentTitle, url=url , thumbnail=thumbnail , folder=True, viewmode="movie_with_plot" , plot =sinopsis, fanart= fanart, show=scrapedtitle, extra=item.extra, infoLabels={"rating":puntuacion,"votes":votos,"year":year,"genre":genero } ) )
         else:
-            #xbmcgui.Dialog().ok ("debug", scrapedtitle )
+            
             if item.extra=="tv":
                 itemlist.append( Item(channel=CHANNEL_NAME, action="preplay", title=title , contentType=contentType  , contentSerieName=contentSerieName , url=url , thumbnail=thumbnail  , folder=True, viewmode="movie_with_plot" , plot =sinopsis, fanart= fanart, show=scrapedtitle, extra=item.extra, ya=item.ya ) )
             else:
@@ -160,8 +160,6 @@ def preplay(item):
         data = scrapertools.cache_page(item.url)
     logger.info("data="+data)
     if (item.extra == "movie" or item.extra == "tv") and MODO_EXTENDIDO:
-        import xbmcgui
-        xbmcgui.Dialog().ok ("debug", StripTags(item.show) )
         fanart,thumbnail,sinopsis,puntuacion,votos,year,genero = TMDb(StripTags(item.show),item.extra)
         if thumbnail =="": thumbnail = item.thumbnail
     else:
