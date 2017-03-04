@@ -142,7 +142,7 @@ def peliculas(item):
             if item.extra=="tv":
                 itemlist.append( Item(channel=CHANNEL_NAME, action="preplay", title=title , contentType=contentType  , contentSerieName=contentSerieName , url=url , thumbnail=thumbnail  , folder=True, viewmode="movie_with_plot" , plot =sinopsis, fanart= fanart, show=scrapedtitle, extra=item.extra, ya=item.ya ) )
             else:
-                itemlist.append( Item(channel=CHANNEL_NAME, action="preplay", title=title , url=url , thumbnail=thumbnail  , folder=True, viewmode="movie_with_plot" , plot =sinopsis, fanart= fanart, show=scrapedtitle, extra=item.extra, ya=item.ya  ) )
+                itemlist.append( Item(channel=CHANNEL_NAME, action="preplay", title=title , contentType=contentType  ,contentTitle=contentTitle , url=url , thumbnail=thumbnail  , folder=True, viewmode="movie_with_plot" , plot =sinopsis, fanart= fanart, show=scrapedtitle, extra=item.extra, ya=item.ya  ) )
 
     patronvideos  = '<a href="([^"]+)" class="pagina pag_sig">Siguiente \&raquo\;</a>'
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
@@ -198,11 +198,11 @@ def preplay(item):
     #if puntuacion !="":
         #sip = sip + "\n[COLOR purple]Puntuación TMDb: [COLOR magenta]" + puntuacion + "[/COLOR]"
         #plot = plot + "\n[COLOR purple]Puntuación TMDb: [COLOR magenta]" + puntuacion + "[/COLOR]"
-    itemlist.append( Item(channel=CHANNEL_NAME, action="play", server="torrent", title=item.title + valoracion + " [COLOR lime][torrent][/COLOR]" , viewmode="movie_with_plot" , url=linkt , thumbnail=thumbnail , plot=sip , fanart=fanart, folder=True , show=item.show , infoLabels={"rating":puntuacion,"votes":votos,"year":year,"genre":genero }) )
-    itemlist.append( Item(channel=CHANNEL_NAME, action="play", server="torrent", title=item.title + valoracion + " [COLOR limegreen][magnet][/COLOR]" , viewmode="movie_with_plot" , url=linkm , thumbnail=thumbnail , plot=plot ,fanart=fanart, folder=True, show=item.show, infoLabels={"rating":puntuacion,"votes":votos,"year":year,"genre":genero }) )
+    itemlist.append( Item(channel=CHANNEL_NAME, action="play", server="torrent", title=item.title + valoracion + " [COLOR lime][torrent][/COLOR]" , contentTitle=item.contentTitle , contentType=item.contentType , viewmode="movie_with_plot" , url=linkt , thumbnail=thumbnail , plot=sip , fanart=fanart, folder=True , show=item.show , infoLabels={"rating":puntuacion,"votes":votos,"year":year,"genre":genero }) )
+    itemlist.append( Item(channel=CHANNEL_NAME, action="play", server="torrent", title=item.title + valoracion + " [COLOR limegreen][magnet][/COLOR]" , contentTitle=item.contentTitle , contentType=item.contentType  , viewmode="movie_with_plot" , url=linkm , thumbnail=thumbnail , plot=plot ,fanart=fanart, folder=True, show=item.show, infoLabels={"rating":puntuacion,"votes":votos,"year":year,"genre":genero }) )
     if item.extra=="tv":
         #info
-        if not item.ya=="1": itemlist.append( Item(channel=CHANNEL_NAME, action="peliculas", server="torrent", title="[B][COLOR cyan]Entrar en la serie completa[/COLOR][/B]" , url="http://www.elitetorrent.net/resultados/"+item.show.split("-")[0].strip().replace(" ","%20")+"/modo:mini" , thumbnail=thumbnail , extra="tv",show="1",ya="1",fanart=fanart, folder=True) )
+        if not item.ya=="1": itemlist.append( Item(channel=CHANNEL_NAME, action="peliculas", server="torrent", title="[B][COLOR cyan]Entrar en la serie completa[/COLOR][/B]" , contentType=item.contentType , contentSerieName=item.contentSerieName , url="http://www.elitetorrent.net/resultados/"+item.show.split("-")[0].strip().replace(" ","%20")+"/modo:mini" , thumbnail=thumbnail , extra="tv",show="1",ya="1",fanart=fanart, folder=True) )
     return itemlist
 
 def play(item):
