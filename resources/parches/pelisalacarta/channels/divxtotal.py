@@ -278,7 +278,7 @@ def lista(item):
                 contentType="movie"
             else: show = ""
         titulo = "[B][COLOR yellow]" + scrapedtitle + "[/COLOR][/B] "+scrapedfecha+" [COLOR limegreen]("+scrapedtam+")[/COLOR]"
-        itemlist.append( Item(channel=CHANNEL_NAME, action=accion, title=titulo , fulltitle=titulo, url=scrapedurl , thumbnail="" , plot="" , show=show , folder=True) )
+        itemlist.append( Item(channel=CHANNEL_NAME, action=accion, title=titulo , fulltitle=titulo, contentType=contentType , contentSerieName=show , contentTitle=show , url=scrapedurl , thumbnail="" , plot="" , show=show , folder=True) )
     patronvideos  = "pagination.*?class='current'.*?<a href='(.*?)'.*?</div>"
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
     scrapertools.printMatches(matches)
