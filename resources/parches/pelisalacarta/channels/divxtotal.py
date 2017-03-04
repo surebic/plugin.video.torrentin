@@ -134,10 +134,10 @@ def entraenpeli(item):
         plot = re.sub('<[^<]+?>', '', scrapedplot)
         if not item.show == "" and MODO_EXTENDIDO: #venimos de la busqueda
             fanart,thumbnail,sip,puntuacion,votos,fecha,genero = TMDb(item.show,"movie")
-            #plot= sip + "\n\n" + plot
+            item.contentTitle=item.show
             item.fanart = fanart
             item.infoLabels={"rating":puntuacion,"votes":votos, "genre":genero, "year":fecha}
-        itemlist.append( Item(channel=CHANNEL_NAME, action="play", server="torrent", title=title , fulltitle=title, url=scrapedurl , thumbnail=scrapedthumb , plot=plot , viewmode="movie_with_plot", fanart=item.fanart , infoLabels=item.infoLabels, folder=False) )
+        itemlist.append( Item(channel=CHANNEL_NAME, action="play", server="torrent", title=title , fulltitle=title, contentTitle=item.contentTitle , contentType="movie" , url=scrapedurl , thumbnail=scrapedthumb , plot=plot , viewmode="movie_with_plot", fanart=item.fanart , infoLabels=item.infoLabels, folder=False) )
     return itemlist
 
 def getthumbnail(url):
@@ -192,7 +192,7 @@ def menuseries(item):
     scrapertools.printMatches(matches)
     for scrapeddir,scrapedthumb,scrapedtitle,scrapedfecha in matches:
         title = "[B][COLOR orange]" + scrapedtitle + "[/COLOR][/B] [COLOR dodgerblue]("+scrapedfecha+")[/COLOR]"
-        itemlist.append( Item(channel=CHANNEL_NAME, action="entraenserie",show=re.sub(r"\d{1,2}[x]\d{2}|[-]","",scrapedtitle).strip(), title=title , fulltitle = title, url=scrapeddir , thumbnail=scrapedthumb , fanart=FANARTIMAGE, plot=
+        itemlist.append( Item(channel=CHANNEL_NAME, action="entraenserie",contentSerieName=re.sub(r"\d{1,2}[x]\d{2}|[-]","",scrapedtitle).strip(), contentType="tvshow",title=title , fulltitle = title, url=scrapeddir , thumbnail=scrapedthumb , fanart=FANARTIMAGE, plot=
 "" , folder=True) )
     patronvideos  = "pagination.*?class='current'.*?<a href='(.*?)'.*?</div>"
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
@@ -229,7 +229,7 @@ def entraenserie(item):
         scrapedfecha=scrapedfecha.replace("\n","")
         if scrapedfecha != "" : scrapedfecha = " [COLOR dodgerblue](" + scrapedfecha + ")[/COLOR]"
         title = "[B][COLOR orange]" + scrapedtitle + "[/COLOR][/B]" +scrapedfecha
-        itemlist.append( Item(channel=CHANNEL_NAME, action="play", server="torrent", title=title , fulltitle = title, show=scrapedtituloserie , url=scrapedurl , thumbnail=item.thumbnail , fanart=scrapedthumb, plot=plot , folder=False , infoLabels=infoLabels) )
+        itemlist.append( Item(channel=CHANNEL_NAME, action="play", server="torrent", title=title , fulltitle = title, contentSerieName=scrapedtituloserie , contentType="tvshow" , url=scrapedurl , thumbnail=item.thumbnail , fanart=scrapedthumb, plot=plot , folder=False , infoLabels=infoLabels) )
     return itemlist
 
 # Buscadores
@@ -270,10 +270,12 @@ def lista(item):
             accion = "entraenserie"
             scrapedtam = "Serie"
             show = scrapedtitle
+            contentType="tvshow"
         else:
             accion = "entraenpeli"
             if "peliculas" in scrapedurl:
                 show= scrapedtitle
+                contentType="movie"
             else: show = ""
         titulo = "[B][COLOR yellow]" + scrapedtitle + "[/COLOR][/B] "+scrapedfecha+" [COLOR limegreen]("+scrapedtam+")[/COLOR]"
         itemlist.append( Item(channel=CHANNEL_NAME, action=accion, title=titulo , fulltitle=titulo, url=scrapedurl , thumbnail="" , plot="" , show=show , folder=True) )
