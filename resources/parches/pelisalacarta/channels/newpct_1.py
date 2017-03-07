@@ -402,7 +402,7 @@ def findvideos(item):
         fanart=item.fanart
         infoLabels=item.infoLabels
 
-    if title=='': title=item.title
+    #if title=='': title=item.title
 
     patron = '<a href="([^"]+)" title="[^"]+" class="btn-torrent" target="_blank">'
     # escraped torrent
