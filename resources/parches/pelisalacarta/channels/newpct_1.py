@@ -60,7 +60,6 @@ def search(item,texto):
 
         return itemlist
 
-
     # Se captura la excepción, para no interrumpir al buscador global si un canal falla
     except:
         import sys
@@ -157,7 +156,10 @@ def listado(item):
             tipo="movie"
             color = 'yellow]'
 
+            # Formateamos titulo para peliculas
             context_title = title.strip()
+            context_title=context_title.replace('HDR',"").replace('V.Extendida','').replace('Version Extendida','').replace('Montaje del Director','').replace('3D','').replace('HOU','').replace('AA','').replace('A.A','').replace('SBS','').replace('IMAX','')
+            context_title=context_title.replace('_Castellano_BDrip_720p_X26',"").replace('_',' ')
             year=""
             try:
                 if re.search( '\d{4}', context_title[-4:]):
@@ -168,9 +170,8 @@ def listado(item):
                     context_title = context_title[:-6]
             except:
                 context_title = title.strip()
-            context_title=context_title.replace('HDR',"").replace('V.Extendida','').replace('Version Extendida','').replace('Montaje del Director','').replace('3D','').replace('HOU','').replace('AA','').replace('A.A','').replace('SBS','').replace('IMAX','').replace('_',' ')
+            context_title=context_title.strip()
 
-        
         show = title.strip()
         if item.extra!="buscar-list":
             if calidad == "":
@@ -178,22 +179,7 @@ def listado(item):
             else:
                 title = '[COLOR ' + color + title + ' ' + '[COLOR dodgerblue](' + calidad + ')[/COLOR]'
 
-        '''
-        context_title = show
-        year=""
-        try:
-            if re.search( '\d{4}', context_title[-4:]):
-                year=context_title[-4:]
-                context_title = context_title[:-4]
-            elif re.search( '\(\d{4}\)', context_title[-6:]):
-                year=context_title[-5:].replace(')','')
-                context_title = context_title[:-6]
-        except:
-            context_title = show
-        '''
-        
         if tipo=="movie":itemlist.append( Item(channel=item.channel, action=action, title=title, url=url, thumbnail=thumbnail, extra=extra, contentTitle=context_title, contentType=tipo, context=["buscar_trailer"] , infoLabels={"year":year} ) )
-
         else: itemlist.append( Item(channel=item.channel, action=action, title=title, url=url, thumbnail=thumbnail, extra=extra, show=show, contentType=tipo, contentSerieName=show,context=["buscar_trailer"]) )
 
     if "pagination" in data:
@@ -269,7 +255,7 @@ def completo(item):
             salir = True          
       
     if (config.get_library_support() and len(itemlist)>0 and item.extra.startswith("serie")) :
-        itemlist.append( Item(channel=item.channel, title="[COLOR cyan]Añadir esta serie a la biblioteca[/COLOR]", url=item.url, action="add_serie_to_library", extra="completo###serie_add" , show = item.show))
+        itemlist.append( Item(channel=item.channel, title="[COLOR cyan]Añadir esta serie a la biblioteca[/COLOR]", url=item.url, action="add_serie_to_library", extra="completo###serie_add" , show = item.show, thumbnail=item.thumbnail))
     logger.info("[newpct1.py] completo items="+ str(len(itemlist)))
     return itemlist
    
@@ -378,29 +364,9 @@ def buscar_en_subcategoria(titulo, categoria):
     logger.info("[newpct1.py] buscar_en_subcategoria: resultado=" + matches [0][0])
     return matches [0][0]
 
-
-def findtmdbvideos(item):
-    import xbmc
-    keyboard = xbmc.Keyboard(item.contentTitle)
-    keyboard.doModal()
-    if (keyboard.isConfirmed()):
-        item.contentTitle = keyboard.getText()
-        #itemlist.append( Item(channel=item.channel, action="findvideos", title=item.title, url=item.url, thumbnail=item.thumbnail, extra=item.extra, contentTitle=item.contentTitle, contentType=item.contentType, infoLabels=item.infoLabels, folder=True ) )
-        #itemlist.append( Item(channel=item.channel, action="findvideos", server=item.server, title=item.title, fulltitle=item.title, contentTitle=item.contentTitle, url=item.url , thumbnail=item.thumbnail, plot=item.plot, fanart=item.fanart, infoLabels=item.infoLabels , folder=True) )
-        import xbmcgui
-        xbmcgui.Dialog().ok('Show: ',item.contentTitle,str(item))
-        xbmc.executebuiltin('Container.Refresh')
-        return findvideos(item)
-        #itemlist.append( Item(channel=item.channel, action="findvideos", server=item.server, title=item.title, fulltitle=item.title, contentTitle=item.contentTitle, url=item.url , thumbnail=item.thumbnail, plot=item.plot, fanart=item.fanart, infoLabels=item.infoLabels , folder=False) )
-
-        xbmc.executebuiltin('Container.Refresh')
-
 def findvideos(item):
     logger.info("[newpct1.py] findvideos")
     itemlist=[]   
-
-    #import xbmcgui
-    #xbmcgui.Dialog().ok('Show: ' + item.show, "Titulo: " + item.contentTitle , "Tipo: " + item.contentType , "Año: " +  item.infoLabels["year"])
           
     ## Cualquiera de las tres opciones son válidas
     #item.url = item.url.replace("1.com/","1.com/ver-online/")
@@ -427,7 +393,7 @@ def findvideos(item):
             keyboard.doModal()
             if (keyboard.isConfirmed()):
                 titu = keyboard.getText()
-                fanart,thumbnail,plot,puntuacion,votos,fecha,genero = TMDb(titu,item.contentType,item.infoLabels["year"])
+                fanart,thumbnail,plot,puntuacion,votos,fecha,genero = TMDb(titu,item.contentType,"")
 
         infoLabels={"rating":puntuacion,"votes":votos, "genre":genero, "year":fecha}
         item.plot=plot
@@ -439,17 +405,12 @@ def findvideos(item):
     if title=='': title=item.title
 
     patron = '<a href="([^"]+)" title="[^"]+" class="btn-torrent" target="_blank">'
-
     # escraped torrent
     url = scrapertools.find_single_match(data,patron)
     if url!="":
         itemlist.append( Item(channel=item.channel, action="play", server="torrent", title='[COLOR lime]' + title+" [COLOR cyan][torrent][/COLOR]", fulltitle=title, contentTitle=item.contentTitle, url=url , thumbnail=caratula, plot=item.plot, fanart=fanart, infoLabels=infoLabels , folder=False) )
 
-        #if thumbnail == "":
-            #itemlist.append( Item(channel=item.channel, action="findtmdbvideos", server="torrent", title='[COLOR magenta]Buscar en TMDb[/COLOR]', fulltitle=title, contentTitle=item.contentTitle, url=url , thumbnail=caratula, plot=item.plot, fanart=fanart, infoLabels=infoLabels , folder=True) )
-
     if MODO_STREAMING:
-
         # escraped ver vídeos, descargar vídeos un link, múltiples liks
         data = data.replace("'",'"')
         data = data.replace('javascript:;" onClick="popup("http://www.newpct1.com/pct1/library/include/ajax/get_modallinks.php?links=',"")
@@ -490,7 +451,6 @@ def findvideos(item):
                     pass
         
     if MODO_STREAMING and MODO_DESCARGA:
-
         for logo, servidor, idioma, calidad, enlace, titulo in enlaces_descargar:
             servidor = servidor.replace("uploaded","uploadedto")
             partes = enlace.split(" ")
