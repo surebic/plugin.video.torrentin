@@ -3,6 +3,8 @@
 # pelisalacarta - XBMC Plugin
 # Canal para newpct1
 # http://blog.tvalacarta.info/plugin-xbmc/pelisalacarta/
+#
+# mod by ciberus (07-03-2017)
 #------------------------------------------------------------
 
 import re
@@ -22,13 +24,12 @@ MODO_CARATULA = config.get_setting('modo_caratula', "newpct_1")
 MODO_STREAMING = config.get_setting('modo_streaming', "newpct_1")
 MODO_DESCARGA = config.get_setting('modo_descarga', "newpct_1")
 
-
 Generos = {"28":"Acción","12":"Aventura","16":"Animación","35":"Comedia","80":"Crimen","99":"Documental","18":"Drama","10751":"Familia","14":"Fantasía","36":"Historia","27":"Terror","10402":"Música","9648":"Misterio","10749":"Romance","878":"Ciencia ficción","10770":"película de la televisión","53":"Suspense","10752":"Guerra","37":"Western"}
 	
 def configuracion(item):
     from platformcode import platformtools
     ret = platformtools.show_channel_settings()
-    platformtools.itemlist_refresh()
+    #platformtools.itemlist_refresh()
     return ret
 
 def mainlist(item):
@@ -155,6 +156,20 @@ def listado(item):
             if title.endswith("gratis"): title= title[:-7]
             tipo="movie"
             color = 'yellow]'
+
+            context_title = title.strip()
+            year=""
+            try:
+                if re.search( '\d{4}', context_title[-4:]):
+                    year=context_title[-4:]
+                    context_title = context_title[:-4]
+                elif re.search( '\(\d{4}\)', context_title[-6:]):
+                    year=context_title[-5:].replace(')','')
+                    context_title = context_title[:-6]
+            except:
+                context_title = title.strip()
+            context_title=context_title.replace('HDR',"").replace('V.Extendida','').replace('Version Extendida','').replace('Montaje del Director','').replace('3D','').replace('HOU','').replace('AA','').replace('A.A','').replace('SBS','').replace('IMAX','').replace('_',' ')
+
         
         show = title.strip()
         if item.extra!="buscar-list":
@@ -162,17 +177,8 @@ def listado(item):
                 title = '[COLOR ' + color + title + '[/COLOR]'
             else:
                 title = '[COLOR ' + color + title + ' ' + '[COLOR dodgerblue](' + calidad + ')[/COLOR]'
+
         '''
-        try:
-            
-            if re.search( '\d{4}', show[-4:]):
-                show = show[:-4]
-            elif show( '\(\d{4}\)', show[-6:]):
-                show = show[:-6]
-        except:
-            pass
-        '''
-        
         context_title = show
         year=""
         try:
@@ -180,9 +186,11 @@ def listado(item):
                 year=context_title[-4:]
                 context_title = context_title[:-4]
             elif re.search( '\(\d{4}\)', context_title[-6:]):
+                year=context_title[-5:].replace(')','')
                 context_title = context_title[:-6]
         except:
             context_title = show
+        '''
         
         if tipo=="movie":itemlist.append( Item(channel=item.channel, action=action, title=title, url=url, thumbnail=thumbnail, extra=extra, contentTitle=context_title, contentType=tipo, context=["buscar_trailer"] , infoLabels={"year":year} ) )
 
@@ -410,7 +418,8 @@ def findvideos(item):
     #<a href="http://tumejorjuego.com/download/index.php?link=descargar-torrent/058310_yo-frankenstein-blurayrip-ac3-51.html" title="Descargar torrent de Yo Frankenstein " class="btn-torrent" target="_blank">Descarga tu Archivo torrent!</a>
 
     if MODO_EXTENDIDO and item.contentType=="movie":
-        titu=item.contentTitle.replace('HDR',"").replace('V.Extendida','').replace('Version Extendida','').replace('Montaje del Director','').replace('3D','').replace('HOU','').replace('AA','').replace('A.A','').replace('SBS','').replace('IMAX','').replace('_',' ')
+        #titu=item.contentTitle.replace('HDR',"").replace('V.Extendida','').replace('Version Extendida','').replace('Montaje del Director','').replace('3D','').replace('HOU','').replace('AA','').replace('A.A','').replace('SBS','').replace('IMAX','').replace('_',' ')
+        titu=item.contentTitle
         fanart,thumbnail,plot,puntuacion,votos,fecha,genero = TMDb(titu,item.contentType,item.infoLabels["year"])
         
         if thumbnail == "" and MODO_MANUAL:
@@ -422,7 +431,7 @@ def findvideos(item):
 
         infoLabels={"rating":puntuacion,"votes":votos, "genre":genero, "year":fecha}
         item.plot=plot
-        if MODO_CARATULA: caratula=thumbnail
+        if MODO_CARATULA and thumbnail != "": caratula=thumbnail
     else:
         fanart=item.fanart
         infoLabels=item.infoLabels
