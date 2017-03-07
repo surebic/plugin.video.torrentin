@@ -7,6 +7,7 @@
 
 import re
 import sys
+import xbmc
 
 from core import config
 from core import logger
@@ -15,7 +16,20 @@ from core import servertools
 from core.item import Item
 
 DEBUG = config.get_setting("debug")
+MODO_EXTENDIDO = config.get_setting('modo_grafico', "newpct_1")
+MODO_MANUAL = config.get_setting('modo_preguntar', "newpct_1")
+MODO_CARATULA = config.get_setting('modo_caratula', "newpct_1")
+MODO_STREAMING = config.get_setting('modo_streaming', "newpct_1")
+MODO_DESCARGA = config.get_setting('modo_descarga', "newpct_1")
 
+
+Generos = {"28":"Acción","12":"Aventura","16":"Animación","35":"Comedia","80":"Crimen","99":"Documental","18":"Drama","10751":"Familia","14":"Fantasía","36":"Historia","27":"Terror","10402":"Música","9648":"Misterio","10749":"Romance","878":"Ciencia ficción","10770":"película de la televisión","53":"Suspense","10752":"Guerra","37":"Western"}
+	
+def configuracion(item):
+    from platformcode import platformtools
+    ret = platformtools.show_channel_settings()
+    platformtools.itemlist_refresh()
+    return ret
 
 def mainlist(item):
     logger.info("[newpct1.py] mainlist")
@@ -24,7 +38,7 @@ def mainlist(item):
     itemlist.append( Item(channel=item.channel, action="submenu", title="[COLOR yellow]Películas[/COLOR]", url="http://www.newpct1.com/", extra="peliculas") )
     itemlist.append( Item(channel=item.channel, action="submenu", title="[COLOR orange]Series[/COLOR]", url="http://www.newpct1.com/", extra="series") )
     itemlist.append( Item(channel=item.channel, action="search", title="[COLOR lime]Buscar[/COLOR]") )
-    
+    itemlist.append( Item(channel=item.channel, action="configuracion", title="[COLOR dodgerblue]Configuración del canal[/COLOR]"))
     return itemlist
 
 def search(item,texto):
@@ -148,8 +162,29 @@ def listado(item):
                 title = '[COLOR ' + color + title + '[/COLOR]'
             else:
                 title = '[COLOR ' + color + title + ' ' + '[COLOR dodgerblue](' + calidad + ')[/COLOR]'
-
-        if tipo=="movie":itemlist.append( Item(channel=item.channel, action=action, title=title, url=url, thumbnail=thumbnail, extra=extra, contentTitle=show, contentType=tipo, context=["buscar_trailer"]) )
+        '''
+        try:
+            
+            if re.search( '\d{4}', show[-4:]):
+                show = show[:-4]
+            elif show( '\(\d{4}\)', show[-6:]):
+                show = show[:-6]
+        except:
+            pass
+        '''
+        
+        context_title = show
+        year=""
+        try:
+            if re.search( '\d{4}', context_title[-4:]):
+                year=context_title[-4:]
+                context_title = context_title[:-4]
+            elif re.search( '\(\d{4}\)', context_title[-6:]):
+                context_title = context_title[:-6]
+        except:
+            context_title = show
+        
+        if tipo=="movie":itemlist.append( Item(channel=item.channel, action=action, title=title, url=url, thumbnail=thumbnail, extra=extra, contentTitle=context_title, contentType=tipo, context=["buscar_trailer"] , infoLabels={"year":year} ) )
 
         else: itemlist.append( Item(channel=item.channel, action=action, title=title, url=url, thumbnail=thumbnail, extra=extra, show=show, contentType=tipo, contentSerieName=show,context=["buscar_trailer"]) )
 
@@ -159,7 +194,7 @@ def listado(item):
         
         if "Next" in paginacion:
             url_next_page  = scrapertools.get_match(paginacion,'<a href="([^>]+)>Next</a>')[:-1].replace(" ","%20")
-            itemlist.append( Item(channel=item.channel, action="listado" , title=">> Página siguiente" , url=url_next_page, extra=item.extra))            
+            itemlist.append( Item(channel=item.channel, action="listado" , title="[COLOR magenta]>> Página siguiente[/COLOR]" , url=url_next_page, extra=item.extra))            
     #logger.info("[newpct1.py] listado items:" + str(len(itemlist)))
     return itemlist
 
@@ -177,35 +212,15 @@ def completo(item):
     if item_extra.startswith("serie"):
         ultimo_action="get_episodios"
         
-        if item.extra !="serie_add":
-            '''
-            # Afinar mas la busqueda 
-            if item_extra=="serie-hd":
-                categoryID=buscar_en_subcategoria(item.show,'1469')
-            elif item_extra=="serie-vo":
-                categoryID=buscar_en_subcategoria(item.show,'775')
-            elif item_extra=="serie-tv":
-                categoryID=buscar_en_subcategoria(item.show,'767')
-            if categoryID !="":
-                item.url=item.url.replace("categoryID=","categoryID="+categoryID)
-                
-            #Fanart
-            oTvdb= TvDb()
-            serieID=oTvdb.get_serieId_by_title(item.show)
-            fanart = oTvdb.get_graphics_by_serieId(serieID)
-            if len(fanart)>0:
-                item.fanart = fanart[0]'''
-            try:
-                from core.tmdb import Tmdb
-                oTmdb= Tmdb(texto_buscado=item.show,tipo="tv",idioma_busqueda="es")
-                item.fanart=oTmdb.get_backdrop()
-                item.plot=oTmdb.get_sinopsis()
-                print item.plot
-            except:
-                pass
+        if item.extra !="serie_add" and MODO_EXTENDIDO:
+            tituserie= item.show
+            item.fanart,thumb,item.plot,puntuacion,votos,fecha,genero = TMDb(item.show,item.contentType,"")
+            item.infoLabels={"rating":puntuacion,"votes":votos, "genre":genero, "year":fecha, "plot":item.plot}
+            if MODO_CARATULA: item.thumbnail=thumb
+            item.show=tituserie
         else:
             item_title= item.show
-        
+
         items_programas = get_episodios(item)        
     else:
         ultimo_action="listado"
@@ -232,6 +247,7 @@ def completo(item):
             ultimo_item.extra = item_extra
             ultimo_item.show = item_show
             ultimo_item.title = item_title
+
             logger.info("[newpct1.py] completo url=" + ultimo_item.url)
             if item_extra.startswith("serie"):
                 items_programas = get_episodios(ultimo_item)
@@ -245,7 +261,7 @@ def completo(item):
             salir = True          
       
     if (config.get_library_support() and len(itemlist)>0 and item.extra.startswith("serie")) :
-        itemlist.append( Item(channel=item.channel, title="Añadir esta serie a la biblioteca", url=item.url, action="add_serie_to_library", extra="completo###serie_add" , show = item.show))
+        itemlist.append( Item(channel=item.channel, title="[COLOR cyan]Añadir esta serie a la biblioteca[/COLOR]", url=item.url, action="add_serie_to_library", extra="completo###serie_add" , show = item.show))
     logger.info("[newpct1.py] completo items="+ str(len(itemlist)))
     return itemlist
    
@@ -303,7 +319,7 @@ def get_episodios(item):
                     idioma= " [" + scrapertools.find_single_match(idioma,'&nbsp;([^<]+)').strip() +"]"
                 '''else:
                     idioma=""'''
-                title =  item.title + " (" + temporada.strip() + "x" + capitulo.strip()  + ") " + idioma
+                title =  item.title + " [COLOR lime](" + temporada.strip() + "x" + capitulo.strip()  + ")[/COLOR] " + idioma
                 
             else:
                 #<h2 style="padding:0;">The Big Bang Theory - Temporada 6 [HDTV][Cap.602][Español Castellano]</h2>
@@ -324,10 +340,10 @@ def get_episodios(item):
                         patron='Temp.*?\s*([\d]+)'            
                         temp= re.compile(patron,re.IGNORECASE).search(scrapedinfo).group(1)
 
-                title = item.title + " ("+ temp + 'x' + cap + ")"
+                title = item.title + " [COLOR lime]("+ temp + 'x' + cap + ")[/COLOR]"
             
             #logger.info("[newpct1.py] get_episodios: fanart= " +item.fanart)
-            itemlist.append( Item(channel=item.channel, action="findvideos", title=title, url=url, thumbnail=item.thumbnail, show=item.show, fanart=item.fanart) )
+            itemlist.append( Item(channel=item.channel, action="findvideos", title=title, url=url, thumbnail=item.thumbnail, show=item.show, fanart=item.fanart , infoLabels=item.infoLabels) )
         except:
             logger.info("[newpct1.py] ERROR al añadir un episodio")
     if "pagination" in data:
@@ -338,7 +354,7 @@ def get_episodios(item):
             url_next_page  = scrapertools.get_match(paginacion,'<a href="([^>]+)>Next</a>')[:-1]
             url_next_page= url_next_page.replace(" ","%20")
             #logger.info("[newpct1.py] get_episodios: url_next_page= " + url_next_page)
-            itemlist.append( Item(channel=item.channel, action="get_episodios" , title=">> Página siguiente" , url=url_next_page))
+            itemlist.append( Item(channel=item.channel, action="get_episodios" , title="[COLOR magenta]>> Página siguiente[/COLOR]" , url=url_next_page   ,   infoLabels=item.infoLabels , thumbnail=item.thumbnail))
 
     return itemlist
 
@@ -353,10 +369,30 @@ def buscar_en_subcategoria(titulo, categoria):
     if len(matches)==0: matches=[('','')]
     logger.info("[newpct1.py] buscar_en_subcategoria: resultado=" + matches [0][0])
     return matches [0][0]
-    
+
+
+def findtmdbvideos(item):
+    import xbmc
+    keyboard = xbmc.Keyboard(item.contentTitle)
+    keyboard.doModal()
+    if (keyboard.isConfirmed()):
+        item.contentTitle = keyboard.getText()
+        #itemlist.append( Item(channel=item.channel, action="findvideos", title=item.title, url=item.url, thumbnail=item.thumbnail, extra=item.extra, contentTitle=item.contentTitle, contentType=item.contentType, infoLabels=item.infoLabels, folder=True ) )
+        #itemlist.append( Item(channel=item.channel, action="findvideos", server=item.server, title=item.title, fulltitle=item.title, contentTitle=item.contentTitle, url=item.url , thumbnail=item.thumbnail, plot=item.plot, fanart=item.fanart, infoLabels=item.infoLabels , folder=True) )
+        import xbmcgui
+        xbmcgui.Dialog().ok('Show: ',item.contentTitle,str(item))
+        xbmc.executebuiltin('Container.Refresh')
+        return findvideos(item)
+        #itemlist.append( Item(channel=item.channel, action="findvideos", server=item.server, title=item.title, fulltitle=item.title, contentTitle=item.contentTitle, url=item.url , thumbnail=item.thumbnail, plot=item.plot, fanart=item.fanart, infoLabels=item.infoLabels , folder=False) )
+
+        xbmc.executebuiltin('Container.Refresh')
+
 def findvideos(item):
     logger.info("[newpct1.py] findvideos")
     itemlist=[]   
+
+    #import xbmcgui
+    #xbmcgui.Dialog().ok('Show: ' + item.show, "Titulo: " + item.contentTitle , "Tipo: " + item.contentType , "Año: " +  item.infoLabels["year"])
           
     ## Cualquiera de las tres opciones son válidas
     #item.url = item.url.replace("1.com/","1.com/ver-online/")
@@ -373,59 +409,63 @@ def findvideos(item):
 
     #<a href="http://tumejorjuego.com/download/index.php?link=descargar-torrent/058310_yo-frankenstein-blurayrip-ac3-51.html" title="Descargar torrent de Yo Frankenstein " class="btn-torrent" target="_blank">Descarga tu Archivo torrent!</a>
 
+    if MODO_EXTENDIDO and item.contentType=="movie":
+        titu=item.contentTitle.replace('HDR',"").replace('V.Extendida','').replace('Version Extendida','').replace('Montaje del Director','').replace('3D','').replace('HOU','').replace('AA','').replace('A.A','').replace('SBS','').replace('IMAX','').replace('_',' ')
+        fanart,thumbnail,plot,puntuacion,votos,fecha,genero = TMDb(titu,item.contentType,item.infoLabels["year"])
+        
+        if thumbnail == "" and MODO_MANUAL:
+            keyboard = xbmc.Keyboard(titu,'[COLOR yellow]"'+item.contentTitle+'"[/COLOR]' + " [COLOR magenta]No encontrada en TMDb,[COLOR cyan] modificar titulo...[/COLOR]")
+            keyboard.doModal()
+            if (keyboard.isConfirmed()):
+                titu = keyboard.getText()
+                fanart,thumbnail,plot,puntuacion,votos,fecha,genero = TMDb(titu,item.contentType,item.infoLabels["year"])
+
+        infoLabels={"rating":puntuacion,"votes":votos, "genre":genero, "year":fecha}
+        item.plot=plot
+        if MODO_CARATULA: caratula=thumbnail
+    else:
+        fanart=item.fanart
+        infoLabels=item.infoLabels
+
+    if title=='': title=item.title
+
     patron = '<a href="([^"]+)" title="[^"]+" class="btn-torrent" target="_blank">'
 
     # escraped torrent
     url = scrapertools.find_single_match(data,patron)
     if url!="":
-        itemlist.append( Item(channel=item.channel, action="play", server="torrent", title='[COLOR lime]' + title+" [COLOR cyan][torrent][/COLOR]", fulltitle=title, contentTitle=item.contentTitle, url=url , thumbnail=caratula, plot=item.plot, folder=False) )
+        itemlist.append( Item(channel=item.channel, action="play", server="torrent", title='[COLOR lime]' + title+" [COLOR cyan][torrent][/COLOR]", fulltitle=title, contentTitle=item.contentTitle, url=url , thumbnail=caratula, plot=item.plot, fanart=fanart, infoLabels=infoLabels , folder=False) )
 
-    # escraped ver vídeos, descargar vídeos un link, múltiples liks
-    data = data.replace("'",'"')
-    data = data.replace('javascript:;" onClick="popup("http://www.newpct1.com/pct1/library/include/ajax/get_modallinks.php?links=',"")
-    data = data.replace("http://tumejorserie.com/descargar/url_encript.php?link=","")
-    data = data.replace("$!","#!")
+        #if thumbnail == "":
+            #itemlist.append( Item(channel=item.channel, action="findtmdbvideos", server="torrent", title='[COLOR magenta]Buscar en TMDb[/COLOR]', fulltitle=title, contentTitle=item.contentTitle, url=url , thumbnail=caratula, plot=item.plot, fanart=fanart, infoLabels=infoLabels , folder=True) )
 
-    patron_descargar = '<div id="tab2"[^>]+>.*?</ul>'
-    patron_ver = '<div id="tab3"[^>]+>.*?</ul>'
+    if MODO_STREAMING:
 
-    match_ver = scrapertools.find_single_match(data,patron_ver)
-    match_descargar = scrapertools.find_single_match(data,patron_descargar)
+        # escraped ver vídeos, descargar vídeos un link, múltiples liks
+        data = data.replace("'",'"')
+        data = data.replace('javascript:;" onClick="popup("http://www.newpct1.com/pct1/library/include/ajax/get_modallinks.php?links=',"")
+        data = data.replace("http://tumejorserie.com/descargar/url_encript.php?link=","")
+        data = data.replace("$!","#!")
 
-    patron = '<div class="box1"><img src="([^"]+)".*?' # logo
-    patron+= '<div class="box2">([^<]+)</div>'         # servidor
-    patron+= '<div class="box3">([^<]+)</div>'         # idioma
-    patron+= '<div class="box4">([^<]+)</div>'         # calidad
-    patron+= '<div class="box5"><a href="([^"]+)".*?'  # enlace
-    patron+= '<div class="box6">([^<]+)</div>'         # titulo
+        patron_descargar = '<div id="tab2"[^>]+>.*?</ul>'
+        patron_ver = '<div id="tab3"[^>]+>.*?</ul>'
 
-    enlaces_ver = re.compile(patron,re.DOTALL).findall(match_ver)
-    enlaces_descargar = re.compile(patron,re.DOTALL).findall(match_descargar)
+        match_ver = scrapertools.find_single_match(data,patron_ver)
+        match_descargar = scrapertools.find_single_match(data,patron_descargar)
 
-    for logo, servidor, idioma, calidad, enlace, titulo in enlaces_ver:
-        servidor = servidor.replace("streamin","streaminto")
-        titulo = titulo+" ["+servidor+"]"
-        mostrar_server= True
-        if config.get_setting("hidepremium")=="true":
-            mostrar_server= servertools.is_server_enabled (servidor)
-        if mostrar_server:
-            try:
-                servers_module = __import__("servers."+servidor)
-                server_module = getattr(servers_module,servidor)
-                devuelve= server_module.find_videos(enlace)
-                if devuelve:
-                    enlace=devuelve[0][1]
-                    itemlist.append( Item(fanart=item.fanart, channel=item.channel, action="play", server=servidor, title='[COLOR yellow]' + titulo + '[/COLOR]', fulltitle = item.title, contentTitle=item.contentTitle,url=enlace , thumbnail=logo , plot=item.plot, folder=False) )
-            except:
-                pass
-        
-    for logo, servidor, idioma, calidad, enlace, titulo in enlaces_descargar:
-        servidor = servidor.replace("uploaded","uploadedto")
-        partes = enlace.split(" ")
-        p = 1
-        for enlace in partes:
-            parte_titulo = titulo+" (%s/%s)" % (p,len(partes)) + " ["+servidor+"]"
-            p+= 1
+        patron = '<div class="box1"><img src="([^"]+)".*?' # logo
+        patron+= '<div class="box2">([^<]+)</div>'         # servidor
+        patron+= '<div class="box3">([^<]+)</div>'         # idioma
+        patron+= '<div class="box4">([^<]+)</div>'         # calidad
+        patron+= '<div class="box5"><a href="([^"]+)".*?'  # enlace
+        patron+= '<div class="box6">([^<]+)</div>'         # titulo
+
+        enlaces_ver = re.compile(patron,re.DOTALL).findall(match_ver)
+        enlaces_descargar = re.compile(patron,re.DOTALL).findall(match_descargar)
+
+        for logo, servidor, idioma, calidad, enlace, titulo in enlaces_ver:
+            servidor = servidor.replace("streamin","streaminto")
+            titulo = titulo+" ["+servidor+"]"
             mostrar_server= True
             if config.get_setting("hidepremium")=="true":
                 mostrar_server= servertools.is_server_enabled (servidor)
@@ -436,12 +476,55 @@ def findvideos(item):
                     devuelve= server_module.find_videos(enlace)
                     if devuelve:
                         enlace=devuelve[0][1]
-                        itemlist.append( Item(fanart=item.fanart, channel=item.channel, action="play", server=servidor, title='[COLOR orange]' + parte_titulo + '[/COLOR]' , fulltitle = item.title, contentTitle=item.contentTitle,url=enlace , thumbnail=logo , plot=item.plot, folder=False) )
+                        itemlist.append( Item(fanart=fanart, channel=item.channel, action="play", server=servidor, title='[COLOR yellow]' + titulo + '[/COLOR]', fulltitle = item.title, contentTitle=item.contentTitle,url=enlace , thumbnail=logo , plot=item.plot, infoLabels=infoLabels , folder=False) )
                 except:
                     pass
+        
+    if MODO_STREAMING and MODO_DESCARGA:
+
+        for logo, servidor, idioma, calidad, enlace, titulo in enlaces_descargar:
+            servidor = servidor.replace("uploaded","uploadedto")
+            partes = enlace.split(" ")
+            p = 1
+            for enlace in partes:
+                parte_titulo = titulo+" (%s/%s)" % (p,len(partes)) + " ["+servidor+"]"
+                p+= 1
+                mostrar_server= True
+                if config.get_setting("hidepremium")=="true":
+                    mostrar_server= servertools.is_server_enabled (servidor)
+                if mostrar_server:
+                    try:
+                        servers_module = __import__("servers."+servidor)
+                        server_module = getattr(servers_module,servidor)
+                        devuelve= server_module.find_videos(enlace)
+                        if devuelve:
+                            enlace=devuelve[0][1]
+                            itemlist.append( Item(fanart=fanart, channel=item.channel, action="play", server=servidor, title='[COLOR orange]' + parte_titulo + '[/COLOR]' , fulltitle = item.title, contentTitle=item.contentTitle,url=enlace , thumbnail=logo , plot=item.plot, infoLabels=infoLabels , folder=False) )
+                    except:
+                        pass
     return itemlist
-    
-    
+
+def TMDb(title,tipo,year):
+	if tipo=="tvshow": tipo="tv"
+	data = re.sub(r'\n|\r|\t|\s{2}|&nbsp;',"",scrapertools.cachePage("http://api.themoviedb.org/3/search/" + tipo + "?api_key=cc4b67c52acb514bdf4931f7cedfd12b&query=" + title.replace(" ","%20") + "&year=" + year + "&language=es&include_adult=false"))
+	try: fanart = "https://image.tmdb.org/t/p/original" + scrapertools.get_match(data,'"page":1,.*?"backdrop_path":"\\\(.*?)"')
+	except: fanart = ""
+	try: caratula =  "https://image.tmdb.org/t/p/original" + scrapertools.get_match(data,'"page":1,.*?"poster_path":"\\\(.*?)"')
+	except: caratula =""
+	sinopsis =  scrapertools.find_single_match(data,'"page":1,.*?"overview":"(.*?)","').replace('\\"','"')
+	puntuacion = scrapertools.find_single_match(data,'"page":1,.*?"vote_average":(.*?)}')
+	votos = scrapertools.find_single_match(data,'"page":1,.*?"vote_count":(.*?),')
+	if tipo == "movie":fecha = scrapertools.find_single_match(data,'"page":1,.*?"release_date":"(.*?)","').split("-")[0]
+	else: fecha = scrapertools.find_single_match(data,'"page":1,.*?"first_air_date":"(.*?)","').split("-")[0]
+	listageneros = scrapertools.find_single_match(data,'"page":1,.*?"genre_ids":\[(.*?)\],"')
+	genero = ""
+	if listageneros != "":
+		listageneros2 = listageneros.split(",")
+		for g in listageneros2:
+			try: genero += Generos.get(g) + " - "
+			except: pass
+	return fanart,caratula,sinopsis,puntuacion,votos,fecha,genero.strip(" - ")
+  
 def episodios(item):
     # Necesario para las actualizaciones automaticas
     return completo(Item(channel=item.channel, url=item.url, show=item.show, extra= "serie_add"))

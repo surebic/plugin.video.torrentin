@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <channel>
 	<id>newpct_1</id>
-	<name>Newpct1.com</name>
+	<name>[COLOR yellow]Newpct1.com[/COLOR]</name>
 
 	<active>true</active>
 	<adult>false</adult>
@@ -12,7 +12,7 @@
 	<bannermenu>http://media.tvalacarta.info/pelisalacarta/bannermenu/newpct1.png</bannermenu>
 
 	<update_url>https://raw.githubusercontent.com/surebic/plugin.video.torrentin/master/resources/parches/pelisalacarta/channels/</update_url>
-	<version>20</version>
+	<version>21</version>
 
 	<changes>
 		<change>
@@ -42,9 +42,55 @@
 	<settings>
 		<id>include_in_global_search</id>
 		<type>bool</type>
-		<label>Incluir en busqueda global</label>
+		<label>Incluir en la búsqueda global</label>
 		<default>false</default>
 		<enabled>true</enabled>
 		<visible>true</visible>
 	</settings>
+
+	<settings>
+		<id>modo_grafico</id>
+		<type>bool</type>
+		<label>Buscar datos extra en TMDb</label>
+		<default>true</default>
+		<enabled>true</enabled>
+		<visible>true</visible>
+ 	</settings>
+
+	<settings>
+		<id>modo_preguntar</id>
+		<type>bool</type>
+		<label>Mostrar teclado para modificar el título de la película si no se encuentra en TMDb</label>
+		<default>true</default>
+		<enabled>true</enabled>
+		<visible>eq(-1 ,true)</visible>
+ 	</settings>
+
+	<settings>
+		<id>modo_caratula</id>
+		<type>bool</type>
+		<label>Mostrar carátula de TMDb en vez de la de la web</label>
+		<default>false</default>
+		<enabled>true</enabled>
+		<visible>eq(-2 ,true)</visible>
+ 	</settings>
+
+	<settings>
+		<id>modo_streaming</id>
+		<type>bool</type>
+		<label>Mostrar enlaces de streaming y descarga</label>
+		<default>true</default>
+		<enabled>true</enabled>
+		<visible>true</visible>
+ 	</settings>
+
+	<settings>
+		<id>modo_descarga</id>
+		<type>bool</type>
+		<label>Mostrar enlaces de descarga</label>
+		<default>false</default>
+		<enabled>true</enabled>
+		<visible>eq(-1 ,true)</visible>
+ 	</settings>
+
 </channel>
