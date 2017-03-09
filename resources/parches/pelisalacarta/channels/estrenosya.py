@@ -13,7 +13,6 @@ from core import config
 from core import scrapertools
 from core.item import Item
 
-__channel__ = "estrenosya"
 BASE_URL = "http://estrenosli.org"
 FANARTIMAGE = "http://i.imgur.com/EmmVJPc.jpg"
 THUMBNAILIMAGE = "http://i.imgur.com/CPqv4rz.jpg"
@@ -28,22 +27,22 @@ def mainlist(item):
     logger.info("pelisalacarta.channels.EstrenosYa mainlist")
     itemlist = []
 
-    itemlist.append( Item(channel=__channel__, action="estrenos" , title="[COLOR yellow]Cartelera  (Últimas)[/COLOR]", url="http://estrenosli.org/descarga-0-58126-0-0-fx-1-" , extra="1",contentType="movie",thumbnail= THUMBNAILIMAGE, fanart=FANARTIMAGE, folder=True))
-    itemlist.append( Item(channel=__channel__, action="categorias" , title="[COLOR yellow]Cartelera  (Por Géneros)[/COLOR]", url="http://estrenosli.org/descarga-0-58126-0-0-fx-1-" , extra="1",contentType="movie",thumbnail= THUMBNAILIMAGE, fanart=FANARTIMAGE, folder=True))
-    itemlist.append( Item(channel=__channel__, action="estrenos" , title="[COLOR orange]Películas DVD Rip  (Últimas)[/COLOR]", url="http://estrenosli.org/descarga-0-581210-0-0-fx-1-" , extra="1",contentType="movie",thumbnail= THUMBNAILIMAGE, fanart=FANARTIMAGE, folder=True))
-    itemlist.append( Item(channel=__channel__, action="categorias" , title="[COLOR orange]Películas DVD Rip  (Por Géneros)[/COLOR]", url="http://estrenosli.org/descarga-0-581210-0-0-fx-1-" , extra="1",contentType="movie",thumbnail= THUMBNAILIMAGE, fanart=FANARTIMAGE, folder=True))
-    itemlist.append( Item(channel=__channel__, action="estrenos" , title="[COLOR yellow]Películas HD Rip  (Últimas)[/COLOR]" ,  url="http://estrenosli.org/descarga-0-58128-0-0-fx-1-" , extra="1",contentType="movie",thumbnail= THUMBNAILIMAGE, fanart=FANARTIMAGE, folder=True))
-    itemlist.append( Item(channel=__channel__, action="categorias" , title="[COLOR yellow]Películas HD Rip  (Por Géneros)[/COLOR]" ,  url="http://estrenosli.org/descarga-0-58128-0-0-fx-1-" , extra="1",contentType="movie",thumbnail= THUMBNAILIMAGE, fanart=FANARTIMAGE, folder=True))
-    itemlist.append( Item(channel=__channel__, action="estrenos" , title="[COLOR orange]Películas subtituladas  (Últimas)[/COLOR]" ,  url="http://estrenosli.org/descarga-0-58127-0-0-fx-1-" , extra="1",contentType="movie",thumbnail= THUMBNAILIMAGE, fanart=FANARTIMAGE, folder=True))
-    itemlist.append( Item(channel=__channel__, action="categorias" , title="[COLOR orange]Películas subtituladas  (Por Géneros)[/COLOR]" ,  url="http://estrenosli.org/descarga-0-58127-0-0-fx-1-" , extra="1",contentType="movie",thumbnail= THUMBNAILIMAGE, fanart=FANARTIMAGE, folder=True))
-    itemlist.append( Item(channel=__channel__, action="estrenos" , title="[COLOR yellow]Películas V.O.  (Últimas)[/COLOR]" ,  url="http://estrenosli.org/descarga-0-5812255-0-0-fx-1-" , extra="1",contentType="movie",thumbnail= THUMBNAILIMAGE, fanart=FANARTIMAGE, folder=True))
-    itemlist.append( Item(channel=__channel__, action="categorias" , title="[COLOR yellow]Películas V.O.  (Por Géneros)[/COLOR]" ,  url="http://estrenosli.org/descarga-0-5812255-0-0-fx-1-" , extra="1",contentType="movie",thumbnail= THUMBNAILIMAGE, fanart=FANARTIMAGE, folder=True))
+    itemlist.append( Item(channel=item.channel, action="estrenos" , title="[COLOR yellow]Cartelera  (Últimas)[/COLOR]", url="http://estrenosli.org/descarga-0-58126-0-0-fx-1-" , extra="1",contentType="movie",thumbnail= THUMBNAILIMAGE, fanart=FANARTIMAGE, folder=True))
+    itemlist.append( Item(channel=item.channel, action="categorias" , title="[COLOR yellow]Cartelera  (Por Géneros)[/COLOR]", url="http://estrenosli.org/descarga-0-58126-0-0-fx-1-" , extra="1",contentType="movie",thumbnail= THUMBNAILIMAGE, fanart=FANARTIMAGE, folder=True))
+    itemlist.append( Item(channel=item.channel, action="estrenos" , title="[COLOR orange]Películas DVD Rip  (Últimas)[/COLOR]", url="http://estrenosli.org/descarga-0-581210-0-0-fx-1-" , extra="1",contentType="movie",thumbnail= THUMBNAILIMAGE, fanart=FANARTIMAGE, folder=True))
+    itemlist.append( Item(channel=item.channel, action="categorias" , title="[COLOR orange]Películas DVD Rip  (Por Géneros)[/COLOR]", url="http://estrenosli.org/descarga-0-581210-0-0-fx-1-" , extra="1",contentType="movie",thumbnail= THUMBNAILIMAGE, fanart=FANARTIMAGE, folder=True))
+    itemlist.append( Item(channel=item.channel, action="estrenos" , title="[COLOR yellow]Películas HD Rip  (Últimas)[/COLOR]" ,  url="http://estrenosli.org/descarga-0-58128-0-0-fx-1-" , extra="1",contentType="movie",thumbnail= THUMBNAILIMAGE, fanart=FANARTIMAGE, folder=True))
+    itemlist.append( Item(channel=item.channel, action="categorias" , title="[COLOR yellow]Películas HD Rip  (Por Géneros)[/COLOR]" ,  url="http://estrenosli.org/descarga-0-58128-0-0-fx-1-" , extra="1",contentType="movie",thumbnail= THUMBNAILIMAGE, fanart=FANARTIMAGE, folder=True))
+    itemlist.append( Item(channel=item.channel, action="estrenos" , title="[COLOR orange]Películas subtituladas  (Últimas)[/COLOR]" ,  url="http://estrenosli.org/descarga-0-58127-0-0-fx-1-" , extra="1",contentType="movie",thumbnail= THUMBNAILIMAGE, fanart=FANARTIMAGE, folder=True))
+    itemlist.append( Item(channel=item.channel, action="categorias" , title="[COLOR orange]Películas subtituladas  (Por Géneros)[/COLOR]" ,  url="http://estrenosli.org/descarga-0-58127-0-0-fx-1-" , extra="1",contentType="movie",thumbnail= THUMBNAILIMAGE, fanart=FANARTIMAGE, folder=True))
+    itemlist.append( Item(channel=item.channel, action="estrenos" , title="[COLOR yellow]Películas V.O.  (Últimas)[/COLOR]" ,  url="http://estrenosli.org/descarga-0-5812255-0-0-fx-1-" , extra="1",contentType="movie",thumbnail= THUMBNAILIMAGE, fanart=FANARTIMAGE, folder=True))
+    itemlist.append( Item(channel=item.channel, action="categorias" , title="[COLOR yellow]Películas V.O.  (Por Géneros)[/COLOR]" ,  url="http://estrenosli.org/descarga-0-5812255-0-0-fx-1-" , extra="1",contentType="movie",thumbnail= THUMBNAILIMAGE, fanart=FANARTIMAGE, folder=True))
 
-    itemlist.append( Item(channel=__channel__, action="estrenos" , title="[COLOR orange]Series  (Últimos Capítulos)[/COLOR]" ,  url="http://estrenosli.org/descarga-0-58122-0-0-fx-1-" , extra="1",contentType="tvshow",thumbnail= THUMBNAILIMAGE, fanart=FANARTIMAGE, folder=True))
-    itemlist.append( Item(channel=__channel__, action="categoriasaz" , title="[COLOR orange]Series  (Últimos Capítulos Por Letra)[/COLOR]" ,  url="http://estrenosli.org/descarga-0-58122-0-0-fx-1-" , extra="1",contentType="tvshow",thumbnail= THUMBNAILIMAGE, fanart=FANARTIMAGE, folder=True))
-    itemlist.append( Item(channel=__channel__, action="categorias" , title="[COLOR orange]Series  (Por Nombre de la Serie)[/COLOR]" , url="http://estrenosli.org/descarga-0-58122-0-0-fx-1-" , extra="1",contentType="tvshow",plot="Opcion muy lenta >1.100 Series",thumbnail= THUMBNAILIMAGE, fanart=FANARTIMAGE, folder=True))
-    itemlist.append( Item(channel=__channel__, action="search" , title="[COLOR lime]Buscar...[/COLOR]",thumbnail= SEARCHIMAGE, fanart=FANARTIMAGE ))
-    itemlist.append( Item(channel=__channel__, action="configuracion", title="[B][COLOR dodgerblue]Configuración del canal[/COLOR][/B]", thumbnail= THUMBNAILIMAGE,fanart= FANARTIMAGE, folder=False))
+    itemlist.append( Item(channel=item.channel, action="estrenos" , title="[COLOR orange]Series  (Últimos Capítulos)[/COLOR]" ,  url="http://estrenosli.org/descarga-0-58122-0-0-fx-1-" , extra="1",contentType="tvshow",thumbnail= THUMBNAILIMAGE, fanart=FANARTIMAGE, folder=True))
+    itemlist.append( Item(channel=item.channel, action="categoriasaz" , title="[COLOR orange]Series  (Últimos Capítulos Por Letra)[/COLOR]" ,  url="http://estrenosli.org/descarga-0-58122-0-0-fx-1-" , extra="1",contentType="tvshow",thumbnail= THUMBNAILIMAGE, fanart=FANARTIMAGE, folder=True))
+    itemlist.append( Item(channel=item.channel, action="categorias" , title="[COLOR orange]Series  (Por Nombre de la Serie)[/COLOR]" , url="http://estrenosli.org/descarga-0-58122-0-0-fx-1-" , extra="1",contentType="tvshow",plot="Opcion muy lenta >1.100 Series",thumbnail= THUMBNAILIMAGE, fanart=FANARTIMAGE, folder=True))
+    itemlist.append( Item(channel=item.channel, action="search" , title="[COLOR lime]Buscar...[/COLOR]",thumbnail= SEARCHIMAGE, fanart=FANARTIMAGE ))
+    itemlist.append( Item(channel=item.channel, action="configuracion", title="[B][COLOR dodgerblue]Configuración del canal[/COLOR][/B]", thumbnail= THUMBNAILIMAGE,fanart= FANARTIMAGE, folder=False))
     return itemlist
     
 def configuracion(item):
@@ -62,7 +61,7 @@ def categorias(item):
     matches = re.compile(patron,re.DOTALL).findall(data)
     scrapertools.printMatches(matches)
     for scrapedurl , scrapedcat in matches:
-        itemlist.append( Item(channel=__channel__, action="estrenos", title="[COLOR lime]"+scrapedcat+"[/COLOR]"  , url=scrapedurl , thumbnail= THUMBNAILIMAGE, fanart=FANARTIMAGE, extra=item.extra, contentType=item.contentType, folder=True) )
+        itemlist.append( Item(channel=item.channel, action="estrenos", title="[COLOR lime]"+scrapedcat+"[/COLOR]"  , url=scrapedurl , thumbnail= THUMBNAILIMAGE, fanart=FANARTIMAGE, extra=item.extra, contentType=item.contentType, folder=True) )
     return itemlist
     
 def categoriasaz(item):
@@ -76,7 +75,7 @@ def categoriasaz(item):
     scrapertools.printMatches(matches)
     for scrapedurl , scrapedcat in matches:
         url = urlparse.urljoin(BASE_URL,scrapedurl)
-        itemlist.append( Item(channel=__channel__, action="estrenos", title="[COLOR lime]Letra: "+scrapedcat+"[/COLOR]"  , url=url , thumbnail= THUMBNAILIMAGE, fanart=FANARTIMAGE, extra=item.extra, contentType=item.contentType, folder=True) )
+        itemlist.append( Item(channel=item.channel, action="estrenos", title="[COLOR lime]Letra: "+scrapedcat+"[/COLOR]"  , url=url , thumbnail= THUMBNAILIMAGE, fanart=FANARTIMAGE, extra=item.extra, contentType=item.contentType, folder=True) )
     return itemlist
 
 def estrenos(item):
@@ -121,8 +120,8 @@ def estrenos(item):
                 votos = ""
                 plot = acentos(scrapedplot)
                 genero = ""
-        itemlist.append( Item(channel=__channel__, action="entraenpeli", title= titulo , fulltitle=titulo, contentType=item.contentType,contentTitle=contentTitle,contentSerieName=contentTitle,url=url , thumbnail=thumbnail , plot=plot , fanart=fanart, extra="", seriecompleta=item.seriecompleta, folder=True , infoLabels={'year': scrapedtitle.split(" - ")[-1].strip() , "rating":puntuacion, "votes":votos, "genre":genero } ) )
-    if ">Siguiente &raquo;</a>" in data: itemlist.append( Item(channel=__channel__, action="estrenos", title="[COLOR cyan]>>> Página Siguiente[/COLOR]" , url=item.url , extra=pag_sig ,seriecompleta=item.seriecompleta, contentType=item.contentType, thumbnail= NEXTPAGEIMAGE , fanart=FANARTIMAGE, folder=True) )
+        itemlist.append( Item(channel=item.channel, action="entraenpeli", title= titulo , fulltitle=titulo, contentType=item.contentType,contentTitle=contentTitle,contentSerieName=contentTitle,context=["buscar_trailer"],url=url , thumbnail=thumbnail , plot=plot , fanart=fanart, extra="", seriecompleta=item.seriecompleta, folder=True , infoLabels={'year': scrapedtitle.split(" - ")[-1].strip() , "rating":puntuacion, "votes":votos, "genre":genero } ) )
+    if ">Siguiente &raquo;</a>" in data: itemlist.append( Item(channel=item.channel, action="estrenos", title="[COLOR cyan]>>> Página Siguiente[/COLOR]" , url=item.url , extra=pag_sig ,seriecompleta=item.seriecompleta, contentType=item.contentType, thumbnail= NEXTPAGEIMAGE , fanart=FANARTIMAGE, folder=True) )
     return itemlist
     
 def entraenpeli(item):
@@ -134,19 +133,19 @@ def entraenpeli(item):
     matches = re.compile(patron,re.DOTALL).findall(data)
     scrapertools.printMatches(matches)
     if len(matches)==0 :
-        itemlist.append( Item(channel=__channel__, title="[COLOR orange]No hay enlaces torrent para este vídeo...[/COLOR]", thumbnail =item.thumbnail, fanart=item.fanart,folder=False, infoLabels=item.infoLabels) )
+        itemlist.append( Item(channel=item.channel, title="[COLOR orange]No hay enlaces torrent para este vídeo...[/COLOR]", thumbnail =item.thumbnail, fanart=item.fanart,folder=False, infoLabels=item.infoLabels) )
         return itemlist
     for scrapedurl, scrapedtitle in matches:
         #title = "[COLOR yellow]" + scrapedtitle+ "[/COLOR]" + "[COLOR pink] [Torrent][/COLOR]"
         if item.contentType=="movie" and MODO_PLANO: title=item.contentTitle
         else: title = "[COLOR yellow]" + scrapedtitle+ "[/COLOR]" + "[COLOR pink] [Torrent][/COLOR]"
-        itemlist.append( Item(channel=__channel__, action="play", title=title , fulltitle=title, url=scrapedurl , thumbnail=item.thumbnail , plot=item.plot , fanart=item.fanart, folder=False, infoLabels=item.infoLabels) )
+        itemlist.append( Item(channel=item.channel, action="play", title=title , fulltitle=title, url=scrapedurl , thumbnail=item.thumbnail ,contentTitle=item.contentTitle, context=item.context ,  plot=item.plot , fanart=item.fanart, folder=False, infoLabels=item.infoLabels) )
         if item.contentType=="tvshow" and not item.seriecompleta == "1":
             patron2 = 'linkMoreMovies.*?a href="(.*?)1-.fx".*? peliculas de (.*?)</a>'
             matches2 = re.compile(patron2,re.DOTALL).findall(data)
             for serie,seriename in matches2:
                 serie = serie.replace("descargar-torrent","descarga").replace("-0-0-0-0-","-0-0-")
-                itemlist.append( Item(channel=__channel__, action="estrenos", title="[COLOR cyan][Ir a Serie][COLOR orange] "+seriename + "[/COLOR]" , url=serie , extra="1", contentType=item.contentType , contentSerieName=seriename, seriecompleta="1", thumbnail=item.thumbnail  , fanart=item.fanart, folder=True) )
+                itemlist.append( Item(channel=item.channel, action="estrenos", title="[COLOR cyan][Ir a Serie][COLOR orange] "+seriename + "[/COLOR]" , url=serie , extra="1", contentType=item.contentType , contentSerieName=seriename, contentTitle=item.contentTitle,context=item.context , seriecompleta="1", thumbnail=item.thumbnail  , fanart=item.fanart, folder=True) )
     return itemlist
 
 def play(item):
@@ -159,7 +158,7 @@ def play(item):
     scrapertools.printMatches(matches)
     for scrapedurl in matches:
         url = urlparse.urljoin(BASE_URL+"/",scrapedurl)
-        itemlist.append( Item(channel=__channel__, action="play", server="torrent", title=item.title , fulltitle=item.title, url=url , thumbnail=item.thumbnail , plot=item.plot , fanart=item.fanart, extra="", folder=False) )
+        itemlist.append( Item(channel=item.channel, action="play", server="torrent", title=item.title , fulltitle=item.title, url=url , thumbnail=item.thumbnail , plot=item.plot , fanart=item.fanart, extra="", folder=False) )
     return itemlist
 
 def search(item,texto):
@@ -201,7 +200,7 @@ def lista(item):
         thumb = urlparse.urljoin(BASE_URL,scrapedthumb)
         torrurl = scrapertools.find_single_match(scrapedurl2,'(/descargar-torrent-.*?)"')
         url = urlparse.urljoin(BASE_URL,torrurl)
-        itemlist.append( Item(channel=__channel__, action="entraenpeli", title=titulo , fulltitle=titulo, url=url , thumbnail=thumb , plot=acentos(scrapedplot) , contentType=contentType , contentTitle=contentTitle, contentSerieName=contentTitle, infoLabels={'year': scrapedtitle.split(" - ")[-1].strip()} , fanart=FANARTIMAGE, extra="", folder=True) )
+        itemlist.append( Item(channel=item.channel, action="entraenpeli", title=titulo , fulltitle=titulo, url=url , thumbnail=thumb , plot=acentos(scrapedplot) , contentType=contentType , contentTitle=contentTitle, contentSerieName=contentTitle,context=["buscar_trailer"] , infoLabels={'year': scrapedtitle.split(" - ")[-1].strip()} , fanart=FANARTIMAGE, extra="", folder=True) )
     return itemlist
 
 def TMDb(title,year,tipo):

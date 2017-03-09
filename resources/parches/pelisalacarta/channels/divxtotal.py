@@ -16,7 +16,6 @@ from core import config
 from core import scrapertools
 from core.item import Item
 
-CHANNEL_NAME = "divxtotal"
 DEBUG = config.get_setting("debug")
 BASE_URL = "http://www.divxtotal.com"
 FANARTIMAGE = "http://i.imgur.com/6ETdWOY.jpg"
@@ -30,17 +29,17 @@ Generos = {"28":"Acción","12":"Aventura","16":"Animación","35":"Comedia","80":
 def mainlist(item):
     logger.info("pelisalacarta.channels.divxtotal mainlist")
     itemlist = []
-    itemlist.append( Item(channel=CHANNEL_NAME, action="menupelis" , title="[COLOR yellow][B]Películas   (Por Fecha)[/B][/COLOR]" , url="http://www.divxtotal.com/peliculas/" , extra="http://www.divxtotal.com/peliculas/page/",thumbnail= THUMBNAILIMAGE,fanart= FANARTIMAGE, folder=True))
-    itemlist.append( Item(channel=CHANNEL_NAME, action="menupelisazgen" , title="[COLOR yellow][B]Películas   (Por Género)[/B][/COLOR]" , url="http://www.divxtotal.com/peliculas/",extra="gen",thumbnail= THUMBNAILIMAGE,fanart= FANARTIMAGE,  folder=True))
-    itemlist.append( Item(channel=CHANNEL_NAME, action="menupelisazgen" , title="[COLOR yellow][B]Películas   (Por Letra A-Z)[/B][/COLOR]" , url="http://www.divxtotal.com/peliculas/",extra="az", thumbnail= THUMBNAILIMAGE,fanart= FANARTIMAGE, folder=True))
+    itemlist.append( Item(channel=item.channel, action="menupelis" , title="[COLOR yellow][B]Películas   (Por Fecha)[/B][/COLOR]" , url="http://www.divxtotal.com/peliculas/" , extra="http://www.divxtotal.com/peliculas/page/",thumbnail= THUMBNAILIMAGE,fanart= FANARTIMAGE, folder=True))
+    itemlist.append( Item(channel=item.channel, action="menupelisazgen" , title="[COLOR yellow][B]Películas   (Por Género)[/B][/COLOR]" , url="http://www.divxtotal.com/peliculas/",extra="gen",thumbnail= THUMBNAILIMAGE,fanart= FANARTIMAGE,  folder=True))
+    itemlist.append( Item(channel=item.channel, action="menupelisazgen" , title="[COLOR yellow][B]Películas   (Por Letra A-Z)[/B][/COLOR]" , url="http://www.divxtotal.com/peliculas/",extra="az", thumbnail= THUMBNAILIMAGE,fanart= FANARTIMAGE, folder=True))
 
-    itemlist.append( Item(channel=CHANNEL_NAME, action="menuseries" , title="[COLOR orange][B]Series   (Últimos capítulos - Por Fecha)[/B][/COLOR]" , url="http://www.divxtotal.com/series/",extra="http://www.divxtotal.com/series/page/",thumbnail= THUMBNAILIMAGE,fanart= FANARTIMAGE, folder=True))
-    itemlist.append( Item(channel=CHANNEL_NAME, action="menuseriesaz" , title="[COLOR orange][B]Series   (Últimos capítulos - Por Letra A-Z)[/B][/COLOR]" , url="http://www.divxtotal.com/series/",thumbnail= THUMBNAILIMAGE,fanart= FANARTIMAGE, folder=True))
-    itemlist.append( Item(channel=CHANNEL_NAME, action="menuserieslistado" , title="[COLOR orange][B]Series   (Listado completo)[/B][/COLOR]" , url="http://www.divxtotal.com/series/",plot="[B] ¡¡¡ATENCION!!! Opción muy lenta, tarda bastante en obtener el listado completo de todas las series ( > 1.000 series).[/B]",thumbnail= THUMBNAILIMAGE,fanart= FANARTIMAGE, folder=True))
+    itemlist.append( Item(channel=item.channel, action="menuseries" , title="[COLOR orange][B]Series   (Últimos capítulos - Por Fecha)[/B][/COLOR]" , url="http://www.divxtotal.com/series/",extra="http://www.divxtotal.com/series/page/",thumbnail= THUMBNAILIMAGE,fanart= FANARTIMAGE, folder=True))
+    itemlist.append( Item(channel=item.channel, action="menuseriesaz" , title="[COLOR orange][B]Series   (Últimos capítulos - Por Letra A-Z)[/B][/COLOR]" , url="http://www.divxtotal.com/series/",thumbnail= THUMBNAILIMAGE,fanart= FANARTIMAGE, folder=True))
+    itemlist.append( Item(channel=item.channel, action="menuserieslistado" , title="[COLOR orange][B]Series   (Listado completo)[/B][/COLOR]" , url="http://www.divxtotal.com/series/",plot="[B] ¡¡¡ATENCION!!! Opción muy lenta, tarda bastante en obtener el listado completo de todas las series ( > 1.000 series).[/B]",thumbnail= THUMBNAILIMAGE,fanart= FANARTIMAGE, folder=True))
 
-    itemlist.append( Item(channel=CHANNEL_NAME, action="search" , title="[COLOR yellow][B]Buscador (General)...[/B][/COLOR]",plot="[B]Busca en todo... (Peliculas, Series, Musica, Programas, Otros).[/B]",thumbnail= SEARCHIMAGE,fanart= FANARTIMAGE ))
-    itemlist.append( Item(channel=CHANNEL_NAME, action="listaseries" , title="[COLOR orange][B]Buscador (Sólo Series)...[/B][/COLOR]", plot="[B]Busca solamente las Series TV (Se filtran los resultados para mostrar solo las series, por lo que si aparece [COLOR magenta]>>>Página siguiente[/COLOR] picar ahi porque puede haber mas resultados en las siguientes páginas).[/B]",thumbnail= SEARCHIMAGE,fanart= FANARTIMAGE ))
-    itemlist.append( Item(channel=CHANNEL_NAME, action="configuracion", title="[B][COLOR dodgerblue]Configuración del canal[/COLOR][/B]", thumbnail= THUMBNAILIMAGE,fanart= FANARTIMAGE, folder=False))
+    itemlist.append( Item(channel=item.channel, action="search" , title="[COLOR yellow][B]Buscador (General)...[/B][/COLOR]",plot="[B]Busca en todo... (Peliculas, Series, Musica, Programas, Otros).[/B]",thumbnail= SEARCHIMAGE,fanart= FANARTIMAGE ))
+    itemlist.append( Item(channel=item.channel, action="listaseries" , title="[COLOR orange][B]Buscador (Sólo Series)...[/B][/COLOR]", plot="[B]Busca solamente las Series TV (Se filtran los resultados para mostrar solo las series, por lo que si aparece [COLOR magenta]>>>Página siguiente[/COLOR] picar ahi porque puede haber mas resultados en las siguientes páginas).[/B]",thumbnail= SEARCHIMAGE,fanart= FANARTIMAGE ))
+    itemlist.append( Item(channel=item.channel, action="configuracion", title="[B][COLOR dodgerblue]Configuración del canal[/COLOR][/B]", thumbnail= THUMBNAILIMAGE,fanart= FANARTIMAGE, folder=False))
     return itemlist
 
 def configuracion(item):
@@ -76,7 +75,7 @@ def menupelisazgen(item):
             url= BASE_URL+"/category/" + scrapedtitle
             titulo = "[B][COLOR yellow]Género:  [/COLOR][COLOR lime]" + scrapedtitle + "[/COLOR][/B]"
         else: titulo = "Titulo"
-        itemlist.append( Item(channel=CHANNEL_NAME, action="menupelis", title=titulo , fulltitle=titulo, url=url , thumbnail=SEARCHIMAGE , plot="" , folder=True) )
+        itemlist.append( Item(channel=item.channel, action="menupelis", title=titulo , fulltitle=titulo, url=url , thumbnail=SEARCHIMAGE , plot="" , folder=True) )
     return itemlist
 
 def menupelis(item):
@@ -110,13 +109,13 @@ def menupelis(item):
             else: puntuaciontitle = ""
             titulo = "[B][COLOR yellow]" + scrapedtitle.strip()+ "[/COLOR][/B] [COLOR cyan]("+scrapedgen+")" + "[/COLOR]" + puntuaciontitle + " [COLOR limegreen]("+scrapedtam+")[/COLOR]"
         else: titulo = scrapedtitle.strip()
-        itemlist.append( Item(channel=CHANNEL_NAME, action="entraenpeli", title=titulo , fulltitle=titulo, contentType="movie" , contentTitle=scrapedtitle.strip() ,  url=scrapedurl , thumbnail=thumbnail , plot=plot , fanart= fanart, extra=scrapedurl, infoLabels={"rating":puntuacion,"votes":votos, "genre":genero, "year":fecha}, folder=True) )
+        itemlist.append( Item(channel=item.channel, action="entraenpeli", title=titulo , fulltitle=titulo, contentType="movie" , contentTitle=scrapedtitle.strip() , context=["buscar_trailer"] , url=scrapedurl , thumbnail=thumbnail , plot=plot , fanart= fanart, extra=scrapedurl, infoLabels={"rating":puntuacion,"votes":votos, "genre":genero, "year":fecha}, folder=True) )
     patronvideos  = "pagination.*?class='current'.*?<a href='(.*?)'.*?</div>"
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
     scrapertools.printMatches(matches)
     if len(matches)>0:
         next_page_url = matches[0]
-        itemlist.append( Item(channel=CHANNEL_NAME, action="menupelis", title="[B][COLOR magenta]>>> Página siguiente[/COLOR][/B]" , url=next_page_url , extra=item.extra , thumbnail= NEXTPAGEIMAGE,fanart= FANARTIMAGE , folder=True) )
+        itemlist.append( Item(channel=item.channel, action="menupelis", title="[B][COLOR magenta]>>> Página siguiente[/COLOR][/B]" , url=next_page_url , extra=item.extra , thumbnail= NEXTPAGEIMAGE,fanart= FANARTIMAGE , folder=True) )
     return itemlist
 
 def entraenpeli(item):
@@ -137,7 +136,7 @@ def entraenpeli(item):
             item.contentTitle=item.show
             item.fanart = fanart
             item.infoLabels={"rating":puntuacion,"votes":votos, "genre":genero, "year":fecha}
-        itemlist.append( Item(channel=CHANNEL_NAME, action="play", server="torrent", title=title , fulltitle=title, contentTitle=item.contentTitle , contentType="movie" , url=scrapedurl , thumbnail=scrapedthumb , plot=plot , viewmode="movie_with_plot", fanart=item.fanart , infoLabels=item.infoLabels, folder=False) )
+        itemlist.append( Item(channel=item.channel, action="play", server="torrent", title=title , fulltitle=title, contentTitle=item.contentTitle , context=item.context , contentType="movie" , url=scrapedurl , thumbnail=scrapedthumb , plot=plot , viewmode="movie_with_plot", fanart=item.fanart , infoLabels=item.infoLabels, folder=False) )
     return itemlist
 
 def getthumbnail(url):
@@ -160,7 +159,7 @@ def menuserieslistado(item):
     scrapertools.printMatches(matches)
     for scrapedurl,scrapedtitle in matches:
         titulo = "[COLOR orange]" + scrapedtitle.capitalize().replace("-"," ") + "[/COLOR]"
-        itemlist.append( Item(channel=CHANNEL_NAME, action="entraenserie", title=titulo , fulltitle=titulo, contentSerieName=scrapedtitle, contenType="tvshow" ,  url=scrapedurl , thumbnail="" , plot="" , folder=True) )
+        itemlist.append( Item(channel=item.channel, action="entraenserie", title=titulo , fulltitle=titulo, contentSerieName=scrapedtitle, contenType="tvshow" , context=["buscar_trailer"] , url=scrapedurl , thumbnail="" , plot="" , folder=True) )
     return itemlist
 
 def menuseriesaz(item):
@@ -176,7 +175,7 @@ def menuseriesaz(item):
         url = BASE_URL + scrapedurl
         titulo = "[B][COLOR orange]Letra:  [/COLOR][COLOR lime]" + scrapedtitle.upper() + "[/COLOR][/B]"
         extra = url + "page/"
-        itemlist.append( Item(channel=CHANNEL_NAME, action="menuseries", title=titulo , fulltitle=titulo, url=url , thumbnail="" , extra=extra, plot="" , folder=True) )
+        itemlist.append( Item(channel=item.channel, action="menuseries", title=titulo , fulltitle=titulo, url=url , thumbnail="" , extra=extra, plot="" , folder=True) )
     return itemlist
 
 def menuseries(item):
@@ -192,14 +191,15 @@ def menuseries(item):
     scrapertools.printMatches(matches)
     for scrapeddir,scrapedthumb,scrapedtitle,scrapedfecha in matches:
         title = "[B][COLOR orange]" + scrapedtitle + "[/COLOR][/B] [COLOR dodgerblue]("+scrapedfecha+")[/COLOR]"
-        itemlist.append( Item(channel=CHANNEL_NAME, action="entraenserie",contentSerieName=re.sub(r"\d{1,2}[x]\d{2}|[-]","",scrapedtitle).strip(), contentType="tvshow",title=title , fulltitle = title, url=scrapeddir , thumbnail=scrapedthumb , fanart=FANARTIMAGE, plot=
+        contentSerieName=re.sub(r"\d{1,2}[x]\d{2}|[-]","",scrapedtitle).strip()
+        itemlist.append( Item(channel=item.channel, action="entraenserie",contentSerieName=contentSerieName, contentType="tvshow",contentTitle=contentSerieName , context=["buscar_trailer"],title=title , fulltitle = title, url=scrapeddir , thumbnail=scrapedthumb , fanart=FANARTIMAGE, plot=
 "" , folder=True) )
     patronvideos  = "pagination.*?class='current'.*?<a href='(.*?)'.*?</div>"
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
     scrapertools.printMatches(matches)
     if len(matches)>0:
         next_page_url = matches[0]
-        itemlist.append( Item(channel=CHANNEL_NAME, action="menuseries", title="[B][COLOR magenta]>>> Página siguiente[/COLOR][/B]" , url=next_page_url , extra=item.extra , thumbnail= NEXTPAGEIMAGE,fanart= FANARTIMAGE , folder=True) )
+        itemlist.append( Item(channel=item.channel, action="menuseries", title="[B][COLOR magenta]>>> Página siguiente[/COLOR][/B]" , url=next_page_url , extra=item.extra , thumbnail= NEXTPAGEIMAGE,fanart= FANARTIMAGE , folder=True) )
     return itemlist
     
 def entraenserie(item):
@@ -229,7 +229,7 @@ def entraenserie(item):
         scrapedfecha=scrapedfecha.replace("\n","")
         if scrapedfecha != "" : scrapedfecha = " [COLOR dodgerblue](" + scrapedfecha + ")[/COLOR]"
         title = "[B][COLOR orange]" + scrapedtitle + "[/COLOR][/B]" +scrapedfecha
-        itemlist.append( Item(channel=CHANNEL_NAME, action="play", server="torrent", title=title , fulltitle = title, contentSerieName=scrapedtituloserie , contentType="tvshow" , url=scrapedurl , thumbnail=item.thumbnail , fanart=scrapedthumb, plot=plot , folder=False , infoLabels=infoLabels) )
+        itemlist.append( Item(channel=item.channel, action="play", server="torrent", title=title , fulltitle = title, contentSerieName=scrapedtituloserie , contentTitle=scrapedtituloserie , context=item.context , contentType="tvshow" , url=scrapedurl , thumbnail=item.thumbnail , fanart=scrapedthumb, plot=plot , folder=False , infoLabels=infoLabels) )
     return itemlist
 
 # Buscadores
@@ -278,13 +278,13 @@ def lista(item):
                 contentType="movie"
             else: show = ""
         titulo = "[B][COLOR yellow]" + scrapedtitle + "[/COLOR][/B] "+scrapedfecha+" [COLOR limegreen]("+scrapedtam+")[/COLOR]"
-        itemlist.append( Item(channel=CHANNEL_NAME, action=accion, title=titulo , fulltitle=titulo, contentType=contentType , contentSerieName=show , contentTitle=show , url=scrapedurl , thumbnail="" , plot="" , show=show , folder=True) )
+        itemlist.append( Item(channel=item.channel, action=accion, title=titulo , fulltitle=titulo, contentType=contentType , contentSerieName=show , contentTitle=show , context=["buscar_trailer"] , url=scrapedurl , thumbnail="" , plot="" , show=show , folder=True) )
     patronvideos  = "pagination.*?class='current'.*?<a href='(.*?)'.*?</div>"
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
     scrapertools.printMatches(matches)
     if len(matches)>0:
         next_page_url = matches[0]
-        itemlist.append( Item(channel=CHANNEL_NAME, action="lista", title="[COLOR magenta]>>> Página siguiente[/COLOR]" , url=next_page_url , extra= "", thumbnail= NEXTPAGEIMAGE,fanart= FANARTIMAGE , folder=True) )
+        itemlist.append( Item(channel=item.channel, action="lista", title="[COLOR magenta]>>> Página siguiente[/COLOR]" , url=next_page_url , extra= "", thumbnail= NEXTPAGEIMAGE,fanart= FANARTIMAGE , folder=True) )
     return itemlist
     
 def listaseries(item):
@@ -312,13 +312,13 @@ def listaseries(item):
     for scrapedurl,scrapedtitle,scrapedfecha,scrapedtam in matches:
         if scrapedtam == "N/A":
             titulo = "[B][COLOR yellow]" + scrapedtitle + "[/COLOR][/B] [COLOR dodgerblue]("+scrapedfecha+")[/COLOR]"
-            itemlist.append( Item(channel=CHANNEL_NAME, action="entraenserie", show=re.sub(r"\d{1,2}[x]\d{2}|[-]","",scrapedtitle).strip(), title=titulo , fulltitle=titulo, url=scrapedurl , thumbnail="" , plot="" , folder=True) )
+            itemlist.append( Item(channel=item.channel, action="entraenserie", show=re.sub(r"\d{1,2}[x]\d{2}|[-]","",scrapedtitle).strip(), context=["buscar_trailer"] , title=titulo , fulltitle=titulo, url=scrapedurl , thumbnail="" , plot="" , folder=True) )
     patronvideos  = "pagination.*?class='current'.*?<a href='(.*?)'.*?</div>"
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
     scrapertools.printMatches(matches)
     if len(matches)>0:
         next_page_url = matches[0]
-        itemlist.append( Item(channel=CHANNEL_NAME, action="listaseries", title="[COLOR magenta]>>> Página siguiente  [COLOR dodgerblue](Puede haber más)[/COLOR]" , url=next_page_url , extra= "", thumbnail= NEXTPAGEIMAGE,fanart= FANARTIMAGE , folder=True) )
+        itemlist.append( Item(channel=item.channel, action="listaseries", title="[COLOR magenta]>>> Página siguiente  [COLOR dodgerblue](Puede haber más)[/COLOR]" , url=next_page_url , extra= "", thumbnail= NEXTPAGEIMAGE,fanart= FANARTIMAGE , folder=True) )
     return itemlist
 
 def TMDb(title,tipo):

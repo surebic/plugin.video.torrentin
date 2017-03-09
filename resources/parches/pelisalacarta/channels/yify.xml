@@ -11,8 +11,8 @@
 	<bannermenu></bannermenu>
 
 	<update_url>https://raw.githubusercontent.com/surebic/plugin.video.torrentin/master/resources/parches/pelisalacarta/channels/</update_url>
-	<version>11</version>
-	<date>02/03/2017</date>
+	<version>12</version>
+	<date>09/03/2017</date>
 	<changes>Adaptado al nuevo dominio yts.ag por cierre de yts.to, arreglado y mejorado (01/2017)</changes>
 
 	<categories>

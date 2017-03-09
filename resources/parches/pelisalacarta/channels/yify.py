@@ -18,7 +18,6 @@ from core import config
 from core import scrapertools
 from core.item import Item
 
-__channel__ = "yify"
 DEBUG = config.get_setting("debug")
 FANARTIMAGE = "http://i.imgur.com/UKFZyfQ.jpg"
 THUMBNAILIMAGE = "http://i.imgur.com/9LWPgxZ.png"
@@ -31,27 +30,27 @@ MODO_PLANO = config.get_setting('only_filmname', "yify")
 def mainlist(item):
     logger.info("pelisalacarta.channels.YTS mainlist")
     itemlist = []
-    itemlist.append( Item(channel=__channel__, action="estrenos" , title="[B][COLOR yellow]Latest Movies (All Qualities)[/COLOR][/B]",show="all" , url="https://yts.ag/browse-movies" , extra="1",thumbnail= THUMBNAILIMAGE, fanart=FANARTIMAGE, folder=True))
+    itemlist.append( Item(channel=item.channel, action="estrenos" , title="[B][COLOR yellow]Latest Movies (All Qualities)[/COLOR][/B]",show="all" , url="https://yts.ag/browse-movies" , extra="1",thumbnail= THUMBNAILIMAGE, fanart=FANARTIMAGE, folder=True))
 
-    itemlist.append( Item(channel=__channel__, action="estrenos" , title="[B][COLOR yellow]Latest Movies (720p)[/COLOR][/B]",show="720p" , url="https://yts.ag/browse-movies" , extra="1",thumbnail= THUMBNAILIMAGE, fanart=FANARTIMAGE, folder=True))
-    itemlist.append( Item(channel=__channel__, action="estrenos" , title="[B][COLOR yellow]Latest Movies (1080p)[/COLOR][/B]",show="1080p" , url="https://yts.ag/browse-movies" , extra="1",thumbnail= THUMBNAILIMAGE, fanart=FANARTIMAGE, folder=True))
-    itemlist.append( Item(channel=__channel__, action="estrenos" , title="[B][COLOR yellow]Latest Movies (3D)[/COLOR][/B]",show="3D" , url="https://yts.ag/browse-movies" , extra="1",thumbnail= THUMBNAILIMAGE, fanart=FANARTIMAGE, folder=True))
+    itemlist.append( Item(channel=item.channel, action="estrenos" , title="[B][COLOR yellow]Latest Movies (720p)[/COLOR][/B]",show="720p" , url="https://yts.ag/browse-movies" , extra="1",thumbnail= THUMBNAILIMAGE, fanart=FANARTIMAGE, folder=True))
+    itemlist.append( Item(channel=item.channel, action="estrenos" , title="[B][COLOR yellow]Latest Movies (1080p)[/COLOR][/B]",show="1080p" , url="https://yts.ag/browse-movies" , extra="1",thumbnail= THUMBNAILIMAGE, fanart=FANARTIMAGE, folder=True))
+    itemlist.append( Item(channel=item.channel, action="estrenos" , title="[B][COLOR yellow]Latest Movies (3D)[/COLOR][/B]",show="3D" , url="https://yts.ag/browse-movies" , extra="1",thumbnail= THUMBNAILIMAGE, fanart=FANARTIMAGE, folder=True))
 
-    itemlist.append( Item(channel=__channel__, action="estrenos" , title="[B][COLOR yellow]Most Downloaded Movies (720p)[/COLOR][/B]",show="720p" , url="https://yts.ag/browse-movies/0/all/all/0/downloads" , extra="1",thumbnail= THUMBNAILIMAGE, fanart=FANARTIMAGE, folder=True))
-    itemlist.append( Item(channel=__channel__, action="estrenos" , title="[B][COLOR yellow]Most Downloaded Movies (1080p)[/COLOR][/B]",show="1080p" , url="https://yts.ag/browse-movies/0/all/all/0/downloads" , extra="1",thumbnail= THUMBNAILIMAGE, fanart=FANARTIMAGE, folder=True))
-    itemlist.append( Item(channel=__channel__, action="estrenos" , title="[B][COLOR yellow]Most Downloaded Movies (3D)[/COLOR][/B]" , show="3D", url="https://yts.ag/browse-movies/0/all/all/0/downloads" , extra="1",thumbnail= THUMBNAILIMAGE, fanart=FANARTIMAGE, folder=True))
+    itemlist.append( Item(channel=item.channel, action="estrenos" , title="[B][COLOR yellow]Most Downloaded Movies (720p)[/COLOR][/B]",show="720p" , url="https://yts.ag/browse-movies/0/all/all/0/downloads" , extra="1",thumbnail= THUMBNAILIMAGE, fanart=FANARTIMAGE, folder=True))
+    itemlist.append( Item(channel=item.channel, action="estrenos" , title="[B][COLOR yellow]Most Downloaded Movies (1080p)[/COLOR][/B]",show="1080p" , url="https://yts.ag/browse-movies/0/all/all/0/downloads" , extra="1",thumbnail= THUMBNAILIMAGE, fanart=FANARTIMAGE, folder=True))
+    itemlist.append( Item(channel=item.channel, action="estrenos" , title="[B][COLOR yellow]Most Downloaded Movies (3D)[/COLOR][/B]" , show="3D", url="https://yts.ag/browse-movies/0/all/all/0/downloads" , extra="1",thumbnail= THUMBNAILIMAGE, fanart=FANARTIMAGE, folder=True))
 
-    itemlist.append( Item(channel=__channel__, action="estrenos" , title="[B][COLOR yellow]Most Rated Movies (720p)[/COLOR][/B]",show="720p" , url="https://yts.ag/browse-movies/0/all/all/0/rating" , extra="1",thumbnail= THUMBNAILIMAGE, fanart=FANARTIMAGE, folder=True))
-    itemlist.append( Item(channel=__channel__, action="estrenos" , title="[B][COLOR yellow]Most Rated Movies (1080p)[/COLOR][/B]",show="1080p" , url="https://yts.ag/browse-movies/0/all/all/0/rating" , extra="1",thumbnail= THUMBNAILIMAGE, fanart=FANARTIMAGE, folder=True))
-    itemlist.append( Item(channel=__channel__, action="estrenos" , title="[B][COLOR yellow]Most Rated Movies (3D)[/COLOR][/B]" , show="3D", url="https://yts.ag/browse-movies/0/all/all/0/rating" , extra="1",thumbnail= THUMBNAILIMAGE, fanart=FANARTIMAGE, folder=True))
+    itemlist.append( Item(channel=item.channel, action="estrenos" , title="[B][COLOR yellow]Most Rated Movies (720p)[/COLOR][/B]",show="720p" , url="https://yts.ag/browse-movies/0/all/all/0/rating" , extra="1",thumbnail= THUMBNAILIMAGE, fanart=FANARTIMAGE, folder=True))
+    itemlist.append( Item(channel=item.channel, action="estrenos" , title="[B][COLOR yellow]Most Rated Movies (1080p)[/COLOR][/B]",show="1080p" , url="https://yts.ag/browse-movies/0/all/all/0/rating" , extra="1",thumbnail= THUMBNAILIMAGE, fanart=FANARTIMAGE, folder=True))
+    itemlist.append( Item(channel=item.channel, action="estrenos" , title="[B][COLOR yellow]Most Rated Movies (3D)[/COLOR][/B]" , show="3D", url="https://yts.ag/browse-movies/0/all/all/0/rating" , extra="1",thumbnail= THUMBNAILIMAGE, fanart=FANARTIMAGE, folder=True))
 
-    itemlist.append( Item(channel=__channel__, action="search" , title="[B][COLOR lime]Search (720p)[/COLOR][/B]",show="720p",thumbnail= SEARCHIMAGE, fanart=FANARTIMAGE ))
-    itemlist.append( Item(channel=__channel__, action="search" , title="[B][COLOR lime]Search (1080p)[/COLOR][/B]",show="1080p",thumbnail= SEARCHIMAGE, fanart=FANARTIMAGE ))
-    itemlist.append( Item(channel=__channel__, action="search" , title="[B][COLOR lime]Search (3D)[/COLOR][/B]",show="3D",thumbnail= SEARCHIMAGE, fanart=FANARTIMAGE ))
+    itemlist.append( Item(channel=item.channel, action="search" , title="[B][COLOR lime]Search (720p)[/COLOR][/B]",show="720p",thumbnail= SEARCHIMAGE, fanart=FANARTIMAGE ))
+    itemlist.append( Item(channel=item.channel, action="search" , title="[B][COLOR lime]Search (1080p)[/COLOR][/B]",show="1080p",thumbnail= SEARCHIMAGE, fanart=FANARTIMAGE ))
+    itemlist.append( Item(channel=item.channel, action="search" , title="[B][COLOR lime]Search (3D)[/COLOR][/B]",show="3D",thumbnail= SEARCHIMAGE, fanart=FANARTIMAGE ))
 
-    itemlist.append( Item(channel=__channel__, action="advsearch" , title="[B][COLOR cyan]Advanced Search[/COLOR][/B]",thumbnail= SEARCHIMAGE, fanart=FANARTIMAGE ))
+    itemlist.append( Item(channel=item.channel, action="advsearch" , title="[B][COLOR cyan]Advanced Search[/COLOR][/B]",thumbnail= SEARCHIMAGE, fanart=FANARTIMAGE ))
     
-    itemlist.append( Item(channel=__channel__, action="configuracion", title="[B][COLOR dodgerblue]Configure Channel[/COLOR][/B]", thumbnail= THUMBNAILIMAGE,fanart= FANARTIMAGE, folder=False))
+    itemlist.append( Item(channel=item.channel, action="configuracion", title="[B][COLOR dodgerblue]Configure Channel[/COLOR][/B]", thumbnail= THUMBNAILIMAGE,fanart= FANARTIMAGE, folder=False))
     return itemlist
     
 def configuracion(item):
@@ -94,8 +93,8 @@ def estrenos(item):
                 else: continue
                 if MODO_PLANO: titulo = scrapertools.htmlclean(scrapedtitulo)
                 else: titulo = "[B][COLOR yellow]" + scrapertools.htmlclean(scrapedtitulo) + "[/COLOR][/B] [COLOR lime]("+scrapedcalidad+")[/COLOR] [COLOR cyan]("+scrapedfecha+")[/COLOR] [COLOR orange]("+scrapedgenero+")[/COLOR] [COLOR magenta]("+scrapedrating+")[/COLOR]"
-                itemlist.append( Item(channel=__channel__, action="play", server="torrent", title=titulo , fulltitle=titulo, contetType="movie" , contentTitle=scrapertools.htmlclean(scrapedtitulo) , url=scrapedurl , thumbnail=scrapedthumb , fanart=fanart, plot=sinopsis, infoLabels={"rating":puntuacion,"votes":votos, "year":scrapedfecha,"genre":genero }, extra="", folder=False) )
-    if ">Next &raquo;</a>" in data: itemlist.append( Item(channel=__channel__, action="estrenos", title="[B][COLOR brown]>>> Next page[/COLOR][/B]" , show=item.show , url=item.url , extra=pag_sig , thumbnail= NEXTPAGEIMAGE , fanart=FANARTIMAGE, folder=True) )
+                itemlist.append( Item(channel=item.channel, action="play", server="torrent", title=titulo , contetType="movie" , contentTitle=scrapertools.htmlclean(scrapedtitulo) , context=["buscar_trailer"] , url=scrapedurl , thumbnail=scrapedthumb , fanart=fanart, plot=sinopsis, infoLabels={"rating":puntuacion,"votes":votos, "year":scrapedfecha,"genre":genero }, extra="", folder=False) )
+    if ">Next &raquo;</a>" in data: itemlist.append( Item(channel=item.channel, action="estrenos", title="[B][COLOR brown]>>> Next page[/COLOR][/B]" , show=item.show , url=item.url , extra=pag_sig , thumbnail= NEXTPAGEIMAGE , fanart=FANARTIMAGE, folder=True) )
     return itemlist
 
 def TMDb(title,year):

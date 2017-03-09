@@ -12,7 +12,6 @@ from core import config
 from core import scrapertools
 from core.item import Item
 
-__channel__ = "estrenosdtl"
 FANARTIMAGE = "http://imgur.com/fUaeSco.jpg"
 THUMBNAILIMAGE = "http://i.imgur.com/o08O5Ey.jpg"
 SEARCHIMAGE = "http://i.imgur.com/STE2K8O.png"
@@ -26,14 +25,14 @@ Generos = {"28":"Acción","12":"Aventura","16":"Animación","35":"Comedia","80":
 def mainlist(item):
     logger.info("pelisalacarta.channels.EstrenosDTL mainlist")
     itemlist = []
-    itemlist.append( Item(channel=__channel__, action="estrenos" , title="[B][COLOR lime]Estrenos   (Todas las calidades)[/COLOR][/B]" , url="http://www.estrenosdtl.com/peliculas-screener.html?pagina=" , extra="1",thumbnail= THUMBNAILIMAGE, fanart=FANARTIMAGE, folder=True))
-    itemlist.append( Item(channel=__channel__, action="estrenos" , title="[B][COLOR yellow]Estrenos   (DVD-Screener)[/COLOR][/B]" , url="http://www.estrenosdtl.com/peliculas-screener.html?pagina=" , extra="1",show="&calidad=105",thumbnail= THUMBNAILIMAGE, fanart=FANARTIMAGE, folder=True))
-    itemlist.append( Item(channel=__channel__, action="estrenos" , title="[B][COLOR yellow]Estrenos   (Telecine)[/COLOR][/B]" , url="http://www.estrenosdtl.com/peliculas-screener.html?pagina=" , extra="1",show="&calidad=106",thumbnail= THUMBNAILIMAGE, fanart=FANARTIMAGE, folder=True))
-    itemlist.append( Item(channel=__channel__, action="estrenos" , title="[B][COLOR yellow]Estrenos   (TS-Screener)[/COLOR][/B]" , url="http://www.estrenosdtl.com/peliculas-screener.html?pagina=" , extra="1",show="&calidad=107",thumbnail= THUMBNAILIMAGE, fanart=FANARTIMAGE, folder=True))
-    itemlist.append( Item(channel=__channel__, action="estrenos" , title="[B][COLOR yellow]Estrenos   (VHS-Screener)[/COLOR][/B]" , url="http://www.estrenosdtl.com/peliculas-screener.html?pagina=" , extra="1",show="&calidad=108",thumbnail= THUMBNAILIMAGE, fanart=FANARTIMAGE, folder=True))
-    itemlist.append( Item(channel=__channel__, action="estrenos" , title="[B][COLOR yellow]Estrenos   (V.O. Subtituladas)[/COLOR][/B]" , url="http://www.estrenosdtl.com/peliculas-screener.html?pagina=" , extra="1",show="&calidad=110",thumbnail= THUMBNAILIMAGE, fanart=FANARTIMAGE, folder=True))
-    itemlist.append( Item(channel=__channel__, action="search" , title="[B][COLOR magenta]Buscar Estrenos...[/COLOR][/B]",thumbnail= THUMBNAILIMAGE, fanart=FANARTIMAGE ))
-    itemlist.append( Item(channel=__channel__, action="configuracion", title="[B][COLOR dodgerblue]Configuración del canal[/COLOR][/B]", thumbnail= THUMBNAILIMAGE,fanart= FANARTIMAGE, folder=False))
+    itemlist.append( Item(channel=item.channel, action="estrenos" , title="[B][COLOR lime]Estrenos   (Todas las calidades)[/COLOR][/B]" , url="http://www.estrenosdtl.com/peliculas-screener.html?pagina=" , extra="1",thumbnail= THUMBNAILIMAGE, fanart=FANARTIMAGE, folder=True))
+    itemlist.append( Item(channel=item.channel, action="estrenos" , title="[B][COLOR yellow]Estrenos   (DVD-Screener)[/COLOR][/B]" , url="http://www.estrenosdtl.com/peliculas-screener.html?pagina=" , extra="1",show="&calidad=105",thumbnail= THUMBNAILIMAGE, fanart=FANARTIMAGE, folder=True))
+    itemlist.append( Item(channel=item.channel, action="estrenos" , title="[B][COLOR yellow]Estrenos   (Telecine)[/COLOR][/B]" , url="http://www.estrenosdtl.com/peliculas-screener.html?pagina=" , extra="1",show="&calidad=106",thumbnail= THUMBNAILIMAGE, fanart=FANARTIMAGE, folder=True))
+    itemlist.append( Item(channel=item.channel, action="estrenos" , title="[B][COLOR yellow]Estrenos   (TS-Screener)[/COLOR][/B]" , url="http://www.estrenosdtl.com/peliculas-screener.html?pagina=" , extra="1",show="&calidad=107",thumbnail= THUMBNAILIMAGE, fanart=FANARTIMAGE, folder=True))
+    itemlist.append( Item(channel=item.channel, action="estrenos" , title="[B][COLOR yellow]Estrenos   (VHS-Screener)[/COLOR][/B]" , url="http://www.estrenosdtl.com/peliculas-screener.html?pagina=" , extra="1",show="&calidad=108",thumbnail= THUMBNAILIMAGE, fanart=FANARTIMAGE, folder=True))
+    itemlist.append( Item(channel=item.channel, action="estrenos" , title="[B][COLOR yellow]Estrenos   (V.O. Subtituladas)[/COLOR][/B]" , url="http://www.estrenosdtl.com/peliculas-screener.html?pagina=" , extra="1",show="&calidad=110",thumbnail= THUMBNAILIMAGE, fanart=FANARTIMAGE, folder=True))
+    itemlist.append( Item(channel=item.channel, action="search" , title="[B][COLOR magenta]Buscar Estrenos...[/COLOR][/B]",thumbnail= THUMBNAILIMAGE, fanart=FANARTIMAGE ))
+    itemlist.append( Item(channel=item.channel, action="configuracion", title="[B][COLOR dodgerblue]Configuración del canal[/COLOR][/B]", thumbnail= THUMBNAILIMAGE,fanart= FANARTIMAGE, folder=False))
     return itemlist
     
 def configuracion(item):
@@ -78,9 +77,9 @@ def estrenos(item):
         numero = scrapertools.find_single_match(scrapedurl,'-(\d+).')
         thumbnail = "http://www.estrenosdtl.com/imagenes/"+numero+".jpg"
         url= "http://www.estrenosdtl.com/"+scrapedurl
-        itemlist.append( Item(channel=__channel__, action="play", title=titulo , fulltitle=titulo, contentType=contentType , contentTitle=contentTitle , url=url , thumbnail=thumbnail , fanart=fanart, extra="", plot=plot,folder=False, infoLabels={"rating":puntuacion,"votes":votos,"year":fecha,"genre":genero }) )
+        itemlist.append( Item(channel=item.channel, action="play", title=titulo , fulltitle=titulo, contentType=contentType , contentTitle=contentTitle , context=["buscar_trailer"] , url=url , thumbnail=thumbnail , fanart=fanart, extra="", plot=plot,folder=False, infoLabels={"rating":puntuacion,"votes":votos,"year":fecha,"genre":genero }) )
     if haymas:
-         itemlist.append( Item(channel=__channel__, action="estrenos", title="[COLOR magenta]>>> Página siguiente[/COLOR]" , url=item.url , extra=pag_sig , fanart=FANARTIMAGE, thumbnail=NEXTPAGEIMAGE, show=item.show , folder=True) )
+         itemlist.append( Item(channel=item.channel, action="estrenos", title="[COLOR magenta]>>> Página siguiente[/COLOR]" , url=item.url , extra=pag_sig , fanart=FANARTIMAGE, thumbnail=NEXTPAGEIMAGE, show=item.show , folder=True) )
     return itemlist
     
 def TMDb(title):
@@ -111,7 +110,7 @@ def play(item):
     scrapertools.printMatches(matches)
     for scrapedlink,scrapedplot in matches:
         plot= (unicode( scrapedplot, "iso-8859-1" , errors="replace" ).encode("utf-8")).replace("<br />","")
-        itemlist.append( Item(channel=__channel__, action="play", server="torrent", title=item.title , fulltitle=item.title, url=scrapedlink , thumbnail=item.thumbnail , fanart=FANARTIMAGE , plot=plot , folder=False) )
+        itemlist.append( Item(channel=item.channel, action="play", server="torrent", title=item.title , fulltitle=item.title, url=scrapedlink , thumbnail=item.thumbnail , fanart=FANARTIMAGE , plot=plot , folder=False) )
     return itemlist
 
 def search(item,texto):
@@ -156,7 +155,7 @@ def lista(item):
         numero = scrapertools.find_single_match(scrapedurl,'-(\d+).')
         thumbnail = "http://www.estrenosdtl.com/imagenes/"+numero+".jpg"
         url= "http://www.estrenosdtl.com/"+scrapedurl
-        itemlist.append( Item(channel=__channel__, action="play", title=titulo , fulltitle=titulo, contentType=contentType , contentTitle=contentTitle , url=url , thumbnail=thumbnail , fanart=fanart, extra="", plot=plot,folder=False, infoLabels={"rating":puntuacion,"votes":votos,"year":fecha,"genre":genero }) )
+        itemlist.append( Item(channel=item.channel, action="play", title=titulo , fulltitle=titulo, contentType=contentType , contentTitle=contentTitle , context=["buscar_trailer"] , url=url , thumbnail=thumbnail , fanart=fanart, extra="", plot=plot,folder=False, infoLabels={"rating":puntuacion,"votes":votos,"year":fecha,"genre":genero }) )
     return itemlist
     #Solo da una pagina en las busquedas...
 
