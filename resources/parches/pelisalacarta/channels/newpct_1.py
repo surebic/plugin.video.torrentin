@@ -169,7 +169,7 @@ def listado(item):
                     year=context_title[-5:].replace(')','')
                     context_title = context_title[:-6]
             except:
-                context_title = title.strip()
+                pass
             context_title=context_title.strip()
 
         show = title.strip()
