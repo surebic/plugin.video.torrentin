@@ -180,7 +180,7 @@ def listado(item):
                 title = '[COLOR ' + color + title + ' ' + '[COLOR dodgerblue](' + calidad + ')[/COLOR]'
 
         if tipo=="movie":itemlist.append( Item(channel=item.channel, action=action, title=title, url=url, thumbnail=thumbnail, extra=extra, contentTitle=context_title, contentType=tipo, context=["buscar_trailer"] , infoLabels={"year":year} ) )
-        else: itemlist.append( Item(channel=item.channel, action=action, title=title, url=url, thumbnail=thumbnail, extra=extra, show=show, contentType=tipo, contentSerieName=show,context=["buscar_trailer"]) )
+        else: itemlist.append( Item(channel=item.channel, action=action, title=title, url=url, thumbnail=thumbnail, extra=extra, show=show, contentType=tipo , contentTitle=show, contentSerieName=show,context=["buscar_trailer"]) )
 
     if "pagination" in data:
         patron = '<ul class="pagination">(.*?)</ul>'
@@ -337,7 +337,7 @@ def get_episodios(item):
                 title = item.title + " [COLOR lime]("+ temp + 'x' + cap + ")[/COLOR]"
             
             #logger.info("[newpct1.py] get_episodios: fanart= " +item.fanart)
-            itemlist.append( Item(channel=item.channel, action="findvideos", title=title, url=url, thumbnail=item.thumbnail, show=item.show, fanart=item.fanart , infoLabels=item.infoLabels) )
+            itemlist.append( Item(channel=item.channel, action="findvideos", title=title, url=url, thumbnail=item.thumbnail, show=item.show, fanart=item.fanart , infoLabels=item.infoLabels , contentTitle=item.show) )
         except:
             logger.info("[newpct1.py] ERROR al añadir un episodio")
     if "pagination" in data:
@@ -408,7 +408,7 @@ def findvideos(item):
     # escraped torrent
     url = scrapertools.find_single_match(data,patron)
     if url!="":
-        itemlist.append( Item(channel=item.channel, action="play", server="torrent", title='[COLOR lime]' + title+" [COLOR cyan][torrent][/COLOR]", fulltitle=title, contentTitle=item.contentTitle, url=url , thumbnail=caratula, plot=item.plot, fanart=fanart, infoLabels=infoLabels , folder=False) )
+        itemlist.append( Item(channel=item.channel, action="play", server="torrent", title='[COLOR lime]' + title+" [COLOR cyan][torrent][/COLOR]", fulltitle=title, contentTitle=item.contentTitle, url=url , thumbnail=caratula, plot=item.plot, fanart=fanart, infoLabels=infoLabels , context=item.context , folder=False) )
 
     if MODO_STREAMING:
         # escraped ver vídeos, descargar vídeos un link, múltiples liks
@@ -446,7 +446,7 @@ def findvideos(item):
                     devuelve= server_module.find_videos(enlace)
                     if devuelve:
                         enlace=devuelve[0][1]
-                        itemlist.append( Item(fanart=fanart, channel=item.channel, action="play", server=servidor, title='[COLOR yellow]' + titulo + '[/COLOR]', fulltitle = item.title, contentTitle=item.contentTitle,url=enlace , thumbnail=logo , plot=item.plot, infoLabels=infoLabels , folder=False) )
+                        itemlist.append( Item(fanart=fanart, channel=item.channel, action="play", server=servidor, title='[COLOR yellow]' + titulo + '[/COLOR]', fulltitle = item.title, contentTitle=item.contentTitle,url=enlace , thumbnail=logo , plot=item.plot, infoLabels=infoLabels , context=item.context , folder=False) )
                 except:
                     pass
         
@@ -468,7 +468,7 @@ def findvideos(item):
                         devuelve= server_module.find_videos(enlace)
                         if devuelve:
                             enlace=devuelve[0][1]
-                            itemlist.append( Item(fanart=fanart, channel=item.channel, action="play", server=servidor, title='[COLOR orange]' + parte_titulo + '[/COLOR]' , fulltitle = item.title, contentTitle=item.contentTitle,url=enlace , thumbnail=logo , plot=item.plot, infoLabels=infoLabels , folder=False) )
+                            itemlist.append( Item(fanart=fanart, channel=item.channel, action="play", server=servidor, title='[COLOR orange]' + parte_titulo + '[/COLOR]' , fulltitle = item.title, contentTitle=item.contentTitle,url=enlace , thumbnail=logo , plot=item.plot, infoLabels=infoLabels , context=item.context , folder=False) )
                     except:
                         pass
     return itemlist
