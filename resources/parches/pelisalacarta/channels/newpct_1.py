@@ -407,7 +407,7 @@ def findvideos(item):
     patron = '<a href="([^"]+)" title="[^"]+" class="btn-torrent" target="_blank">'
     # escraped torrent
     url = scrapertools.find_single_match(data,patron)
-    if url!="" and xbmc.getCondVisibility('System.HasAddon("plugin.video.torrentin")'):
+    if url!="":
         itemlist.append( Item(channel=item.channel, action="play", server="torrent", title='[COLOR lime]' + title+" [COLOR cyan][torrent][/COLOR]", fulltitle=title, contentTitle=item.contentTitle, url=url , thumbnail=caratula, plot=item.plot, fanart=fanart, infoLabels=infoLabels , context=item.context , folder=False) )
 
     if MODO_STREAMING:
@@ -444,7 +444,7 @@ def findvideos(item):
                     servers_module = __import__("servers."+servidor)
                     server_module = getattr(servers_module,servidor)
                     devuelve= server_module.find_videos(enlace)
-                    if devuelve and xbmc.getCondVisibility('System.HasAddon("plugin.video.torrentin")'):
+                    if devuelve:
                         enlace=devuelve[0][1]
                         itemlist.append( Item(fanart=fanart, channel=item.channel, action="play", server=servidor, title='[COLOR yellow]' + titulo + '[/COLOR]', fulltitle = item.title, contentTitle=item.contentTitle,url=enlace , thumbnail=logo , plot=item.plot, infoLabels=infoLabels , context=item.context , folder=False) )
                 except:
@@ -466,7 +466,7 @@ def findvideos(item):
                         servers_module = __import__("servers."+servidor)
                         server_module = getattr(servers_module,servidor)
                         devuelve= server_module.find_videos(enlace)
-                        if devuelve and xbmc.getCondVisibility('System.HasAddon("plugin.video.torrentin")'):
+                        if devuelve:
                             enlace=devuelve[0][1]
                             itemlist.append( Item(fanart=fanart, channel=item.channel, action="play", server=servidor, title='[COLOR orange]' + parte_titulo + '[/COLOR]' , fulltitle = item.title, contentTitle=item.contentTitle,url=enlace , thumbnail=logo , plot=item.plot, infoLabels=infoLabels , context=item.context , folder=False) )
                     except:
