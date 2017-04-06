@@ -12,7 +12,7 @@
 	<bannermenu></bannermenu>
 
 	<update_url>https://raw.githubusercontent.com/surebic/plugin.video.torrentin/master/resources/parches/pelisalacarta/channels/</update_url>
-	<version>14</version>
+	<version>15</version>
 	<date>09/03/2017</date>
 	<changes>Re-escrito al completo para adaptarlo a la nueva web, mejorado buscador y con generos</changes>
 

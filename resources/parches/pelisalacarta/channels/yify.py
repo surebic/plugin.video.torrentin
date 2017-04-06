@@ -11,7 +11,7 @@
 # Ajustes en las busquedas para el buscador general (09-02-2017)
 #------------------------------------------------------------
 
-import urlparse,urllib2,urllib,re,xbmcgui
+import urlparse,urllib2,urllib,re,xbmc,xbmcgui
 
 from core import logger
 from core import config
@@ -62,8 +62,10 @@ def configuracion(item):
 def estrenos(item):
     logger.info("pelisalacarta.channels.YTS peliculas")
     itemlist=[]
-    if item.extra =="1":  data = scrapertools.cache_page(item.url)
-    else: data = scrapertools.cache_page(item.url + "?page=" + item.extra)
+    if xbmc.getCondVisibility('System.HasAddon("plugin.video.torrentin")'):
+        if item.extra =="1":  data = scrapertools.cache_page(item.url)
+        else: data = scrapertools.cache_page(item.url + "?page=" + item.extra)
+    else: data=''
     logger.info("data="+data)
     pag_sig=str(int(item.extra)+1)
     patron =    'browse-movie-wrap.*?src="(.*?)" alt=' #  thumb

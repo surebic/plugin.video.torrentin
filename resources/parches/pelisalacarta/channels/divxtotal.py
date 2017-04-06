@@ -9,7 +9,7 @@
 # Añadido TMDb para pelisculas desde las busquedas. (09-02-2017)
 # Añadido TMDb para las series. (11-02-2017)
 #------------------------------------------------------------
-import urlparse,urllib2,urllib,re
+import urlparse,urllib2,urllib,re,xbmc
 
 from core import logger
 from core import config
@@ -81,7 +81,8 @@ def menupelisazgen(item):
 def menupelis(item):
     logger.info("pelisalacarta.channels.divxtotal menupelis")
     itemlist=[]
-    data = scrapertools.cache_page(item.url)
+    if xbmc.getCondVisibility('System.HasAddon("plugin.video.torrentin")'): data = scrapertools.cache_page(item.url)
+    else: data =''
     logger.info("data="+data)
     listado = scrapertools.find_single_match(data,'<ul class="section_list">(.*?)</ul>')
     logger.info("data="+data)
@@ -181,7 +182,8 @@ def menuseriesaz(item):
 def menuseries(item):
     logger.info("pelisalacarta.channels.divxtotal menuseries")
     itemlist=[]
-    data = scrapertools.cache_page(item.url)
+    if xbmc.getCondVisibility('System.HasAddon("plugin.video.torrentin")'): data = scrapertools.cache_page(item.url)
+    else: data =''
     logger.info("data="+data)
     listado = scrapertools.find_single_match(data,'letra-0(.*?)id="footer"')
     logger.info("data="+data)
@@ -252,8 +254,8 @@ def search(item,texto):
 def lista(item):
     logger.info("pelisalacarta.channels.divxtotal lista")
     itemlist = []
-    data = scrapertools.cachePage(item.url+item.extra)
-    print item.url+item.extra
+    if xbmc.getCondVisibility('System.HasAddon("plugin.video.torrentin")'): data = scrapertools.cache_page(item.url+item.extra)
+    else: data =''
     logger.info("data="+data)
     
     patron =  'seccontnom.*?<a href="(.*?)"' # dir
@@ -301,7 +303,8 @@ def listaseries(item):
         else: return itemlist
         item.url="http://www.divxtotal.com/?s="
     
-    data = scrapertools.cachePage(item.url+item.extra)
+    if xbmc.getCondVisibility('System.HasAddon("plugin.video.torrentin")'): data = scrapertools.cache_page(item.url+item.extra)
+    else: data =''
     logger.info("data="+data)
     patron =  'seccontnom.*?<a href="(.*?)"' # dir
     patron += '.*?title.*?>(.*?)</a'# tit

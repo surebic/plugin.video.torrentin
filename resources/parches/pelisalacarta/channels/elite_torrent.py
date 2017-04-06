@@ -12,7 +12,7 @@
 # Ampliado con numero de votos, eliminado codigo innecesario, etc. (09-02-2017)
 # Incluida busqueda en TMDb para series y busquedas (14-02-2017)
 #--------------------------------------------------------------
-import urlparse,re,time
+import urlparse,re,time,xbmc
 from core import logger
 from core import config
 from core import scrapertools
@@ -77,7 +77,8 @@ def configuracion(item):
 def peliculas(item):
     logger.info("[elite_torrent.py] peliculas")
     itemlist = []
-    data = scrapertools.cachePage(item.url)
+    if xbmc.getCondVisibility('System.HasAddon("plugin.video.torrentin")'): data = scrapertools.cache_page(item.url)
+    else: data =''
     if data.startswith('<meta http-equiv="Refresh"'):
         data = scrapertools.cache_page(item.url)
     patron =  '<a href="(/torrent/[^"]+)">'

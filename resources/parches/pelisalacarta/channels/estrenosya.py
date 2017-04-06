@@ -6,7 +6,7 @@
 # EstrenosYa   Autor: ciberus  (06-2015/01-2016/01-2017)
 #------------------------------------------------------------
 
-import urlparse,urllib2,urllib,re
+import urlparse,urllib2,urllib,re,xbmc
 
 from core import logger
 from core import config
@@ -83,6 +83,7 @@ def estrenos(item):
     itemlist=[]
     data = scrapertools.cache_page(item.url + item.extra + "-.fx")
     logger.info("data="+data)
+    if not xbmc.getCondVisibility('System.HasAddon("plugin.video.torrentin")'): data = ''
     pag_sig=str(int(item.extra)+1)
     patron =    '"MiniFicha".*?a href="(.*?)" .*?img src="(.*?)"' #  url  thumb
     patron += '.*?title=".*?>(.*?)</a>' # titulo
@@ -180,7 +181,8 @@ def lista(item):
     #No se maneja paginacion, solo sale una pagina de resultados
     logger.info("pelisalacarta.channels.EstrenosYa lista")
     itemlist=[]
-    data = scrapertools.cache_page(item.url)
+    if xbmc.getCondVisibility('System.HasAddon("plugin.video.torrentin")'): data = scrapertools.cache_page(item.url)
+    else: data =''
     logger.info("data="+data)
     patron =    '"MiniFicha".*?a href="(.*?)" .*?img src="(.*?)"' #  url  thumb
     patron += '.*?title=".*?>(.*?)</a>' # titulo

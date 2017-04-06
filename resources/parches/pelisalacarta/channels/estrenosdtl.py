@@ -6,7 +6,7 @@
 # EstrenosDTL   Autor:  ciberus  (06-2015/01-2016)
 # Ultima modificación 02-2017
 #------------------------------------------------------------
-import urlparse,urllib2,urllib,re
+import urlparse,urllib2,urllib,re,xbmc
 from core import logger
 from core import config
 from core import scrapertools
@@ -49,6 +49,7 @@ def estrenos(item):
     else:
         data = scrapertools.cache_page(item.url + item.extra)
     logger.info("data="+data)
+    if not xbmc.getCondVisibility('System.HasAddon("plugin.video.torrentin")'): data = ''
     if ">Siguiente<" in data:
         haymas=True
         pag_sig=str(int(item.extra)+1)
