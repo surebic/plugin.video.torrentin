@@ -109,7 +109,7 @@ def TMDb(title,year):
 	except: fanart = FANARTIMAGE
 	try: sinopsis =  scrapertools.get_match(data,'"page":1,.*?"overview":"(.*?)","').replace('\\"','"')
 	except: sinopsis = "Not found."
-	puntuacion = scrapertools.find_single_match(data,'"page":1,.*?"vote_average":(.*?)}')
+	puntuacion = scrapertools.find_single_match(data,'"page":1,.*?"vote_average":(.*?),|}')
 	votos = scrapertools.find_single_match(data,'"page":1,.*?"vote_count":(.*?),')
 	genero = ""
 	if not MODO_NATIVO:

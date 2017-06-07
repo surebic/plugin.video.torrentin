@@ -212,7 +212,7 @@ def TMDb(title,year,tipo):
 	try: caratula =  "https://image.tmdb.org/t/p/original" + scrapertools.get_match(data,'"page":1,.*?"poster_path":"\\\(.*?)"')
 	except: caratula =THUMBNAILIMAGE
 	sinopsis =  scrapertools.find_single_match(data,'"page":1,.*?"overview":"(.*?)","').replace('\\"','"')
-	puntuacion = scrapertools.find_single_match(data,'"page":1,.*?"vote_average":(.*?)}')
+	puntuacion = scrapertools.find_single_match(data,'"page":1,.*?"vote_average":(.*?),|}')
 	if tipo=="tv": puntuacion = puntuacion.split(",")[0]
 	votos = scrapertools.find_single_match(data,'"page":1,.*?"vote_count":(.*?),')
 	listageneros = scrapertools.find_single_match(data,'"page":1,.*?"genre_ids":\[(.*?)\],"')
