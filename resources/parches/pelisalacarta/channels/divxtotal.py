@@ -8,6 +8,7 @@
 # Arreglado buscador y añadido Generos en los listados (15-1-2017)
 # Añadido TMDb para pelisculas desde las busquedas. (09-02-2017)
 # Añadido TMDb para las series. (11-02-2017)
+# Corregido por nuevo formato de la web (22-06-2017) se suprime fecha y tamaño en listado pelis y se añade nueva seccion Peliculas HD
 #------------------------------------------------------------
 import urlparse,urllib2,urllib,re,xbmc
 
@@ -33,12 +34,14 @@ def mainlist(item):
     itemlist.append( Item(channel=item.channel, action="menupelisazgen" , title="[COLOR yellow][B]Películas   (Por Género)[/B][/COLOR]" , url="http://www.divxtotal.com/peliculas/",extra="gen",thumbnail= THUMBNAILIMAGE,fanart= FANARTIMAGE,  folder=True))
     itemlist.append( Item(channel=item.channel, action="menupelisazgen" , title="[COLOR yellow][B]Películas   (Por Letra A-Z)[/B][/COLOR]" , url="http://www.divxtotal.com/peliculas/",extra="az", thumbnail= THUMBNAILIMAGE,fanart= FANARTIMAGE, folder=True))
 
+    itemlist.append( Item(channel=item.channel, action="menupelis" , title="[COLOR yellow][B]Películas HD  (Por Fecha)[/B][/COLOR]" , url="http://www.divxtotal.com/peliculas-hd/" , extra="http://www.divxtotal.com/peliculas-hd/page/",thumbnail= THUMBNAILIMAGE,fanart= FANARTIMAGE, folder=True))
+
     itemlist.append( Item(channel=item.channel, action="menuseries" , title="[COLOR orange][B]Series   (Últimos capítulos - Por Fecha)[/B][/COLOR]" , url="http://www.divxtotal.com/series/",extra="http://www.divxtotal.com/series/page/",thumbnail= THUMBNAILIMAGE,fanart= FANARTIMAGE, folder=True))
     itemlist.append( Item(channel=item.channel, action="menuseriesaz" , title="[COLOR orange][B]Series   (Últimos capítulos - Por Letra A-Z)[/B][/COLOR]" , url="http://www.divxtotal.com/series/",thumbnail= THUMBNAILIMAGE,fanart= FANARTIMAGE, folder=True))
     itemlist.append( Item(channel=item.channel, action="menuserieslistado" , title="[COLOR orange][B]Series   (Listado completo)[/B][/COLOR]" , url="http://www.divxtotal.com/series/",plot="[B] ¡¡¡ATENCION!!! Opción muy lenta, tarda bastante en obtener el listado completo de todas las series ( > 1.000 series).[/B]",thumbnail= THUMBNAILIMAGE,fanart= FANARTIMAGE, folder=True))
 
-    itemlist.append( Item(channel=item.channel, action="search" , title="[COLOR yellow][B]Buscador (General)...[/B][/COLOR]",plot="[B]Busca en todo... (Peliculas, Series, Musica, Programas, Otros).[/B]",thumbnail= SEARCHIMAGE,fanart= FANARTIMAGE ))
-    itemlist.append( Item(channel=item.channel, action="listaseries" , title="[COLOR orange][B]Buscador (Sólo Series)...[/B][/COLOR]", plot="[B]Busca solamente las Series TV (Se filtran los resultados para mostrar solo las series, por lo que si aparece [COLOR magenta]>>>Página siguiente[/COLOR] picar ahi porque puede haber mas resultados en las siguientes páginas).[/B]",thumbnail= SEARCHIMAGE,fanart= FANARTIMAGE ))
+    itemlist.append( Item(channel=item.channel, action="search" , title="[COLOR yellow][B]Buscador...[/B][/COLOR]",plot="[B]Busca en todo... (Peliculas, Series, Musica, Programas, Otros).[/B]",thumbnail= SEARCHIMAGE,fanart= FANARTIMAGE ))
+    #itemlist.append( Item(channel=item.channel, action="listaseries" , title="[COLOR orange][B]Buscador (Sólo Series)...[/B][/COLOR]", plot="[B]Busca solamente las Series TV (Se filtran los resultados para mostrar solo las series, por lo que si aparece [COLOR magenta]>>>Página siguiente[/COLOR] picar ahi porque puede haber mas resultados en las siguientes páginas).[/B]",thumbnail= SEARCHIMAGE,fanart= FANARTIMAGE ))
     itemlist.append( Item(channel=item.channel, action="configuracion", title="[B][COLOR dodgerblue]Configuración del canal[/COLOR][/B]", thumbnail= THUMBNAILIMAGE,fanart= FANARTIMAGE, folder=False))
     return itemlist
 
@@ -58,9 +61,9 @@ def menupelisazgen(item):
     if item.extra == "gen":
         data = scrapertools.find_single_match(data,'select name="generos"(.*?)</select>')
         logger.info("data="+data)
-        patron = "<option value='(.*?)'>(.*?)<" # dir letra
+        patron = "value='(.*?)'>(.*?)<" # dir gen
     elif item.extra == "az":
-        data = scrapertools.find_single_match(data,'div class="orden_alfa">(.*?)</div>')
+        data = scrapertools.find_single_match(data,'<div class="row orden_alfa"(.*?)</div>')
         logger.info("data="+data)
         patron =  '<li><a href="(.*?)">(.*?)</a' # dir letra
     else: return itemlist
@@ -71,8 +74,9 @@ def menupelisazgen(item):
             url = urlparse.urljoin(BASE_URL, scrapedurl)
             titulo = "[B][COLOR yellow]Letra:  [/COLOR][COLOR lime]" + scrapedtitle.upper() + "[/COLOR][/B]"
         elif item.extra == "gen":
-            if "Espa" in scrapedtitle : scrapedtitle = "Espanolas"
+            #if "Espa" in scrapedtitle : scrapedtitle = "Espanolas"
             url= BASE_URL+"/category/" + scrapedtitle
+            url=scrapedurl
             titulo = "[B][COLOR yellow]Género:  [/COLOR][COLOR lime]" + scrapedtitle + "[/COLOR][/B]"
         else: titulo = "Titulo"
         itemlist.append( Item(channel=item.channel, action="menupelis", title=titulo , fulltitle=titulo, url=url , thumbnail=SEARCHIMAGE , plot="" , folder=True) )
@@ -83,17 +87,16 @@ def menupelis(item):
     itemlist=[]
     if xbmc.getCondVisibility('System.HasAddon("plugin.video.torrentin")'): data = scrapertools.cache_page(item.url)
     else: data =''
-    logger.info("data="+data)
-    listado = scrapertools.find_single_match(data,'<ul class="section_list">(.*?)</ul>')
-    logger.info("data="+data)
-    patron =  'seccontnom.*?<a href="(.*?)"' # dir
+    logger.info("##### data="+data)
+    listado = scrapertools.find_single_match(data,'<tbody>(.*?)</tbody>')
+    logger.info("##### Listado="+listado)
+    patron =  '<a href="(.*?)"' # dir
     patron += '.*?title.*?>(.*?)</a'# tit
     patron += '.*?a href=.*?>(.*?)</a'# gen
-    patron += '.*?seccontfetam">(.*?)</p' # fecha
-    patron += '.*?seccontfetam">(.*?)</p' # tam
     matches = re.compile(patron,re.DOTALL).findall(listado)
     scrapertools.printMatches(matches)
-    for scrapedurl,scrapedtitle,scrapedgen,scrapedfecha,scrapedtam in matches:
+    for scrapedurl,scrapedtitle,scrapedgen in matches:
+        if 'peliculas-hd' in item.url: scrapedtitle = re.sub('\(\d{4}\)| (HD)| HD','',scrapedtitle)
         if MODO_EXTENDIDO:
             fanart,thumbnail,plot,puntuacion,votos,fecha,genero = TMDb(scrapedtitle,"movie")
         else: 
@@ -108,10 +111,10 @@ def menupelis(item):
         if not MODO_PLANO:
             if puntuacion != "": puntuaciontitle = " [COLOR deeppink](" + puntuacion + ")[/COLOR]"
             else: puntuaciontitle = ""
-            titulo = "[B][COLOR yellow]" + scrapedtitle.strip()+ "[/COLOR][/B] [COLOR cyan]("+scrapedgen+")" + "[/COLOR]" + puntuaciontitle + " [COLOR limegreen]("+scrapedtam+")[/COLOR]"
+            titulo = "[B][COLOR yellow]" + scrapedtitle.strip()+ "[/COLOR][/B] [COLOR cyan]("+scrapedgen+")" + "[/COLOR]" + puntuaciontitle
         else: titulo = scrapedtitle.strip()
         itemlist.append( Item(channel=item.channel, action="entraenpeli", title=titulo , fulltitle=titulo, contentType="movie" , contentTitle=scrapedtitle.strip() , context=["buscar_trailer"] , url=scrapedurl , thumbnail=thumbnail , plot=plot , fanart= fanart, extra=scrapedurl, infoLabels={"rating":puntuacion,"votes":votos, "genre":genero, "year":fecha}, folder=True) )
-    patronvideos  = "pagination.*?class='current'.*?<a href='(.*?)'.*?</div>"
+    patronvideos  = "pagination.*?current.*?<a href='(.*?)'>"
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
     scrapertools.printMatches(matches)
     if len(matches)>0:
@@ -123,26 +126,25 @@ def entraenpeli(item):
     logger.info("pelisalacarta.channels.divxtotal entraenpeli")
     itemlist=[]
     data = scrapertools.cache_page(item.url)
-    patron = '"ficha_img".*?src="(.*?)" alt' #Thumb
-    patron += '.*?ficha_link_det.*?href="(.*?)"' #link_torrent
-    patron += '.*?"fichatxt">(.*?)</div>' #Desc
+    patron = 'HOTWordsTxt.*?src="(.*?)" alt' #Thumb
+    patron += '.*?Fecha.*?href="(.*?)"' #link_torrent
     matches = re.compile(patron,re.DOTALL).findall(data)
     scrapertools.printMatches(matches)
-    for scrapedthumb,scrapedurl,scrapedplot in matches:
-        if not MODO_PLANO: title = item.title + " [B][COLOR pink][Torrent][/COLOR][/B]"
+    for scrapedthumb,scrapedurl in matches:
+        if not MODO_PLANO: title = item.title + " [COLOR navajowhite][Torrent][/COLOR]"
         else: title = item.title
-        plot = re.sub('<[^<]+?>', '', scrapedplot)
+        #plot = re.sub('<[^<]+?>', '', scrapedplot)
         if not item.show == "" and MODO_EXTENDIDO: #venimos de la busqueda
             fanart,thumbnail,sip,puntuacion,votos,fecha,genero = TMDb(item.show,"movie")
             item.contentTitle=item.show
             item.fanart = fanart
-            item.infoLabels={"rating":puntuacion,"votes":votos, "genre":genero, "year":fecha}
-        itemlist.append( Item(channel=item.channel, action="play", server="torrent", title=title , fulltitle=title, contentTitle=item.contentTitle , context=item.context , contentType="movie" , url=scrapedurl , thumbnail=scrapedthumb , plot=plot , viewmode="movie_with_plot", fanart=item.fanart , infoLabels=item.infoLabels, folder=False) )
+            item.infoLabels={"rating":puntuacion,"votes":votos, "genre":genero, "year":fecha, "plot":sip}
+        itemlist.append( Item(channel=item.channel, action="play", server="torrent", title=title , fulltitle=title, contentTitle=item.contentTitle , context=item.context , contentType="movie" , url=scrapedurl , thumbnail=scrapedthumb , plot=item.plot , viewmode="movie_with_plot", fanart=item.fanart , infoLabels=item.infoLabels, folder=False) )
     return itemlist
 
 def getthumbnail(url):
     data = scrapertools.cache_page(url)
-    thumb = scrapertools.find_single_match(data,'"ficha_img".*?src="(.*?)" alt')
+    thumb = scrapertools.find_single_match(data,'"HOTWordsTxt".*?src="(.*?)" alt')
     return thumb
 
 # Begin series
@@ -152,10 +154,10 @@ def menuserieslistado(item):
     itemlist=[]
     data = scrapertools.cache_page(item.url)
     logger.info("data="+data)
-    data = scrapertools.find_single_match(data,'"/series/">Todos(.*?)class="orden_alfa')
-    logger.info("data="+data)
+    data = scrapertools.find_single_match(data,'/series/">Todos(.*?)class="row orden_alfa')
+    logger.info("###########data="+data)
     #patron =  "<a href='([^']+)' ?title=([^>]+)>" # dir title
-    patron= '<option value="(.*?)">(.*?)<.*?'
+    patron= 'value="(.*?)">(.*?)<.*?'
     matches = re.compile(patron,re.DOTALL).findall(data)
     scrapertools.printMatches(matches)
     for scrapedurl,scrapedtitle in matches:
@@ -186,7 +188,7 @@ def menuseries(item):
     else: data =''
     logger.info("data="+data)
     listado = scrapertools.find_single_match(data,'letra-0(.*?)id="footer"')
-    logger.info("data="+data)
+    logger.info("data="+listado)
     patron =  'secconimagen"><a href="(.*?)" title.*?img src="(.*?)" alt' # dir - thumb
     patron += '.*?seccontnom.*?title=.*?>(.*?)</a.*?seccontfetam">(.*?)</p>' # titulo fecha
     matches = re.compile(patron,re.DOTALL).findall(listado)
@@ -196,7 +198,7 @@ def menuseries(item):
         contentSerieName=re.sub(r"\d{1,2}[x]\d{2}|[-]","",scrapedtitle).strip()
         itemlist.append( Item(channel=item.channel, action="entraenserie",contentSerieName=contentSerieName, contentType="tvshow",contentTitle=contentSerieName , context=["buscar_trailer"],title=title , fulltitle = title, url=scrapeddir , thumbnail=scrapedthumb , fanart=FANARTIMAGE, plot=
 "" , folder=True) )
-    patronvideos  = "pagination.*?class='current'.*?<a href='(.*?)'.*?</div>"
+    patronvideos  = "pagination.*?current.*?<a href='(.*?)'>"
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
     scrapertools.printMatches(matches)
     if len(matches)>0:
@@ -209,29 +211,30 @@ def entraenserie(item):
     itemlist=[]
     data = scrapertools.cache_page(item.url)
     logger.info("data="+data)
-    scrapedthumb  = scrapertools.find_single_match(data,'"secciones".*?img src="(.*?)" +alt=') 
+    scrapedthumb  = scrapertools.find_single_match(data,'"panel panel-default peliculas-bloque bloque-home".*?img.*?src="(.*?)"') 
     scrapedplot  = scrapertools.find_single_match(data,'Descripcion.*?<p>(.*?)</div>') 
-    scrapedtituloserie = scrapertools.find_single_match(data,'"secciones".*?title="(.*?)"') 
+    scrapedtituloserie = scrapertools.find_single_match(data,'"panel panel-default peliculas-bloque bloque-home".*?title="(.*?)"') 
     if MODO_EXTENDIDO:
         #scrapedtituloserie = scrapertools.find_single_match(data,'"secciones".*?title="(.*?)"') 
         fanart,thumbnail,sip,puntuacion,votos,fecha,genero = TMDb(scrapedtituloserie,"tv")
         if not "imgur" in fanart: scrapedthumb = fanart
         if not "imgur" in thumbnail: item.thumbnail = thumbnail
         puntuacion = puntuacion.split(",")[0]
-        infoLabels={"rating":puntuacion,"votes":votos, "genre":genero, "year":fecha}
+        infoLabels={"rating":puntuacion,"votes":votos, "genre":genero, "year":fecha, "plot":sip}
     else: infoLabels={}
     plot = re.sub('<[^<]+?>', '', scrapedplot)
-    data = scrapertools.find_single_match(data,'CAPITULOS(.*?)id="footer"')
+    #plot=sip
+    data = scrapertools.find_single_match(data,'CAPITULOS DE LA SERIE(.*?)RECOMMENDED CONFIGURATION VARIABLES')
     logger.info("data="+data)
-    patron =  'fichserietabla.*?<a href="(.*?)" title="">(.*?)</a>' # link - title
-    patron += '.*?capitulodescarga.*?<td>(.*?)</td>' # fecha
+    patron =  'img src=.*?<a href="(.*?)" title="">(.*?)</a>' # link - title
+    patron += '.*?</a>.*?<td>(.*?)</td>' # fecha
     matches = re.compile(patron,re.DOTALL).findall(data)
     scrapertools.printMatches(matches)
     for scrapedurl , scrapedtitle , scrapedfecha in matches:
         scrapedfecha=scrapedfecha.replace("\n","")
         if scrapedfecha != "" : scrapedfecha = " [COLOR dodgerblue](" + scrapedfecha + ")[/COLOR]"
         title = "[B][COLOR orange]" + scrapedtitle + "[/COLOR][/B]" +scrapedfecha
-        itemlist.append( Item(channel=item.channel, action="play", server="torrent", title=title , fulltitle = title, contentSerieName=scrapedtituloserie , contentTitle=scrapedtituloserie , context=item.context , contentType="tvshow" , url=scrapedurl , thumbnail=item.thumbnail , fanart=scrapedthumb, plot=plot , folder=False , infoLabels=infoLabels) )
+        itemlist.append( Item(channel=item.channel, action="play", server="torrent", title=title , fulltitle = title, contentSerieName=scrapedtituloserie , contentTitle=scrapedtituloserie , context=item.context , contentType="tvshow" , url=scrapedurl , thumbnail=item.thumbnail , fanart=scrapedthumb , plot=plot , folder=False , infoLabels=infoLabels) )
     return itemlist
 
 # Buscadores
@@ -258,30 +261,48 @@ def lista(item):
     else: data =''
     logger.info("data="+data)
     
-    patron =  'seccontnom.*?<a href="(.*?)"' # dir
+    listado = scrapertools.find_single_match(data,'<tbody>(.*?)</tbody>')
+    logger.info("##### Listado="+listado)
+
+    patron =  '<tr>.*?<a href="(.*?)"' # dir
     patron += '.*?title.*?>(.*?)</a'# tit
-    #patron += '.*?seccontgen">(.*?)</p'# genero (la cagaron)
-    patron += '.*?seccontfetam">(.*?)</p' # fecha
-    patron += '.*?seccontfetam">(.*?)</p' # tam
+    patron += '.*?<td class="text-left">(.*?)</td'#  gen/tam
+    patron += '.*?<td class="text-left">(.*?)</td' # fecha
+
     matches = re.compile(patron,re.DOTALL).findall(data)
     scrapertools.printMatches(matches)
-    for scrapedurl,scrapedtitle,scrapedfecha,scrapedtam in matches:
-        if scrapedfecha == "29-10-2016" : scrapedfecha = ""
-        else: scrapedfecha = " [COLOR dodgerblue](" + scrapedfecha + ")[/COLOR]"
-        if scrapedtam == "N/A":
-            accion = "entraenserie"
-            scrapedtam = "Serie"
-            show = scrapedtitle
-            contentType="tvshow"
+    for scrapedurl,scrapedtitle,scrapedtam,scrapedfecha in matches:
+        #if scrapedfecha == "29-10-2016" : scrapedfecha = ""
+        #else: scrapedfecha = " [COLOR dodgerblue](" + scrapedfecha + ")[/COLOR]"
+        scrapedfecha = " [COLOR dodgerblue](" + scrapedfecha + ")[/COLOR]"
+        if "N/A" in scrapedtam:
+            if "/programas/" in scrapedurl:
+                accion = "entraenpeli"
+                scrapedtam = "Programa"
+                show=""
+                contentType=""
+            elif "/otros/" in scrapedurl:
+                accion = "entraenpeli"
+                scrapedtam = "Otros"
+                show=""
+                contentType=""
+            elif "/series/" in scrapedurl:
+                accion = "entraenserie"
+                scrapedtam = "Serie"
+                show = scrapedtitle
+                contentType="tvshow"
         else:
             accion = "entraenpeli"
-            if "peliculas" in scrapedurl:
+            if "/peliculas/" in scrapedurl:
+                scrapedtam = scrapertools.find_single_match(scrapedtam,'">(.*?)</a>') 
                 show= scrapedtitle
                 contentType="movie"
-            else: show = ""
+            else:
+                show = ""
+                contentType="movie"
         titulo = "[B][COLOR yellow]" + scrapedtitle + "[/COLOR][/B] "+scrapedfecha+" [COLOR limegreen]("+scrapedtam+")[/COLOR]"
         itemlist.append( Item(channel=item.channel, action=accion, title=titulo , fulltitle=titulo, contentType=contentType , contentSerieName=show , contentTitle=show , context=["buscar_trailer"] , url=scrapedurl , thumbnail="" , plot="" , show=show , folder=True) )
-    patronvideos  = "pagination.*?class='current'.*?<a href='(.*?)'.*?</div>"
+    patronvideos  = "pagination.*?current.*?<a href='(.*?)'>"
     matches = re.compile(patronvideos,re.DOTALL).findall(data)
     scrapertools.printMatches(matches)
     if len(matches)>0:
@@ -302,7 +323,6 @@ def listaseries(item):
             item.extra = texto
         else: return itemlist
         item.url="http://www.divxtotal.com/?s="
-    
     if xbmc.getCondVisibility('System.HasAddon("plugin.video.torrentin")'): data = scrapertools.cache_page(item.url+item.extra)
     else: data =''
     logger.info("data="+data)
@@ -343,4 +363,7 @@ def TMDb(title,tipo):
 			try: genero += Generos.get(g) + " - "
 			except: pass
 	return fanart,caratula,sinopsis,puntuacion,votos,fecha,genero.strip(" - ")
+
+#EOF ciberus (2015-2017)
+
 
