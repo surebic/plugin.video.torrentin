@@ -12,7 +12,7 @@
 	<bannermenu>http://media.tvalacarta.info/pelisalacarta/bannermenu/newpct1.png</bannermenu>
 
 	<update_url>https://raw.githubusercontent.com/surebic/plugin.video.torrentin/master/resources/parches/pelisalacarta/channels/</update_url>
-	<version>29</version>
+	<version>30</version>
 
 	<changes>
 		<change>
@@ -31,9 +31,14 @@
 			<description>Modificacion para InfoPlus y ExtendedInfo y mas...</description>
 		</change>
 		<change>
-			<date>07/07/2017</date>
+			<date>07/06/2017</date>
 			<autor>ciberus</autor>
 			<description>Arreglado por cambios en TMDb</description>
+		</change>
+		<change>
+			<date>24/06/2017</date>
+			<autor>ciberus</autor>
+			<description>Incluida información extra en el primer listado y areglado tema de eñes.</description>
 		</change>
 	</changes>
 
@@ -54,9 +59,18 @@
 	</settings>
 
 	<settings>
+		<id>modo_grafico_1</id>
+		<type>bool</type>
+		<label>Buscar datos extra en TMDb en el primer listado (más lento)</label>
+		<default>false</default>
+		<enabled>true</enabled>
+		<visible>true</visible>
+ 	</settings>
+
+	<settings>
 		<id>modo_grafico</id>
 		<type>bool</type>
-		<label>Buscar datos extra en TMDb</label>
+		<label>Buscar datos extra en TMDb al entrar en película o serie</label>
 		<default>true</default>
 		<enabled>true</enabled>
 		<visible>true</visible>
@@ -66,7 +80,7 @@
 		<id>modo_preguntar</id>
 		<type>bool</type>
 		<label>Mostrar teclado para modificar el título de la película si no se encuentra en TMDb</label>
-		<default>true</default>
+		<default>false</default>
 		<enabled>true</enabled>
 		<visible>eq(-1 ,true)</visible>
  	</settings>

@@ -5,11 +5,13 @@
 # http://blog.tvalacarta.info/plugin-xbmc/pelisalacarta/
 #
 # mod by ciberus (07-03-2017)
+# Modificado para info extra en listado principal y arreglado problema de eñes (24/6/2017)
 #------------------------------------------------------------
 
 import re
 import sys
 import xbmc
+import time
 
 from core import config
 from core import logger
@@ -18,12 +20,13 @@ from core import servertools
 from core.item import Item
 
 DEBUG = config.get_setting("debug")
+MODO_EXTENDIDO_1 = config.get_setting('modo_grafico_1', "newpct_1")
 MODO_EXTENDIDO = config.get_setting('modo_grafico', "newpct_1")
 MODO_MANUAL = config.get_setting('modo_preguntar', "newpct_1")
 MODO_CARATULA = config.get_setting('modo_caratula', "newpct_1")
 MODO_STREAMING = config.get_setting('modo_streaming', "newpct_1")
 MODO_DESCARGA = config.get_setting('modo_descarga', "newpct_1")
-
+NEXTPAGEIMAGE = "http://i.imgur.com/lqt8JcD.png"
 Generos = {"28":"Acción","12":"Aventura","16":"Animación","35":"Comedia","80":"Crimen","99":"Documental","18":"Drama","10751":"Familia","14":"Fantasía","36":"Historia","27":"Terror","10402":"Música","9648":"Misterio","10749":"Romance","878":"Ciencia ficción","10770":"película de la televisión","53":"Suspense","10752":"Guerra","37":"Western"}
 	
 def configuracion(item):
@@ -122,7 +125,7 @@ def listado(item):
     itemlist = []
     
     data = re.sub(r"\n|\r|\t|\s{2}|(<!--.*?-->)","",scrapertools.cache_page(item.url))
-    data = unicode( data, "iso-8859-1" , errors="replace" ).encode("utf-8")    
+    #data = unicode( data, "iso-8859-15" , errors="replace" ).encode("utf-8")    
         
     patron = '<ul class="'+item.extra+'">(.*?)</ul>'
     logger.info("[newpct1.py] patron="+patron)
@@ -135,18 +138,22 @@ def listado(item):
     patron += '<span>([^<]*)</span>' #calidad
 
     matches = re.compile(patron,re.DOTALL).findall(fichas)
-       
+    result=0
+    start = time.time()
     for scrapedurl,scrapedtitle,scrapedthumbnail,calidad in matches:
+        scrapedtitle = jodidasenyes(scrapedtitle)
         url = scrapedurl
         title = scrapedtitle
         thumbnail = scrapedthumbnail
         action = "findvideos"
         extra = ""
+        year=''
        
         if "1.com/series" in url: 
             action = "completo"
             extra="serie"
             tipo="tvshow"
+            
             title=scrapertools.find_single_match(title,'([^-]+)')
             title= title.replace("Ver online","",1).replace("Descarga Serie HD","",1).replace("Ver en linea","",1).strip() 
             color = 'orange]'
@@ -160,7 +167,6 @@ def listado(item):
             context_title = title.strip()
             context_title=context_title.replace('HDR',"").replace('V.Extendida','').replace('Version Extendida','').replace('Montaje del Director','').replace('3D','').replace('HOU','').replace('AA','').replace('A.A','').replace('SBS','').replace('IMAX','')
             context_title=context_title.replace('_Castellano_BDrip_720p_X26',"").replace('_',' ')
-            year=""
             try:
                 if re.search( '\d{4}', context_title[-4:]):
                     year=context_title[-4:]
@@ -178,9 +184,23 @@ def listado(item):
                 title = '[COLOR ' + color + title + '[/COLOR]'
             else:
                 title = '[COLOR ' + color + title + ' ' + '[COLOR dodgerblue](' + calidad + ')[/COLOR]'
-
-        if tipo=="movie":itemlist.append( Item(channel=item.channel, action=action, title=title, url=url, thumbnail=thumbnail, extra=extra, contentTitle=context_title, contentType=tipo, context=["buscar_trailer"] , infoLabels={"year":year} ) )
-        else: itemlist.append( Item(channel=item.channel, action=action, title=title, url=url, thumbnail=thumbnail, extra=extra, show=show, contentType=tipo , contentTitle=show, contentSerieName=show,context=["buscar_trailer"]) )
+        if MODO_EXTENDIDO_1: 
+            if tipo =="tvshow":
+                context_title=show
+            result = result +1
+            if result == 41:
+                while time.time()-start < 11:
+                    time.sleep(1)
+            fanart,thumbnail,plot,puntuacion,votos,fecha,genero = TMDb(context_title,tipo,year)
+            infoLabels={"rating":puntuacion,"votes":votos, "genre":genero, "year":fecha}
+            title = title + '[COLOR magenta] [' + puntuacion + '][/COLOR]'
+            if thumbnail=='': thumbnail=scrapedthumbnail
+        else:
+            fanart=""
+            plot=''
+            infoLabels={'year':year}
+        if tipo=="movie":itemlist.append( Item(channel=item.channel, action=action, title=title, url=url, thumbnail=thumbnail, extra=extra, contentTitle=context_title, contentType=tipo, plot=plot , fanart=fanart , context=["buscar_trailer"] , infoLabels=infoLabels ) )
+        else: itemlist.append( Item(channel=item.channel, action=action, title=title, url=url, thumbnail=thumbnail, extra=extra, show=show, contentType=tipo , plot=plot ,  contentTitle=show, fanart=fanart , contentSerieName=show,context=["buscar_trailer"] , infoLabels=infoLabels) )
 
     if "pagination" in data:
         patron = '<ul class="pagination">(.*?)</ul>'
@@ -188,7 +208,7 @@ def listado(item):
         
         if "Next" in paginacion:
             url_next_page  = scrapertools.get_match(paginacion,'<a href="([^>]+)>Next</a>')[:-1].replace(" ","%20")
-            itemlist.append( Item(channel=item.channel, action="listado" , title="[COLOR magenta]>> Página siguiente[/COLOR]" , url=url_next_page, extra=item.extra))            
+            itemlist.append( Item(channel=item.channel, action="listado" , title="[COLOR magenta]>> Página siguiente[/COLOR]" , url=url_next_page, extra=item.extra , thumbnail=NEXTPAGEIMAGE))            
     #logger.info("[newpct1.py] listado items:" + str(len(itemlist)))
     return itemlist
 
@@ -497,3 +517,16 @@ def TMDb(title,tipo,year):
 def episodios(item):
     # Necesario para las actualizaciones automaticas
     return completo(Item(channel=item.channel, url=item.url, show=item.show, extra= "serie_add"))
+
+
+def jodidasenyes(unicrap):
+    xlate={0xec:'', 0xed:'', 0xee:'', 0xef:'', 0xbd:'ñ' , 0xf1:'ñ', 0xd1:'Ñ'}
+    r = ''
+    for i in unicrap:
+        if xlate.has_key(ord(i)):
+            r += xlate[ord(i)]
+        elif ord(i) >= 0x80:
+            pass
+        else:
+            r += str(i)
+    return r.replace(":","")
