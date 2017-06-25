@@ -92,13 +92,27 @@ def menupelis(item):
     logger.info("##### Listado="+listado)
     patron =  '<a href="(.*?)"' # dir
     patron += '.*?title.*?>(.*?)</a'# tit
-    patron += '.*?a href=.*?>(.*?)</a'# gen
+    #patron += '.*?<a href=.*?>(.*?)</a>'# gen
+    patron += '.*?<td>(.*?)</td>'# gen
     matches = re.compile(patron,re.DOTALL).findall(listado)
     scrapertools.printMatches(matches)
     for scrapedurl,scrapedtitle,scrapedgen in matches:
-        if 'peliculas-hd' in item.url: scrapedtitle = re.sub('\(\d{4}\)| (HD)| HD','',scrapedtitle)
+        if not "N/A" in scrapedgen: scrapedgen = scrapertools.find_single_match(scrapedgen,'">(.*?)</a')
+        else: scrapedgen = "No definido"
+        year=''
+        scrapedtitlesearch = scrapedtitle
+        if 'peliculas-hd' in item.url: scrapedtitlesearch = re.sub(' (HD)| HD| mp4| Castellano','',scrapedtitlesearch)
+        try:
+            if re.search( '\d{4}', scrapedtitlesearch[-4:]):
+                year=scrapedtitlesearch[-4:]
+                scrapedtitlesearch = scrapedtitlesearch[:-4]
+            elif re.search( '\(\d{4}\)', scrapedtitlesearch[-6:]):
+                year=scrapedtitlesearch[-5:].replace(')','')
+                scrapedtitlesearch = scrapedtitlesearch[:-6]
+        except:
+            pass
         if MODO_EXTENDIDO:
-            fanart,thumbnail,plot,puntuacion,votos,fecha,genero = TMDb(scrapedtitle,"movie")
+            fanart,thumbnail,plot,puntuacion,votos,fecha,genero = TMDb(scrapedtitlesearch,"movie",year)
         else: 
             fanart = FANARTIMAGE
             thumbnail =THUMBNAILIMAGE
@@ -344,8 +358,8 @@ def listaseries(item):
         itemlist.append( Item(channel=item.channel, action="listaseries", title="[COLOR magenta]>>> Página siguiente  [COLOR dodgerblue](Puede haber más)[/COLOR]" , url=next_page_url , extra= "", thumbnail= NEXTPAGEIMAGE,fanart= FANARTIMAGE , folder=True) )
     return itemlist
 
-def TMDb(title,tipo):
-	data = re.sub(r'\n|\r|\t|\s{2}|&nbsp;',"",scrapertools.cachePage("http://api.themoviedb.org/3/search/" + tipo + "?api_key=cc4b67c52acb514bdf4931f7cedfd12b&query=" + title.replace(" ","%20") + "&language=es&include_adult=false"))
+def TMDb(title,tipo,year=''):
+	data = re.sub(r'\n|\r|\t|\s{2}|&nbsp;',"",scrapertools.cachePage("http://api.themoviedb.org/3/search/" + tipo + "?api_key=cc4b67c52acb514bdf4931f7cedfd12b&query=" + title.replace(" ","%20") + "&language=es" + "&year=" + year + "&include_adult=false"))
 	try: fanart = "https://image.tmdb.org/t/p/original" + scrapertools.get_match(data,'"page":1,.*?"backdrop_path":"\\\(.*?)"')
 	except: fanart = FANARTIMAGE
 	try: caratula =  "https://image.tmdb.org/t/p/original" + scrapertools.get_match(data,'"page":1,.*?"poster_path":"\\\(.*?)"')
