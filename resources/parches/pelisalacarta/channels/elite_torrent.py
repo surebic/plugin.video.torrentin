@@ -34,11 +34,16 @@ Generos = {"28":"Acción","12":"Aventura","16":"Animación","35":"Comedia","80":
 def mainlist(item):
     logger.info("[elitetorrent.py] mainlist")
     itemlist = []
+    itemlist.append( Item(channel=item.channel, title="[B][COLOR red]www.EliteTorrent.net  ha cerrado la web...[/COLOR][/B]" , action="mainlist", extra="movie",thumbnail= THUMBNAILIMAGE, fanart= FANARTIMAGE))
+    itemlist.append( Item(channel=item.channel, title="[B][COLOR red]No se pueden sacar enlaces de donde no los hay[/COLOR][/B]" , action="mainlist", extra="movie",thumbnail= THUMBNAILIMAGE, fanart= FANARTIMAGE))
+    itemlist.append( Item(channel=item.channel, title="[B][COLOR red]Si se vuelve a abrir se actualizará el canal[/COLOR][/B]" , action="mainlist", extra="movie",thumbnail= THUMBNAILIMAGE, fanart= FANARTIMAGE))
+    '''
     itemlist.append( Item(channel=item.channel, title="[B][COLOR yellow]Películas[/COLOR][/B]" , action="menu", extra="movie",thumbnail= THUMBNAILIMAGE, fanart= FANARTIMAGE))
     itemlist.append( Item(channel=item.channel, title="[B][COLOR orange]Series[/COLOR][/B]" , action="menu", extra="tv",thumbnail= THUMBNAILIMAGE, fanart= FANARTIMAGE))
     itemlist.append( Item(channel=item.channel, title="[B][COLOR lime]Documentales y TV[/COLOR][/B]" , action="menu", extra="docu",thumbnail= THUMBNAILIMAGE, fanart= FANARTIMAGE))
     itemlist.append( Item(channel=item.channel, action="search" , title="[B][COLOR yellow]Buscar...[/COLOR][/B]", thumbnail= SEARCHIMAGE, fanart= FANARTIMAGE))
     itemlist.append( Item(channel=item.channel, action="configuracion", title="[B][COLOR dodgerblue]Configuración del canal[/COLOR][/B]", thumbnail= THUMBNAILIMAGE,fanart= FANARTIMAGE, folder=False))
+    '''
     return itemlist
 
 def menu(item):
