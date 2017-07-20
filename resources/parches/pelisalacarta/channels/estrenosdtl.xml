@@ -12,14 +12,13 @@
 	<bannermenu></bannermenu>
 
 	<update_url>https://raw.githubusercontent.com/surebic/plugin.video.torrentin/master/resources/parches/pelisalacarta/channels/</update_url>
-	<version>12</version>
-	<date>07/07/2017</date>
-	<changes>Arreglado y mejorado</changes>
+	<version>13</version>
+	<date>20/07/2017</date>
+	<changes>Re-escrito por nueva web</changes>
 
 	<categories>
 		<category>torrent</category>
 		<category>movie</category>
-		<category>serie</category>
 	</categories>
 	
 	<settings>
@@ -44,7 +43,7 @@
 		<id>modo_grafico_b</id>
 		<type>bool</type>
 		<label>Buscar datos extra en TMDb en la búsquedas (enlentece el buscador general)</label>
-		<default>true</default>
+		<default>false</default>
 		<enabled>true</enabled>
 		<visible>true</visible>
 	</settings>
