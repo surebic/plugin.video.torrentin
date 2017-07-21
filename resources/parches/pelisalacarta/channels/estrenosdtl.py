@@ -84,7 +84,16 @@ def limpia(titulo):
 def getthumbandplot(url):
     data = scrapertools.cache_page(url)
     thumb = scrapertools.find_single_match(data,'contenedor_ficha.*?src="(.*?)"')
-    plot = re.sub('<[^<]+?>', '', scrapertools.find_single_match(data,'<p class="cuadro_sinopsis">(.*?)</p>'))
+    try:
+        plot = re.sub('<[^<]+?>', '', scrapertools.find_single_match(data,'<p class="cuadro_sinopsis">(.*?)</p>'))
+        try:
+            plot = plot.split('inopsis',1)[1].replace('\n','')
+        except:
+            try:
+                plot = plot.split('INOPSIS',1)[1].replace('\n','')
+            except: plot=''
+    except:
+        plot=''
     return thumb,plot
 
 def generos(item):
