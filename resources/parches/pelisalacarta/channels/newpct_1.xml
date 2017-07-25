@@ -12,7 +12,7 @@
 	<bannermenu>http://media.tvalacarta.info/pelisalacarta/bannermenu/newpct1.png</bannermenu>
 
 	<update_url>https://raw.githubusercontent.com/surebic/plugin.video.torrentin/master/resources/parches/pelisalacarta/channels/</update_url>
-	<version>30</version>
+	<version>31</version>
 
 	<changes>
 		<change>
@@ -39,6 +39,11 @@
 			<date>24/06/2017</date>
 			<autor>ciberus</autor>
 			<description>Incluida información extra en el primer listado y areglado tema de eñes.</description>
+		</change>
+		<change>
+			<date>25/07/2017</date>
+			<autor>ciberus</autor>
+			<description>Reparado por cambios en la web.</description>
 		</change>
 	</changes>
 

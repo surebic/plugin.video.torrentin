@@ -77,7 +77,7 @@ def submenu(item):
     data = re.sub(r"\n|\r|\t|\s{2}|(<!--.*?-->)","",scrapertools.cache_page(item.url))
     data = unicode( data, "iso-8859-1" , errors="replace" ).encode("utf-8")
 
-    patron = '<li><a href="http://www.newpct1.com/'+item.extra+'/">.*?<ul>(.*?)</ul>'
+    patron = '<li><a href="http://newpct1.com/'+item.extra+'/">.*?<ul>(.*?)</ul>'
     data = scrapertools.get_match(data,patron)
 
     patron = '<a href="([^"]+)".*?>([^>]+)</a>'
