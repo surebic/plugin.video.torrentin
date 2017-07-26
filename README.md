@@ -1,6 +1,6 @@
 ![](https://raw.githubusercontent.com/surebic/plugin.video.torrentin/master/banner.jpg)
 
-- Torrentin es un plugin, Add-On o complemento para KODI, es un explorador, almacenador, catalogador y reproduxtor de torrents capaz de usar 8 reproductores externos de android, (App's) (Torrent Video Player, Torrent Video Player Pro, BitX, BitFalcon, Torrent Stream Controller, AcePlayer, mTorrent(GP) y mTorrent(MDC), etc.), tambien es capaz de reproducir directamente a traves del motor AceStream o mandar el torrent/magnet a otros 9 Add-Ons de kodi como Kmediatorrent/Stream/XBMCtorrent, Pulsar, Quasar, YATP etc...(22 reproductores en total). Funciona en Android, Windows y Linux.
+- Torrentin es un plugin, Add-On o complemento para KODI, es un explorador, almacenador, catalogador y reproduxtor de torrents capaz de usar 12 reproductores externos de android, (App's) (Torrent Video Player, Torrent Video Player Pro, BitX, BitFalcon, Torrent Stream Controller, AcePlayer, mTorrent(GP) y mTorrent(MDC), etc.), tambien es capaz de reproducir directamente a traves del motor AceStream o mandar el torrent/magnet a otros 9 Add-Ons de kodi como Kmediatorrent/Stream/XBMCtorrent, Pulsar, Quasar, YATP etc...(22 reproductores en total). Funciona en Android, Windows y Linux.
 
 - Asi mismo es capaz de guardar los torrents o magnets en dos directorios y explorarlos cuando queramos para reproducirlos o volver a lanzar el ultimo torrent o magnet cargado y puede mandar el torrent/magnet a cualquier gestor de descarga de Android.
 
