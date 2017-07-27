@@ -12,7 +12,7 @@
 
 ### Para más información visite el foro: http://www.htcmania.com/showthread.php?t=995348
 
-## Descargar Version 0.5.6
-https://github.com/surebic/plugin.video.torrentin/blob/master/archives/plugin.video.torrentin-0.5.6.zip?raw=true
+## Descargar Version 0.6.0
+https://github.com/surebic/plugin.video.torrentin/blob/master/archives/plugin.video.torrentin-0.6.0.zip?raw=true
 
 Instalar en KODI desde Configuración -> AddOns -> instalar desde archivo .zip
