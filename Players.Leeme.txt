@@ -51,6 +51,25 @@ esta disponible en la web, la subo a MEGA:
 https://mega.co.nz/#!PxR3AYZY!5IgQxVlcZ1IeBhHlfyQLeP2uPJ74zu4RnAPSeGaKzOo
 Funcionan bastante bien, con libtorrent y reproductor incluido, de los autores del Live Stream Player
 
+------------------------------------------------------------------------------------- Nuevo (Marzo-2017)
+
+Xtorrent (Kewlapps)
+https://play.google.com/store/apps/details?id=com.gamemalt.streamtorrentvideos
+Permite seleccionar directorio para cache y reproductor.
+
+Torrent Player (topl)
+https://play.google.com/store/apps/details?id=com.torrent_player
+Permite seleccionar directorio para cache pero no reproductor, lleva uno propio compatible con AC3.
+
+Torrent Video Streaming (Itsasoftware)
+https://play.google.com/store/apps/details?id=org.itsasoftware.torrent.streaming
+Permite seleccionar directorio para cache y reproductor.
+
+Turkey torrent video player (Turkey torrent)
+https://play.google.com/store/apps/details?id=rocks.turkeytorrent.player
+No permite seleccionar directorio para cache (usa la SD interna) pero permite seleccionar reproductor
+y al igual que algunos anteriores recomienda el VLC, mejor usar MXPlayer con codecs AC3
+
 -------------------------------------------------------------------------------------
 Reqieren motor AceStream, el Aceplayer lo lleva incluido, (no aceptan magnets):
 -------------------------------------------------------------------------------------

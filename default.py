@@ -4,7 +4,7 @@
 # Play torrent & magnet  on Android (Windows / Linux only AceStream and KMediaTorrent)
 # by ciberus
 # You can copy, distribute, modify blablabla.....
-# v.0.5.1 (06.2016)
+# v.0.5.4 (01.2017)
 
 import sys,os,xbmc, xbmcaddon
 
