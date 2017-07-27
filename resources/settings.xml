@@ -1,33 +1,31 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <settings>
  <category label="General">
-<!--	<setting label="Seleccionar aplicación o plugin a usar como reproductor por defecto" type="lsep" /> -->
+	<setting label="[COLOR dodgerblue]Seleccionar AddOn o App a usar como reproductor por defecto[/COLOR]" type="lsep" />
 	<setting type="sep" />
-	<setting id="defplayer" type="enum" values="Info Torrent|[engine]   AceStream|[add-on]    XBMCtorrent|[add-on]    Stream|[add-on]    KmediaTorrent|[add-on]    Pulsar|[add-on]    Quasar|[add-on]    p2p-Streams|[add-on]    Plexus|[add-on]   Torrenter|[add-on]   Yet Another Torrent Player|[app]   Torrent Video Player|[app]   Torrent Video Player Pro|[app]   BitX|[app]   BitFalcon|[app]   Torrent Stream Controller|[app]   AcePlayer|[app]   mTorrent (GP)|[app]   mTorrent (MDC)|Enviar al gestor de descargas|Mostrar menú de selección" label="Reproductor:" default="20"/>
-	<setting id="aceplay" type="bool" label="Reproducir enlaces AceLive con AceStream sin presentar menú" default="true" />
-<!--	<setting label="Configurar directorios para guardar los torrents y magnets:" type="lsep" /> -->
+	<setting id="newdefplayer" type="enum" values="Info Torrent|[engine]   AceStream|[add-on]    XBMCtorrent|[add-on]    Stream|[add-on]    KmediaTorrent|[add-on]    Pulsar|[add-on]    Quasar|[add-on]    p2p-Streams|[add-on]    Plexus|[add-on]   Torrenter|[add-on]   Yet Another Torrent Player|[app]   Torrent Video Player|[app]   Torrent Video Player Pro|[app]   BitX|[app]   BitFalcon|[app]   Torrent Stream Controller|[app]   AcePlayer|[app]   mTorrent (GP)|[app]   mTorrent (MDC)|[app]   Xtorrent|[app]   Torrent Player|[app]   Torrent Video Streaming|[app]   Turkey torrent video player|Enviar al gestor de descargas|Mostrar menú de selección" label="[COLOR yellow]Reproductor:[/COLOR]" default="24"/>
+	<setting id="aceplay" type="bool" label="[COLOR yellow]Auto-Reproducir enlaces AceLive con AceStream[/COLOR]" default="true" />
+	<setting label="[COLOR dodgerblue]Configurar directorios para guardar los torrents y magnets:[/COLOR]" type="lsep" /> 
 	<setting type="sep" />
-	<setting id="torrent_path" type="folder" label="Directorio Principal:" default="" />
-	<setting id="torrent_path_tvp" type="folder" label="Directorio Secundario:" default="" />
+	<setting id="torrent_path" type="folder" label="[COLOR lime]Directorio Principal de torrents:[/COLOR]" default="" />
+	<setting id="torrent_path_tvp" type="folder" label="[COLOR limegreen]Directorio Secundario de torrents:[/COLOR]" default="" />
+	<setting id="saveopt" type="enum" values="[COLOR lime]Principal[/COLOR]|[COLOR limegreen]Secundario[/COLOR]" label="[COLOR orange]Los Torrents/Magnets se guardan en el:[/COLOR]" default="0"  />
+	<setting id="reopen" type="bool" label="[COLOR orange]Re-abrir menú después de Guardar Torrent/Magnet[/COLOR]" default="true" />
 	<setting type="sep" />
-	<setting id="saveopt" type="enum" values="Principal|Secundario" label="El botón Guardar Torrent/Magnet lo guarda en el:" default="0"  />
-	<setting id="reopen" type="bool" label="Re-abrir menú despues de Guardar Torrent/Magnet" default="true" />
-	<!--
-	<setting type="sep" />
-	-->
-	<setting id="pelismenu" type="enum" values="El directorio principal|Los canales torrent" label="La opción del menú Ir a pelisalacarta abre:" default="1"  />
-	
-	<setting type="action" label="[COLOR lime]Comprobar actualizaciones[/COLOR]" action="XBMC.RunPlugin(plugin://plugin.video.torrentin/?funcion=chkupdate)" />
-
+	<setting id="pelis_path" type="folder" label="[COLOR yellowgreen]Directorio de Películas:[/COLOR]" default="" />
+	<setting id="browser" type="enum" values="Nativo Android|Google Chrome" label="[COLOR aquamarine]Navegador para consultas en la web[/COLOR]" default="0" visible="System.Platform.Android" />
+	<setting id="nosound" type="bool" label="[COLOR magenta]Desactivar sonido en las notificaciones[/COLOR]" default="false" />
+    <setting id="forkname" type="text" label="[COLOR khaki]AddOn[/COLOR]" default="torrentin" />
+    <setting type="action" label="Cerrar y salvar la configuración" action="XBMC.RunPlugin(plugin://plugin.video.torrentin/?funcion=addconfig)" option="close" />
   </category>
 
  <category label="Reproductores">
-    <setting label="Añadir gestor de descargas torrent/magnet al menú de reproductores" type="lsep" visible="System.Platform.Android" />
+    <setting label="[COLOR dodgerblue]Añadir App de descarga de torrents al menú de reproductores[/COLOR]" type="lsep" visible="System.Platform.Android" />
     <setting id="tordown" type="enum" values="Ninguno|Custom o Menú del sistema|uTorrent|uTorrent Pro|tTorrent|tTorrent Pro|BitTorrent|Flud|Vuze|aTorrent" label="Gestor de descargas:" default="0" visible="System.Platform.Android" />
     <setting id="tordowncust" type="text" label="Nombre (package) del gestor Custom:" default="com.teeonsoft.ztorrent" visible="eq(-1 ,1)" />
-    <setting label="Seleccionar Reproductores instalados a mostrar en el menú" type="lsep" />
+    <setting label="[COLOR dodgerblue]Seleccionar reproductores que se mostrarán en el menú[/COLOR]" type="lsep" />
     <setting id="aces" type="bool" label="[engine]      AceStream" default="true" />
-    <setting id="autoconf" type="action" label="[COLOR lime]Click aqui para auto-configurar los add-ons (se activarán sólo los instalados)[/COLOR]" action="XBMC.RunPlugin(plugin://plugin.video.torrentin/?funcion=autoconf)" />
+    <setting type="sep" />
     <setting id="quasar" type="bool" label="[add-on]      Quasar" default="true" />
     <setting id="pulsar" type="bool" label="[add-on]      Pulsar" default="true" />
     <setting id="yatp" type="bool" label="[add-on]      Yet Another Torrent Player" default="true" />
@@ -38,56 +36,69 @@
     <setting id="strm" type="bool" label="[add-on]      Stream" default="true" />
     <setting id="p2p" type="bool" label="[add-on]      p2p-streams" default="true" />
     <setting type="sep" />
-    <setting id="tvp" type="bool" label="[app]          Torrent Video Player" default="true" visible="System.Platform.Android" />
-    <setting id="tvpp" type="bool" label="[app]          Torrent Video Player Pro" default="true" visible="System.Platform.Android" />
-    <setting id="bitx" type="bool" label="[app]          BitX" default="true" visible="System.Platform.Android" />
-    <setting id="bfalc" type="bool" label="[app]          BitFalcon" default="true" visible="System.Platform.Android" />
-    <setting id="tsc" type="bool" label="[app]          Torrent Stream Controller" default="true" visible="System.Platform.Android" />
-    <setting id="acep" type="bool" label="[app]          AcePlayer" default="true" visible="System.Platform.Android" />
-    <setting id="mtorg" type="bool" label="[app]          mTorrent (GP)" default="true" visible="System.Platform.Android" />
-    <setting id="mtorm" type="bool" label="[app]          mTorrent (MDC)" default="true" visible="System.Platform.Android" />
+    <setting id="tvp" type="bool" label="[app]          Torrent Video Player" default="false" visible="System.Platform.Android" />
+    <setting id="tvpp" type="bool" label="[app]          Torrent Video Player Pro" default="false" visible="System.Platform.Android" />
+    <setting id="bitx" type="bool" label="[app]          BitX" default="false" visible="System.Platform.Android" />
+    <setting id="bfalc" type="bool" label="[app]          BitFalcon" default="false" visible="System.Platform.Android" />
+    <setting id="tsc" type="bool" label="[app]          Torrent Stream Controller" default="false" visible="System.Platform.Android" />
+    <setting id="acep" type="bool" label="[app]          AcePlayer" default="false" visible="System.Platform.Android" />
+    <setting id="mtorg" type="bool" label="[app]          mTorrent (GP)" default="false" visible="System.Platform.Android" />
+    <setting id="mtorm" type="bool" label="[app]          mTorrent (MDC)" default="false" visible="System.Platform.Android" />
+    <setting id="xtor" type="bool" label="[app]          Xtorrent" default="false" visible="System.Platform.Android" />
+    <setting id="tpl" type="bool" label="[app]          Torrent Player" default="false" visible="System.Platform.Android" />
+    <setting id="tvs" type="bool" label="[app]          Torrent Video Streaming" default="false" visible="System.Platform.Android" />
+    <setting id="turk" type="bool" label="[app]          Turkey torrent video player" default="false" visible="System.Platform.Android" />
   </category>
 
   <category label="AceStream">
-    <setting label="Configuración del reproductor AceStream (engine) interno" type="lsep" />
-    <setting id="estadisticas" type="enum" values="Nunca|Durante la pausa (1 vez)|Durante la pausa (Continuo)|Durante el OSD (Continuo)|Durante la pausa y el OSD (Continuo)" label="Mostrar Avisos y estadísticas:" default="2"/>
-    <setting id="aceold" type="enum" values="Antiguo 3.0.x|Nuevo 3.1.x" label="Versión del motor AceStream (App) instalado" visible="System.Platform.Android" default="1"/>
+    <setting label="[COLOR dodgerblue]Configuración del reproductor AceStream (engine) interno[/COLOR]" type="lsep" />
+    <setting id="estadisticas" type="enum" values="Nunca|Durante la pausa (1 vez)|Durante la pausa (Continuo)|Durante el OSD (Continuo)|Durante la pausa y el OSD (Continuo)" label="Mostrar estadísticas:" default="2"/>
+    <setting id="aceold" type="enum" values="Antiguo 3.0.x|Nuevo 3.1.x" label="Versión del motor AceStream instalado" visible="System.Platform.Android" default="1"/>
     <setting id="iplocal" type="text" label="IP del servidor AceStream:" default="127.0.0.1" />
     <setting id="portace" type="text" label="Puerto del servidor AceStream:" default="62062" />
     <setting id="prog" type="text" label="Nombre del proceso del motor AceStream (Linux)" default="" />
     <setting id="savelive" type="bool" label="Guardar los enlaces AceLive reproducidos en lista M3U" default="true" />
-
     <setting id="save" type="bool" label="Guardar los videos reproducidos en disco o tarjeta" default="false" />
     <setting id="saveposter" type="bool" label="Guardar tambien la carátula del video" default="true" visible="eq(-1 ,true)" />
     <setting id="folder" type="folder" label="Directorio para guardar los videos:" visible="eq(-2 ,true)" />
     <setting id="acelog" type="bool" label="Modo depuración del motor AceStream" default="false" />
   </category>
 
-  <category label="Parches">
-	<setting label="[COLOR orange]Para desparchear pelisalacarta ejecutar cualquier parche de nuevo.[/COLOR]" type="lsep" />
-
-	<setting label="Parche para pelisalacarta (Automático, envia torrents directamente a Torrentin)" type="lsep" />
-	<setting id="pchpelis" type="action" label="Parchear pelisalacarta para obtener las carátulas y auto-reproducir" action="XBMC.RunPlugin(plugin://plugin.video.torrentin/?funcion=pchpelis)" />
-
-	<setting label="Parche para pelisalacarta (Muestra menús de selección del pelisalacarta)" type="lsep" />
-	<setting id="pchpelis2" type="action" label="Parchear pelisalacarta (NO AUTOMÁTICO) para obtener las carátulas" action="XBMC.RunPlugin(plugin://plugin.video.torrentin/?funcion=pchpelis2)" />
-
-	<setting label="[COLOR orange]Los siguientes parches no tienen vuelta atrás, para desparchear reinstalar.[/COLOR]" type="lsep" />
-
-	<setting label="Parche para plexus-streams" type="lsep" />
-	<setting id="pchplexusstreams" type="action" label="Parchear plexus-streams para reproducir con Torrentin" action="XBMC.RunPlugin(plugin://plugin.video.torrentin/?funcion=pchplexusstreams)" />
-
-	<setting label="Parche para plexus v. 0.1.4" type="lsep" />
-	<setting id="pchplexus" type="action" label="Parchear plexus para reproducir con Torrentin , guardar enlaces AceLive en lista y seleccionar tipo de motor externo" action="XBMC.RunPlugin(plugin://plugin.video.torrentin/?funcion=pchplexus)" />
-<!--	
-	<setting label="Parche para p2p-Streams v. 1.2.0b" type="lsep" />
-	<setting id="pchp2p" type="action" label="Parchear p2p-Streams para reproducir torrents con Torrentin y guardar enlaces AceLive en lista" action="XBMC.RunPlugin(plugin://plugin.video.torrentin/?funcion=pchp2p)" />
--->	
-	<setting label="Parche para KmediaTorrent v. 2.3.7" type="lsep" />
-	<setting id="pchkmedia" type="action" label="Parchear KmediaTorrent para completar .avi antes de reproducirlos y poner caché en FAT32" action="XBMC.RunPlugin(plugin://plugin.video.torrentin/?funcion=pchkmedia)" />
-
-	<setting label="Parche para LatinoTotal  v. 0.2.0" type="lsep" />
-	<setting id="pchlatino" type="action" label="Parchear LatinoTotal para reproducir los videos por torrent con Torrentin" action="XBMC.RunPlugin(plugin://plugin.video.torrentin/?funcion=pchlatino)" />
+  <category label="Utilidades">
+	<setting label="[COLOR magenta]Renombrador de películas [COLOR yellow]cambia a: Título de la película (año)[/COLOR]" type="lsep" />
+	<setting id="ren_path5" type="folder" label="[COLOR aquamarine]Directorio:[/COLOR]" default="" />
+	<setting id="incsubdir" type="bool" label="[COLOR aquamarine]Incluir subdirectorios[/COLOR]" default="true" />
+	<setting id="screener" type="bool" label="[COLOR aquamarine]Mantener la información de Screener en el nombre[/COLOR]" default="true" />
+	<setting id="askren5" type="bool" label="[COLOR aquamarine]Pedir confirmación antes de renombrar cualquier película[/COLOR]" default="true" />
+	<setting id="scraper" type="enum" values="[COLOR chartreuse]Torrentin[/COLOR]|Kodi" label="[COLOR aquamarine]Información al listarlas desde el menú principal[/COLOR]" default="0"  />
+	<setting id="cleantmdb" type="bool" label="[COLOR aquamarine]Opción de limpieza del caché al finalizar el renombrado[/COLOR]" default="false" visible="eq(-1 ,0)" />
+	<setting type="sep" />
+	<setting label="[COLOR magenta]Movedor de archivos [COLOR yellow](más lento entre distintas unidades)[/COLOR]" type="lsep" />
+	<setting id="moveorig_path" type="folder" label="[COLOR aquamarine]Directorio origen:[/COLOR]" default="" />
+	<setting id="movedest_path" type="folder" label="[COLOR aquamarine]Directorio destino:[/COLOR]" default="" />
+	<setting id="askmov" type="bool" label="[COLOR aquamarine]Pedir confirmación para mover cada archivo[/COLOR]" default="true" />
+	<setting type="sep" />
+	<setting label="[COLOR magenta][B]Renombradores de archivos[/COLOR][/B]" type="lsep" />
+	<setting type="sep" />
+	<setting label="[COLOR dodgerblue]Renombrador de archivos [COLOR yellow]cambia ( ) por [ ][/COLOR]" type="lsep" />
+	<setting id="ren_path1" type="folder" label="[COLOR aquamarine]Directorio:[/COLOR]" default="" />
+	<setting id="askren1" type="bool" label="[COLOR aquamarine]Pedir confirmación para renombrar cada archivo[/COLOR]" default="true" />
+	<setting type="sep" />
+	<setting label="[COLOR dodgerblue]Renombrador de archivos [COLOR yellow]elimina cadenas de texto[/COLOR]" type="lsep" />
+    <setting id="stringsup" type="text" label="[COLOR aquamarine]Texto(s), [COLOR cyan]separados por |[/COLOR]" default=".[www.DivxTotaL.com]| www.DESCARGASMIX.com| (EliteTorrent.net)| [EliteTorrent net]|" />
+	<setting id="ren_path2" type="folder" label="[COLOR aquamarine]Directorio:[/COLOR]" default="" />
+	<setting id="askren2" type="bool" label="[COLOR aquamarine]Pedir confirmación para renombrar cada archivo[/COLOR]" default="true" />
+	<setting type="sep" />
+	<setting label="[COLOR dodgerblue]Renombrador de archivos [COLOR yellow]cambia . y _ por espacio en el nombre[/COLOR]" type="lsep" />
+	<setting id="ren_path3" type="folder" label="[COLOR aquamarine]Directorio:[/COLOR]" default="" />
+	<setting id="askren3" type="bool" label="[COLOR aquamarine]Pedir confirmación para renombrar cada archivo[/COLOR]" default="true" />
+	<setting type="sep" />
+	<setting label="[COLOR dodgerblue]Renombrador de archivos [COLOR yellow]quita [ ] y ( ) y lo de dentro[/COLOR]" type="lsep" />
+	<setting id="ren_path4" type="folder" label="[COLOR aquamarine]Directorio:[/COLOR]" default="" />
+	<setting id="askren4" type="bool" label="[COLOR aquamarine]Pedir confirmación para renombrar cada archivo[/COLOR]" default="true" />
+	<setting type="sep" />
+	<setting label="[COLOR magenta]Copia de seguridad de la configuración de Kodi[/COLOR]" type="lsep" />
+	<setting id="bkpdest_path" type="folder" label="[COLOR aquamarine]Directorio para backups (vacio=Principal):[/COLOR]" default="" />
   </category>
 
 </settings>
