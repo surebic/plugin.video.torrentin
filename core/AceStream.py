@@ -2,6 +2,17 @@
 # -*- coding: utf-8 -*-
 # Originally coded by Nuismons (thanks)
 # Modified by ciberus for Torrentin Add-On
+# v. 0.6.0 - Julio 2017
+
+################################################################
+# Este AddOn de KODI no contiene enlaces internos o directos a material protegido por
+# copyright de ningun tipo, ni siquiera es un reproductor de torrents, tan solo se encarga
+# de hacer de puente de los enlaces que le llegan de otros AddOns y los re-envia a otros
+# Add-Ons de kodi o Aplicaciones de android capaces de reproducir torrents o magnets
+# sin descargarlos previamente.
+# Es de distribucion libre, gratuita y de codigo abierto y nunca se ha obtenido ningun tipo
+# de beneficio economico con el mismo.
+################################################################
 
 import urllib
 import re

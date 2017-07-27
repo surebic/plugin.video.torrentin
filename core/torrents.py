@@ -3,6 +3,17 @@
 # Torrentin - XBMC/Kodi Plugin
 # por ciberus para reproducir por AceStream .torrent descargados o locales y otros Add-Ons o App's
 #------------------------------------------------------------
+# v. 0.6.0 - Julio 2017
+
+################################################################
+# Este AddOn de KODI no contiene enlaces internos o directos a material protegido por
+# copyright de ningun tipo, ni siquiera es un reproductor de torrents, tan solo se encarga
+# de hacer de puente de los enlaces que le llegan de otros AddOns y los re-envia a otros
+# Add-Ons de kodi o Aplicaciones de android capaces de reproducir torrents o magnets
+# sin descargarlos previamente.
+# Es de distribucion libre, gratuita y de codigo abierto y nunca se ha obtenido ningun tipo
+# de beneficio economico con el mismo.
+################################################################
 
 import sys,os,urllib,base64,xbmc,xbmcgui,xbmcaddon
 
@@ -15,9 +26,9 @@ def cargar():
             if torrentfile != "":
                 img=""
                 try:
-                    findimg= torrentfile.replace(u'.torrent','')+u'.png'
+                    findimg= torrentfile.replace('.torrent','.png')
                     if os.path.isfile(findimg): img=findimg
-                    findimg= torrentfile.replace(u'.torrent','')+u'.jpg'
+                    findimg= torrentfile.replace('.torrent','.jpg')
                     if os.path.isfile(findimg): img=findimg
                 except: pass
                 return torrentfile,img
@@ -25,36 +36,51 @@ def cargar():
 
 def browsear(dir):
 	itemlist = {}
-	if dir ==1: torr_folder=unicode(__addon__.getSetting('torrent_path'),'utf-8')
+	if dir ==1: torr_folder= __addon__.getSetting('torrent_path')
 	elif dir == 2:
 		if __addon__.getSetting('torrent_path_tvp'):
-			torr_folder=unicode(__addon__.getSetting('torrent_path_tvp'),'utf-8')
+			torr_folder=__addon__.getSetting('torrent_path_tvp')
 		else:
 			xbmcgui.Dialog().ok("Torrentin" , "Directorio secundario de torrents no configurado.")
 			__addon__.openSettings()
 			return itemlist
+	if not os.path.isdir(torr_folder):
+		xbmcgui.Dialog().ok("Torrentin" , "ERROR, No se puede acceder al directorio.")
+		return itemlist
 	dirList=os.listdir( torr_folder )
 	for fname in dirList:
-		try:
-			fname = fname.encode("utf-8", 'ignore')
-		except:
-			show_Msg('Nombre de fichero invalido, renombrar', str(fname), 9000)    
-			continue
 		if os.path.isdir(os.path.join( torr_folder , fname )) or fname.endswith('.meta.torrent') or fname.startswith("torrentin."): continue
 		if fname.endswith('.torrent'):
 			img=""
-			findimg= os.path.join( torr_folder ,  fname.replace(u'.torrent','')+u'.png')
+			findimg= os.path.join( torr_folder ,  fname.replace('.torrent','.png'))
 			if os.path.isfile(findimg): img=findimg
-			findimg= os.path.join( torr_folder ,  fname.replace(u'.torrent','')+u'.jpg')
+			findimg= os.path.join( torr_folder ,  fname.replace('.torrent','.jpg'))
 			if os.path.isfile(findimg): img=findimg
+			'''
+			findimg= os.path.join( torr_folder ,  fname.replace('.torrent','.info'))
+			if os.path.isfile(findimg):
+				fo = open(findimg,"r")
+				lines = fo.read().split("|")
+				fo.close()
+				img = lines[0]
+			'''
 			itemlist[os.path.join(torr_folder , fname)] = img
 		if fname.endswith('.magnet'):
 			img=""
-			findimg= os.path.join( torr_folder ,  fname.replace(u'.magnet','')+u'.png')
+			findimg= os.path.join( torr_folder ,  fname.replace('.magnet','.png'))
 			if os.path.isfile(findimg): img=findimg
-			findimg= os.path.join( torr_folder ,  fname.replace(u'.magnet','')+u'.jpg')
+			findimg= os.path.join( torr_folder ,  fname.replace('.magnet','.jpg'))
 			if os.path.isfile(findimg): img=findimg
+			'''
+			findimg= os.path.join( torr_folder ,  fname.replace('.magnet','.info'))
+			if os.path.isfile(findimg):
+				fo = open(findimg,"r")
+				lines = fo.read().split("|")
+				fo.close()
+				img = lines[0]
+			'''
 			itemlist[os.path.join(torr_folder , fname)] = img
+		
 	return itemlist
 
 def play_acelive(link,imagen=""):
@@ -78,7 +104,7 @@ def play_acelive(link,imagen=""):
 	TSplayer.end()
 
 def savelink(link,name):
-	torrent_folder=unicode(__addon__.getSetting('torrent_path'),'utf-8')
+	torrent_folder=__addon__.getSetting('torrent_path')
 	if not link.startswith("acestream://"): return
 	if __addon__.getSetting("savelive")== "true":
 		fichero = os.path.join(torrent_folder,"Torrentin-Streams.m3u")
@@ -126,8 +152,14 @@ def play_torrent_from_file(fichero, imagen = ""):
 	TSplayer.end()
 
 def show_Msg(heading, message, time = 6000, pic = os.path.join(__cwd__ , "icon.png")):
-    try: xbmc.executebuiltin('XBMC.Notification("%s", "%s", %s, "%s")' % (heading, message, time, pic))
-    except: pass
+    if __addon__.getSetting('nosound') == "true":
+        try: xbmcgui.Dialog().notification(heading, message, pic, time, 0)
+        except: pass
+    else:
+        try: xbmc.executebuiltin('XBMC.Notification("%s", "%s", %s, "%s")' % (heading, message, time, pic))
+        except:
+            try: xbmcgui.Dialog().notification(heading, message, pic, time, 0)
+            except: pass
 
 def acewarn(torrent_data):
     if not xbmc.getCondVisibility('System.Platform.Android'): return True
@@ -148,7 +180,7 @@ def acewarn(torrent_data):
     else: return True
 
 def dltorrent(url , player="" , image=""):
-    torrent_folder=unicode(__addon__.getSetting('torrent_path'),'utf-8')
+    torrent_folder=__addon__.getSetting('torrent_path')
     global original_torrentin_uri
     original_torrentin_uri = url
     descarga = xbmcgui.DialogProgress()
@@ -191,7 +223,7 @@ def dltorrent(url , player="" , image=""):
     return True
 
 def SaveImgLink(image=""):
-    torrent_folder=unicode(__addon__.getSetting('torrent_path'),'utf-8')
+    torrent_folder=__addon__.getSetting('torrent_path')
     #if os.path.isfile(os.path.join( torrent_folder , "torrentin.torrent.img")): os.remove(os.path.join( torrent_folder , "torrentin.torrent.img"))
     if image != "":
         f = open(os.path.join( torrent_folder , "torrentin.torrent.img") , "wb+")
@@ -351,103 +383,9 @@ def torrent_info(uri , infotype):
 def chkvideo(title):
     ext = title.split('.')[-1]
     torrentname = title.rsplit(".",1) [0]
-    if ext.lower() in ['avi','mp4','mkv','flv','mov','vob','wmv','ogm','asx','mpg','mpeg','avc','vp3','fli','flc','m4v','iso','divx']:
-        tipo = ext.upper()        
+    if ext.lower() in ['rar','avi','mp4','mkv','flv','mov','vob','wmv','ogm','asx','mpg','mpeg','avc','vp3','fli','flc','m4v','iso','divx']:
+        tipo = ext.upper()
     else:
-        tipo = "No Video"
+            tipo = "No Video"
     return tipo, torrentname
 
-def savetorrent(uri,image,torr_folder,modo):
-    import tools
-    if uri.startswith("file://"): file = uri.replace("file://","")
-    else: return False
-    try:
-        f = open(file , "rb+")
-        torrent_data=f.read()
-        f.close()
-    except: return False
-    import base64
-    import bencode
-    import hashlib
-    try:
-        metadata = bencode.bdecode(torrent_data)
-    except:
-        pass
-    try:
-        title = metadata['info']['name']
-    except:
-        title = ""
-        modo = 2
-        pass
-    title = title.replace(".avi","").replace(".mp4","").replace(".mkv","").replace("+"," ").replace(",","").replace("?","").replace("*","")
-    try:
-        title = unicode(title,'utf-8')
-        title = tools.latin1_to_ascii(title)
-        #title = tools.StripTags(title)
-    except: pass
-    if modo == 2:
-        keyboard = xbmc.Keyboard(title)
-        keyboard.doModal()
-        if (keyboard.isConfirmed()):
-            title = keyboard.getText()
-        else: return False
-    try:
-        f = open(os.path.join( torr_folder , title + ".torrent") , "wb+")
-        f.write(torrent_data)
-        f.close()
-    except: return False
-
-    if image != "":
-        image_data = ""
-        if image.startswith("http"):
-            image_data = url_get(image)
-        else:
-            try:
-                f = open(image , "rb+")
-                image_data=f.read()
-                f.close()
-            except: pass
-        if image_data =="": return "nocarat"+title
-        if ".png" in image.lower(): ext=".png"
-        elif ".gif" in image.lower(): ext=".gif"
-        elif ".jpg" in image.lower(): ext= ".jpg"
-        else: ext = ".img"
-        try:
-            f = open(os.path.join( torr_folder , title + ext ) , "wb+")
-            f.write(image_data)
-            f.close()
-        except: 
-            os.remove(os.path.join( torr_folder , title + ext ))
-            return "nocarat"+title
-    else: return "nocarat"+title
-    return title
-
-
-def dlimageold(image=""):
-    torrent_folder=unicode(__addon__.getSetting('torrent_path'),'utf-8')
-    if os.path.isfile(os.path.join( torrent_folder , "torrentin.png")): os.remove(os.path.join( torrent_folder , "torrentin.png"))
-    if os.path.isfile(os.path.join( torrent_folder , "torrentin.jpg")): os.remove(os.path.join( torrent_folder , "torrentin.jpg"))
-    if image != "":
-        if image.startswith("http"):
-
-            f = open(os.path.join( torrent_folder , "torrentin.torrent.img") , "wb+")
-            f.write(image)
-            f.close()
-
-            image_data = url_get(image)
-            if image_data !="" and ".jpg" in image.lower():
-                try:
-                    f = open(os.path.join( torrent_folder , "torrentin.jpg") , "wb+")
-                    f.write(image_data)
-                    f.close()
-                except: return False,""
-                return True,"jpg"
-            if image_data !="" and ".png" in image.lower():
-                try:
-                    f = open(os.path.join( torrent_folder , "torrentin.png") , "wb+")
-                    f.write(image_data)
-                    f.close()
-                except: return False,""
-                return True,"png"
-        else: return False, ""
-    else: return False, ""

@@ -1,18 +1,31 @@
+#!/usr/bin/python
 # -*- coding: utf-8 -*-
 #:-----------------------------------------------------------
 # Torrentin - XBMC/Kodi Plugin
 # por ciberus (algunas rutinas tomadas de la web)
 #------------------------------------------------------------
+# v. 0.6.0 - Juilo 2017
 
-import sys,os,xbmc,zipfile,xbmcaddon,xbmcvfs
+################################################################
+# Este AddOn de KODI no contiene enlaces internos o directos a material protegido por
+# copyright de ningun tipo, ni siquiera es un reproductor de torrents, tan solo se encarga
+# de hacer de puente de los enlaces que le llegan de otros AddOns y los re-envia a otros
+# Add-Ons de kodi o Aplicaciones de android capaces de reproducir torrents o magnets
+# sin descargarlos previamente.
+# Es de distribucion libre, gratuita y de codigo abierto y nunca se ha obtenido ningun tipo
+# de beneficio economico con el mismo.
+################################################################
+
+import sys,os,xbmc,zipfile,xbmcaddon,xbmcvfs,xbmcgui
 __addon__ = xbmcaddon.Addon( id = 'plugin.video.torrentin' )
 __cwd__        = __addon__.getAddonInfo('path')
-addonspath = xbmc.translatePath(os.path.join('special://home', 'addons')).decode("utf-8")
+__language__   = __addon__.getLocalizedString
+addonspath = xbmc.translatePath(os.path.join('special://home', 'addons'))
 
 def ldlst(lista):
-	list_folder=unicode(__addon__.getSetting('torrent_path'),'utf-8')
+	list_folder=__addon__.getSetting('torrent_path')
 	itemlist = {}
-	if not list_folder: return itemlist
+	if not os.path.isdir(list_folder): return itemlist
 	f = open(os.path.join( list_folder ,  lista),"r")
 	line = f.readline()
 	if not line.startswith("#EXTM3U"): return itemlist
@@ -27,13 +40,11 @@ def ldlst(lista):
 	return itemlist
 
 def ldlstall():
-	list_folder=unicode(__addon__.getSetting('torrent_path'),'utf-8')
+	list_folder=__addon__.getSetting('torrent_path')
 	itemlist = {}
-	if not list_folder: return itemlist
+	if not os.path.isdir(list_folder): return itemlist
 	dirList=os.listdir( list_folder )
 	for fname in dirList:
-		try: fname = fname.encode("utf-8", 'ignore')
-		except: continue
 		if os.path.isdir(os.path.join( list_folder , fname )): continue
 		if fname.endswith('.m3u'):
 			f = open(os.path.join( list_folder ,  fname),"r")
@@ -48,15 +59,245 @@ def ldlstall():
 			f.close()
 	return itemlist
 
+def renamer1():
+	list_folder=__addon__.getSetting('ren_path1')
+	lista = ""
+	if not os.path.isdir(list_folder):
+		lista = "Directorio para renombrar archivos no\nconfigurado o no se encuentra."
+		return lista
+	if __addon__.getSetting('askren1') == "true": confirm = "Activado"
+	else: confirm = "Desactivado"
+	if not xbmcgui.Dialog().yesno("Torrentin - Renombrar","[COLOR cyan]Sustituir ( ) por [ ] en el nombre de archivos[/COLOR]" , "[COLOR lime]Directorio: [COLOR yellow]" +  list_folder + "[/COLOR]" , "[COLOR cyan]Preguntar en cada uno antes de renombrar [COLOR yellow]" + confirm + "[/COLOR]" ,"Abandonar","Continuar"):
+		return lista
+	dirList=os.listdir( list_folder )
+	for fname in dirList:
+		if os.path.isdir(os.path.join( list_folder , fname )): continue
+		if "(" in fname or ")" in fname:
+			nuevo=fname
+			nuevo = nuevo.replace("(","[").replace(")","]")
+			if __addon__.getSetting('askren1') == "true":
+				if xbmcgui.Dialog().yesno("Torrentin - Renombrar:",fname,"como:",nuevo):
+					os.rename(os.path.join(list_folder , fname),os.path.join(list_folder , nuevo))
+					lista += "= " + fname+"\n> " + nuevo + "\n"
+			else:
+				os.rename(os.path.join(list_folder , fname),os.path.join(list_folder , nuevo))
+				lista += "= " + fname+"\n> " + nuevo + "\n"
+	return lista
+
+def renamer2():
+	list_folder=__addon__.getSetting('ren_path2')
+	lista = ""
+	if not os.path.isdir(list_folder):
+		lista = "Directorio para renombrar archivos no\nconfigurado o no se encuentra."
+		return lista
+	if __addon__.getSetting('askren2') == "true": confirm = "Activado"
+	else: confirm = "Desactivado"
+	if not xbmcgui.Dialog().yesno("Torrentin - Renombrar","[COLOR cyan]Quitar cadenas de texto pre-definidas en el nombre de archivos[/COLOR]" , "[COLOR lime]Directorio: [COLOR yellow]" +  list_folder + "[/COLOR]" , "[COLOR cyan]Preguntar en cada uno antes de renombrar [COLOR yellow]" + confirm + "[/COLOR]","Abandonar","Continuar"):
+		return lista
+	dirList=os.listdir( list_folder )
+	strsup = __addon__.getSetting('stringsup').split("|")
+	for fname in dirList:
+		if os.path.isdir(os.path.join( list_folder , fname )): continue
+		nuevo = fname
+		for n in strsup:
+			if n!="" and n in nuevo:
+				nuevo = nuevo.replace(n,'')
+		if nuevo != fname:
+			if __addon__.getSetting('askren2') == "true":
+				if xbmcgui.Dialog().yesno("Torrentin - Renombrar:",fname,"como:",nuevo):
+					os.rename(os.path.join(list_folder , fname),os.path.join(list_folder , nuevo))
+					lista += "= " + fname+"\n> " + nuevo + "\n"
+			else:
+				os.rename(os.path.join(list_folder , fname),os.path.join(list_folder , nuevo))
+				lista += "= " + fname+"\n> " + nuevo + "\n"
+	return lista
+
+def renamer3():
+	list_folder=__addon__.getSetting('ren_path3')
+	lista = ""
+	if not os.path.isdir(list_folder):
+		lista = "Directorio para renombrar archivos no\nconfigurado o no se encuentra."
+		return lista
+	if __addon__.getSetting('askren3') == "true": confirm = "Activado"
+	else: confirm = "Desactivado"
+	if not xbmcgui.Dialog().yesno("Torrentin - Renombrar","[COLOR cyan]Sustituir . y _ por espacio en el nombre de archivos[/COLOR]" , "[COLOR lime]Directorio: [COLOR yellow]" +  list_folder + "[/COLOR]" , "[COLOR cyan]Preguntar en cada uno antes de renombrar [COLOR yellow]" + confirm + "[/COLOR]","Abandonar","Continuar"):
+		return lista
+	dirList=os.listdir( list_folder )
+	for fname in dirList:
+		if os.path.isdir(os.path.join( list_folder , fname )): continue
+		nombre = fname.rsplit(".",1)[0]
+		ext = fname.rsplit(".",1)[1]
+		if "." in nombre or "_" in nombre:
+			renombre=stripnew(nombre)
+			if renombre == nombre: continue
+			if __addon__.getSetting('askren3') == "true":
+				if xbmcgui.Dialog().yesno("Torrentin - Renombrar:",fname,"como:",renombre + "." + ext):
+					os.rename(os.path.join(list_folder , fname),os.path.join(list_folder , renombre + "." + ext))
+					lista += "= " + fname+"\n> " + renombre + "." + ext + "\n"
+			else:
+				os.rename(os.path.join(list_folder , fname),os.path.join(list_folder , renombre + "." + ext))
+				lista += "= " + fname+"\n> " + renombre + "." + ext + "\n"
+	return lista
+
+def renamer4():
+	list_folder=__addon__.getSetting('ren_path4')
+	lista = ""
+	if not os.path.isdir(list_folder):
+		lista = "Directorio para renombrar archivos no\nconfigurado o no se encuentra."
+		return lista
+	if __addon__.getSetting('askren4') == "true": confirm = "Activado"
+	else: confirm = "Desactivado"
+	if not xbmcgui.Dialog().yesno("Torrentin - Renombrar","[COLOR cyan]Quitar lo que haya entre parentesis y llaves en el nombre de archivos[/COLOR]" , "[COLOR lime]Directorio: [COLOR yellow]" +  list_folder + "[/COLOR]" , "[COLOR cyan]Preguntar en cada uno antes de renombrar [COLOR yellow]" + confirm + "[/COLOR]","Abandonar","Continuar"):
+		return lista
+	dirList=os.listdir( list_folder )
+	for fname in dirList:
+		if os.path.isdir(os.path.join( list_folder , fname )): continue
+		nombre = fname.rsplit(".",1)[0]
+		ext = fname.rsplit(".",1)[1]
+		renombre=StripTags(nombre)
+		if renombre == nombre: continue
+		if __addon__.getSetting('askren4') == "true":
+			if xbmcgui.Dialog().yesno("Torrentin - Renombrar:",fname,"como:",renombre + "." + ext):
+				os.rename(os.path.join(list_folder , fname),os.path.join(list_folder , renombre + "." + ext))
+				lista += "= " + fname+"\n> " + renombre + "." + ext + "\n"
+		else:
+			os.rename(os.path.join(list_folder , fname),os.path.join(list_folder , renombre + "." + ext))
+			lista += "= " + fname+"\n> " + renombre + "." + ext + "\n"
+	return lista
+
+def stripnew(text):
+	if not '[' in text and not '(' in text: return text.replace("."," ").replace("_"," ")
+	texto = ''
+	start = text.find("[")
+	if start >= 0:
+		texto=text[:start].replace("."," ").replace("_"," ") + text[start:]
+	start = text.find("(")
+	if start >= 0:
+		texto=text[:start].replace("."," ").replace("_"," ") + text[start:]
+	return texto
+
+def mover():
+	orig_folder=__addon__.getSetting('moveorig_path')
+	dest_folder=__addon__.getSetting('movedest_path')
+	lista = ""
+	if not os.path.isdir(orig_folder) or not os.path.isdir(dest_folder):
+		lista = "Directorio origen y/o destino no configurados\n o no se encuentran."
+		return lista
+	if __addon__.getSetting('askmov') == "true": confirm = "Activado"
+	else: confirm = "Desactivado"
+	if not xbmcgui.Dialog().yesno("Torrentin - Mover","[COLOR cyan]Mover todos los archivos de los directorios[/COLOR]" , "[COLOR lime]Origen: [COLOR yellow]" +  orig_folder + "[/COLOR]" ,
+"[COLOR lime]Destino: [COLOR yellow]" + dest_folder + "[/COLOR]\n[COLOR cyan]Preguntar en cada uno antes de mover [COLOR yellow]" + confirm + "[/COLOR]","Abandonar","Continuar"):
+		return lista
+	dirList=os.listdir( orig_folder )
+	for fname in dirList:
+		if os.path.isdir(os.path.join( orig_folder , fname )): continue
+		if __addon__.getSetting('askmov') == "true":
+				if xbmcgui.Dialog().yesno("Torrentin - Mover:",os.path.join(orig_folder , fname),"a:",os.path.join(dest_folder , fname)):
+					try:
+						os.rename(os.path.join(orig_folder , fname),os.path.join(dest_folder , fname))
+						lista += fname+"\n"
+					except:
+						xbmcvfs.copy(os.path.join(orig_folder , fname),os.path.join(dest_folder , fname))
+						os.remove(os.path.join(orig_folder , fname))
+						lista += fname+"\n"
+		else:
+				try:
+					os.rename(os.path.join(orig_folder , fname),os.path.join(dest_folder , fname))
+					lista += fname+"\n"
+				except:
+					xbmcvfs.copy(os.path.join(orig_folder , fname),os.path.join(dest_folder , fname))
+					os.remove(os.path.join(orig_folder , fname))
+					lista += fname+"\n"
+	return lista
+
+def backupkodi(bkp_folder):
+	borra = False
+	if not os.path.isdir(bkp_folder):
+		xbmcgui.Dialog().ok("Torrentin" , "Las copias de seguridad usan el directorio",
+                                                                  "principal de Torrentin si no se configura uno,",
+                                                                  "el directorio configurado no se encuentra.")
+		return '', borra
+	from time import strftime
+	fichero = os.path.join(bkp_folder,"BackupKodi"+strftime("(%d-%m-%y-%H%M)")+".zip")
+	backup = xbmcgui.DialogProgress()
+	backup.create("Torrentin","Salvando directorios de Kodi.")
+	if xbmcgui.Dialog().yesno("Torrentin" , "[COLOR yellow]Antes de hacer el Backup se pueden borrar los[/COLOR]",
+                                                                      "[COLOR yellow]directorios innecesarios (Textures y Packages)[/COLOR]",
+                                                                      "[COLOR lime]Pulsa Si para borrarlos o No para copiarlos.[/COLOR]"):
+		backup.update(10,"","Espera, No Canceles.","Borrando temporales, esto puede tardar...")
+		borra = True
+		tempdel()
+		xbmc.sleep(500)
+	backup.update(20,"","Espera, No Canceles.","Comprimiendo addons, esto puede tardar...")
+	zip_dir(xbmc.translatePath(os.path.join('special://home','addons')), fichero,"w")
+	backup.update(70,"","Espera, No Canceles.","Comprimiendo media, ya queda poco...")
+	zip_dir(xbmc.translatePath(os.path.join('special://home','media')), fichero,"a")
+	backup.update(75,"","Espera, No Canceles.","Comprimiendo system, ya queda poco...")
+	zip_dir(xbmc.translatePath(os.path.join('special://home','system')), fichero,"a")
+	backup.update(80,"","Espera, No Canceles.","Comprimiendo userdata, terminando...")
+	zip_dir(xbmc.translatePath(os.path.join('special://home','userdata')), fichero,"a")
+	backup.close()
+	return fichero, borra
+
+def restorekodi(bkp_folder):
+	if not os.path.isdir(bkp_folder):
+		xbmcgui.Dialog().ok("Torrentin" , "Las copias de seguridad usan el directorio",
+                                                                  "principal de Torrentin si no se configura uno,",
+                                                                  "el directorio configurado no se encuentra.")
+		return ''
+	backups = []
+	dirList=os.listdir( bkp_folder )
+	for fname in dirList:
+		if os.path.isdir(os.path.join( bkp_folder , fname )): continue
+		if fname.endswith('.zip') and fname.startswith("Backup"):
+			backups.append(fname)
+	if len(backups)==0:
+		xbmcgui.Dialog().ok("Torrentin" , "No se encuentra ningun fichero de copia",
+                                                                 "de seguridad en el directorio principal.")
+		return ''
+	seleccion = xbmcgui.Dialog().select("Selecciona un fichero de Backup" , backups)
+	if seleccion == -1: return ""
+	fichero_seleccionado = backups[seleccion]
+	if not fichero_seleccionado.startswith("BackupKodi("):
+		if not xbmcgui.Dialog().yesno("Torrentin" , "El fichero seleccionado no tiene el nombre",
+                                                                                 "standard de copia de seguridad creado por",
+                                                                                 "Torrentin, seguro que quieres restaurarlo?","Abandonar","Continuar"):
+			return ''
+	fichero = os.path.join(bkp_folder,fichero_seleccionado)
+	if os.path.isfile(fichero):
+		dirkodi = xbmc.translatePath('special://home')
+		backup = zipfile.ZipFile(fichero, 'r')
+		backup.extractall(dirkodi)
+	else:
+		xbmcgui.Dialog().ok("Torrentin" , "Fichero de copia de seguridad no encontrado.",
+                                                                 "Para restaurar un backup hay que crearlo antes.")
+		return ''
+	return fichero
+
+def tempdel():
+	import shutil
+	if xbmc.getCondVisibility('system.platform.android'):
+		if os.path.isfile(xbmc.translatePath(os.path.join('special://home','userdata','Database','Textures13.db'))):
+			try: os.remove(xbmc.translatePath(os.path.join('special://home','userdata','Database','Textures13.db')))
+			except: pass
+		if os.path.isdir(xbmc.translatePath(os.path.join('special://home','temp'))):
+			try: shutil.rmtree(xbmc.translatePath(os.path.join('special://home','temp')))
+			except: pass
+	if os.path.isdir(xbmc.translatePath(os.path.join('special://home','userdata','Thumbnails'))):
+		try: shutil.rmtree(xbmc.translatePath(os.path.join('special://home','userdata','Thumbnails')))
+		except: pass
+	if os.path.isdir(xbmc.translatePath(os.path.join('special://home','addons','packages'))):
+		try: shutil.rmtree(xbmc.translatePath(os.path.join('special://home','addons','packages')))
+		except: pass
+	xbmc.sleep(10000)
+
 def chklst():
-	list_folder=unicode(__addon__.getSetting('torrent_path'),'utf-8')
+	list_folder=__addon__.getSetting('torrent_path')
 	listas  = []
 	if not list_folder: return listas
 	try:
 		dirList=os.listdir( list_folder )
 		for fname in dirList:
-			try: fname = fname.encode("utf-8", 'ignore')
-			except: continue
 			if os.path.isdir(os.path.join( list_folder , fname )): continue
 			if fname.endswith('.m3u'):
 				listas.append(fname)
@@ -101,9 +342,21 @@ def latin1_to_ascii (unicrap):
             r += str(i)
     return r.replace(":","")
 
-def remove_non_ascii(text):
-    from unidecode import unidecode
-    return unidecode(unicode(text, encoding = "utf-8"))
+def zip_dir(path_dir, path_file_zip,mode):
+    import contextlib
+    #backup2 = xbmcgui.DialogProgress()
+    #backup2.create("Torrentin","Salvando directorios de Kodi.")
+    with contextlib.closing(zipfile.ZipFile(path_file_zip, mode, zipfile.ZIP_DEFLATED)) as zip_file:
+        try:
+            for root, dirs, files in os.walk(path_dir):
+                for file_or_dir in files + dirs:
+                    if not file_or_dir.endswith(".pyo"):
+                        #backup2.update(0,"","Espera, No Canceles.","Comprimiendo " + file_or_dir)
+                        zip_file.write(os.path.join(root, file_or_dir),os.path.relpath(os.path.join(root, file_or_dir),os.path.join(path_dir, os.path.pardir)))
+        except:
+            xbmcgui.Dialog().ok("Torrentin" , "Se ha producido un error al comprimir los ficheros","la copia de seguridad no se ha completado.")
+            pass
+    #backup2.close()
 
 def StripTags(text):
      finished = 0
@@ -130,31 +383,31 @@ def StripTags2(text):
                  finished = 0
      return text.strip(".")
 
-def chkpchpelis():
-	version = chkpelis()
+def chkpchaddon():
+	version = chkaddon()
 	if version == "42": patchedfile = "platformtools"
 	else: patchedfile = "xbmctools"
-	origen = os.path.join(addonspath,"plugin.video.pelisalacarta","platformcode",patchedfile+".py")
+	origen = os.path.join(addonspath,__addon__.getSetting('forkname'),"platformcode",patchedfile+".py")
 	if os.path.isfile(origen):
 		if __addon__.getSetting('parche') == txtmd5(origen):
 			return 1
 		else: return 0
 	else: return 0
 		
-def pchpelis(tipo):
-	version = chkpelis()
+def pchaddon(tipo):
+	version = chkaddon()
 	if version == "42": patchedfile = "platformtools"
 	elif version == "41": patchedfile = "xbmctools"
-	else: return 3
+	else: return 3 , ""
 	
-	origen = os.path.join(addonspath,"plugin.video.pelisalacarta","platformcode",patchedfile+".py")
-	destino = os.path.join(addonspath,"plugin.video.pelisalacarta","platformcode",patchedfile+".py.pch")
-	backup = os.path.join(addonspath,"plugin.video.pelisalacarta","platformcode",patchedfile+".py.bkp")
+	origen = os.path.join(addonspath,__addon__.getSetting('forkname'),"platformcode",patchedfile+".py")
+	destino = os.path.join(addonspath,__addon__.getSetting('forkname'),"platformcode",patchedfile+".py.pch")
+	backup = os.path.join(addonspath,__addon__.getSetting('forkname'),"platformcode",patchedfile+".py.bkp")
 	parcheado = False
 	try:
 		fo = open(origen,"r")
 		fd = open(destino,"w")
-	except: return 0
+	except: return 0 , ""
 
 	fd.writelines('# -*- coding: utf-8 -*-'+'\n'+'# Parcheado por Torrentin'+'\n')
 	line = fo.readline()
@@ -183,149 +436,78 @@ def pchpelis(tipo):
 	fo.close()
 	fd.close()
 	if not parcheado: #No estaba
-		__addon__.setSetting('parche',txtmd5(destino))
 		xbmcvfs.copy(origen , backup)
 		xbmcvfs.copy(destino , origen)
 		os.remove(destino)
-		addchannels()
-		return 1
+		return 1, txtmd5(origen)
 	else: #Si estaba
-		__addon__.setSetting('parche','')
 		xbmcvfs.copy(backup , origen)
 		os.remove(backup)
 		os.remove(destino)
-		removechannels()
-		return 2
+		return 2 , ""
 
-def addchannels():
-	origen = os.path.join(__cwd__ , "resources" , "parches" , "pelisalacarta" )
-	destino = os.path.join(addonspath,"plugin.video.pelisalacarta","channels")
-	#xbmcvfs.copy(os.path.join(destino,"elitetorrent.py") , os.path.join(destino,"elitetorrent.py.bkp"))
-	#xbmcvfs.copy(os.path.join(destino,"elitetorrent.xml") , os.path.join(destino,"elitetorrent.xml.bkp"))
-	#xbmcvfs.copy(os.path.join(destino,"newpct.xml") , os.path.join(destino,"newpct.xml.bkp"))
-	ciberus_channels = zipfile.ZipFile(os.path.join(origen,"newpct.py" ), 'r')
-	ciberus_channels.extractall(destino)
+def addconfig():
+	origen=__addon__.getSetting('prog')
+	fork = __addon__.getSetting('forkname')
+	destino = os.path.join(addonspath, fork ,"channels")
+	if os.path.isfile(os.path.join(origen,"config.zip" )) and os.path.isdir(destino):
+		config = zipfile.ZipFile(os.path.join(origen,"config.zip" ), 'r')
+		config.extractall(destino)
+		xbmc.executebuiltin('XBMC.Notification("", "All Ok.", 1000, ")')
 
-def removechannels():
-	destino = os.path.join(addonspath,"plugin.video.pelisalacarta","channels")
-	ciberus_channels = [ "divxtotal.py" , "divxtotal.xml" , "elite_torrent.py" , "elite_torrent.xml" , "estrenosdtl.py" , "estrenosdtl.xml" , "estrenosya.py" , "estrenosya.xml" , "yify.py" , "yify.xml" ]
-	for f in ciberus_channels:
-		if os.path.isfile(os.path.join(destino,f)): os.remove(os.path.join(destino,f))
-	if os.path.isfile(os.path.join(destino,"elitetorrent.py.bkp")):
-		xbmcvfs.copy(os.path.join(destino,"elitetorrent.py.bkp") , os.path.join(destino,"elitetorrent.py"))
-		os.remove(os.path.join(destino,"elitetorrent.py.bkp"))
-	if os.path.isfile(os.path.join(destino,"elitetorrent.xml.bkp")):
-		xbmcvfs.copy(os.path.join(destino,"elitetorrent.xml.bkp") , os.path.join(destino,"elitetorrent.xml"))
-		os.remove(os.path.join(destino,"elitetorrent.xml.bkp"))
-	if os.path.isfile(os.path.join(destino,"newpct.xml.bkp")):
-		xbmcvfs.copy(os.path.join(destino,"newpct.xml.bkp") , os.path.join(destino,"newpct.xml"))
-		os.remove(os.path.join(destino,"newpct.xml.bkp"))
-
-def pchpelisold(tipo):
+def chkaddon():
 	try:
-		f = open(os.path.join(addonspath,"plugin.video.pelisalacarta","addon.xml"), 'r')
-		AddOnId=f.read()
-		f.close
-	except:
-		return False
-	if not 'version="4.0.6"' in AddOnId: return False
-	destino = os.path.join(addonspath,"plugin.video.pelisalacarta","servers","torrent.py")
-	if os.path.isfile(destino):
-		if not xbmcvfs.copy(os.path.join(__cwd__ , "resources" , "parches" , "pelisalacarta" , "torrent.py") , destino) : return False
-	else: return False
-	destino = os.path.join(addonspath,"plugin.video.pelisalacarta","platformcode","xbmctools.py")
-	if os.path.isfile(destino):
-		if tipo == 1:
-			if not xbmcvfs.copy(os.path.join(__cwd__ , "resources" , "parches" , "pelisalacarta" , "xbmctools.py") , destino) : return False
-		if tipo == 2:
-			if not xbmcvfs.copy(os.path.join(__cwd__ , "resources" , "parches" , "pelisalacarta" , "xbmctools(2).py") , destino) : return False
-	else: return False
-
-	destino = os.path.join(addonspath,"plugin.video.pelisalacarta","channels","newpct.xml")
-	if os.path.isfile(destino):
-		if not xbmcvfs.copy(os.path.join(__cwd__ , "resources" , "parches" , "pelisalacarta" , "newpct.xml") , destino) : return False
-	else: return False
-	destino = os.path.join(addonspath,"plugin.video.pelisalacarta","channels","newpct1.xml")
-	if os.path.isfile(destino):
-		if not xbmcvfs.copy(os.path.join(__cwd__ , "resources" , "parches" , "pelisalacarta" , "newpct1.xml") , destino) : return False
-	else: return False
-	'''
-	destino = os.path.join(addonspath,"plugin.video.pelisalacarta","channels","elitetorrent.xml")
-	if os.path.isfile(destino):
-		if not xbmcvfs.copy(os.path.join(__cwd__ , "resources" , "parches" , "pelisalacarta" , "elitetorrent.xml") , destino) : return False
-	else: return False
-	destino = os.path.join(addonspath,"plugin.video.pelisalacarta","channels","elitetorrent.py")
-	if os.path.isfile(destino):
-		if not xbmcvfs.copy(os.path.join(__cwd__ , "resources" , "parches" , "pelisalacarta" , "elitetorrent.py") , destino) : return False
-	else: return False
-	'''
-	return True
-
-def chkpelis():
-	try:
-		f = open(os.path.join(addonspath,"plugin.video.pelisalacarta","addon.xml"), 'r')
+		f = open(os.path.join(addonspath,__addon__.getSetting('forkname'),"addon.xml"), 'r')
 		AddOnId=f.read()
 		f.close
 	except:
 		return "0"
-	if '    version="4.2.' in AddOnId: return "42"
-	elif '    version="4.1.' in AddOnId: return "41"
+	if '    version="4.1.' in AddOnId: return "41"
 	elif '    version="4.0.' in AddOnId: return "40"
-	else: return "0"
-    
-def pchlatino():
-	try:
-		f = open(os.path.join(addonspath,"plugin.video.latinototal","addon.xml"), 'r')
-		AddOnId=f.read()
-		f.close
-	except:
-		return False
-	if not 'version="0.2.0"' in AddOnId: return False
-	destino = os.path.join(addonspath,"plugin.video.latinototal","default.py")
-	if os.path.isfile(destino):
-		if not xbmcvfs.copy(os.path.join(__cwd__ , "resources" , "parches" , "latinototal" , "default.py") , destino) : return False
-		else: return True
-	else: return False
+	else: return "42"
 
-def pchp2p():
-	try:
-		f = open(os.path.join(addonspath,"plugin.video.p2p-streams","addon.xml"), 'r')
-		AddOnId=f.read()
-		f.close
-	except:
-		return False
-	if not 'version="1.2.0b"' in AddOnId: return False
-	destino = os.path.join(addonspath,"plugin.video.p2p-streams","resources","settings.xml")
-	if os.path.isfile(destino):
-		if not xbmcvfs.copy(os.path.join(__cwd__ , "resources" , "parches" , "p2p-streams" , "settings.xml") , destino) : return False
-	else: return False
-	destino = os.path.join(addonspath,"plugin.video.p2p-streams","resources","core","acestream.py")
-	if os.path.isfile(destino):
-		if not xbmcvfs.copy(os.path.join(__cwd__ , "resources" , "parches" , "p2p-streams" , "acestream.py") , destino) : return False
-	else: return False
-	return True
+
+def chkpchplexus():
+	destinoace = os.path.join(addonspath,"program.plexus","resources","plexus","acestream.py")
+	if os.path.isfile(destinoace):
+		md5sum = txtmd5(destinoace)
+		if md5sum == "a222c9f91c1e83328156a5a468586334" or md5sum == "7c04391ab3b95b8bfa12d0f147e49f94":
+			return True
+		else: return False
 
 def pchplexus():
+	md5sum = ""
 	try:
 		f = open(os.path.join(addonspath,"program.plexus","addon.xml"), 'r')
 		AddOnId=f.read()
 		f.close
 	except:
-		return False
-	if not 'version="0.1.4"' in AddOnId: return False
-	destino = os.path.join(addonspath,"program.plexus","resources","settings.xml")
-	if os.path.isfile(destino):
-		if not xbmcvfs.copy(os.path.join(__cwd__ , "resources" , "parches" , "plexus" , "settings.xml") , destino) : return False
-	else: return False
-	destino = os.path.join(addonspath,"program.plexus","resources","plexus","acestream.py")
-	if os.path.isfile(destino):
-		if not xbmcvfs.copy(os.path.join(__cwd__ , "resources" , "parches" , "plexus" , "acestream.py") , destino) : return False
-	else: return False
-	destino = os.path.join(addonspath,"program.plexus","resources","plexus","acecore.py")
-	if os.path.isfile(destino):
-		if not xbmcvfs.copy(os.path.join(__cwd__ , "resources" , "parches" , "plexus" , "acecore.py") , destino) : return False
-	else: return False
-	return True
+		return False , md5sum
+	if 'version="0.1.4"' in AddOnId:
+		destino = os.path.join(addonspath,"program.plexus","resources","settings.xml")
+		if os.path.isfile(destino):
+			if not xbmcvfs.copy(os.path.join(__cwd__ , "resources" , "parches" , "plexus" , "settings.xml") , destino) : return False , md5sum
+		else: return False , md5sum
+		destino = os.path.join(addonspath,"program.plexus","resources","plexus","acestream.py")
+		if os.path.isfile(destino):
+			if not xbmcvfs.copy(os.path.join(__cwd__ , "resources" , "parches" , "plexus" , "acestream.py") , destino) : return False , md5sum
+			else: md5sum = txtmd5(destino) # a222c9f91c1e83328156a5a468586334
+		else: return False , md5sum
+		destino = os.path.join(addonspath,"program.plexus","resources","plexus","acecore.py")
+		if os.path.isfile(destino):
+			if not xbmcvfs.copy(os.path.join(__cwd__ , "resources" , "parches" , "plexus" , "acecore.py") , destino) : return False , md5sum
+	elif 'version="0.1.6.a"' in AddOnId or 'version="0.1.7"' in AddOnId:
+		destino = os.path.join(addonspath,"program.plexus","resources","settings.xml")
+		if os.path.isfile(destino):
+			if not xbmcvfs.copy(os.path.join(__cwd__ , "resources" , "parches" , "plexus" , "016a" , "settings.xml") , destino) : return False , md5sum
+		else: return False , md5sum
+		destino = os.path.join(addonspath,"program.plexus","resources","plexus","acestream.py")
+		if os.path.isfile(destino):
+			if not xbmcvfs.copy(os.path.join(__cwd__ , "resources" , "parches" , "plexus" , "016a" , "acestream.py") , destino) : return False , md5sum
+			else: md5sum = txtmd5(destino)
+		else: return False , md5sum
+	else: return False , md5sum
+	return True  , md5sum
 
 def chkps():
 	destinoace = os.path.join(addonspath,"plugin.video.plexus-streams","resources","core","acestream.py")
@@ -337,7 +519,6 @@ def chkps():
 			return 1
 	else: return 0
 	
-
 def pchplexusstreams():
 	proceso = 0
 	proceso2 = 0
@@ -373,6 +554,7 @@ def pchplexusstreams():
 #patched acestream.py  63267830d43361a408e8b34695cbb073
 
 def pchkmedia():
+	md5sum = ""
 	try:
 		KmediaDir = "plugin.video.kmediatorrent"
 		f = open(os.path.join(addonspath,KmediaDir,"addon.xml"), 'r')
@@ -385,18 +567,39 @@ def pchkmedia():
 			AddOnId=f.read()
 			f.close
 		except:
-			return False
-	#if AddOnId == "" : return False
-	if not 'version="2.3.7"' in AddOnId: return False
+			return False , md5sum
+	#if AddOnId == "" : return False , md5sum
+
+	destinoplayer = os.path.join(addonspath,KmediaDir,"resources","site-packages","kmediatorrent","player.py")
+	if os.path.isfile(destinoplayer):
+		md5sum = txtmd5(destinoplayer)
+		if md5sum == "454d4618b8628aecf66c0bb7bf8d3662":
+			return False , "1"
+
+	if not 'version="2.3.7"' in AddOnId: return False , md5sum
+
 	destino = os.path.join(addonspath,KmediaDir,"resources","settings.xml")
 	if os.path.isfile(destino):
-		if not xbmcvfs.copy(os.path.join(__cwd__ , "resources" , "parches" , "kmediatorrent" , "settings.xml") , destino) : return False
-	else: return False
-	destino = os.path.join(addonspath,KmediaDir,"resources","site-packages","kmediatorrent","player.py")
-	if os.path.isfile(destino):
-		if not xbmcvfs.copy(os.path.join(__cwd__ , "resources" , "parches" , "kmediatorrent" , "player.py") , destino) : return False
-	else: return False
-	return True
+		if not xbmcvfs.copy(os.path.join(__cwd__ , "resources" , "parches" , "kmediatorrent" , "settings.xml") , destino) : return False , md5sum
+	else: return False , md5sum
+
+	#destinoplayer = os.path.join(addonspath,KmediaDir,"resources","site-packages","kmediatorrent","player.py")
+	if os.path.isfile(destinoplayer):
+		if not xbmcvfs.copy(os.path.join(__cwd__ , "resources" , "parches" , "kmediatorrent" , "player.py") , destinoplayer) : return False , md5sum
+		else: md5sum = txtmd5(destinoplayer)
+
+	else: return False , md5sum
+	return True , md5sum
+
+def chkpchkmedia():
+	if os.path.isfile(os.path.join(addonspath,"plugin.video.kmediatorrent","resources","site-packages","kmediatorrent","player.py")):
+		if txtmd5(os.path.join(addonspath,"plugin.video.kmediatorrent","resources","site-packages","kmediatorrent","player.py")) == "454d4618b8628aecf66c0bb7bf8d3662":
+			return True
+	elif os.path.isfile(os.path.join(addonspath,"plugin.video.kmediatorrent-2.3.7","resources","site-packages","kmediatorrent","player.py")):
+		if txtmd5(os.path.join(addonspath,"plugin.video.kmediatorrent-2.3.7","resources","site-packages","kmediatorrent","player.py")) == "454d4618b8628aecf66c0bb7bf8d3662":
+			return True
+	else:
+		return False
 
 def recursive_overwrite(src, dest, ignore=None):
     import shutil
@@ -426,4 +629,96 @@ def txtmd5(file):
     #print "TORRENTIN_MD5: "+ file + "  " + md5.hexdigest()
     return md5.hexdigest()
 
+def convert_size(size_bytes):
+   import math
+   if size_bytes == 0:
+       return "0B"
+   size_name = ("B", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB")
+   i = int(math.floor(math.log(size_bytes, 1024)))
+   p = math.pow(1024, i)
+   s = round(size_bytes / p, 2)
+   return "%s %s" % (s, size_name[i])
+
+def get_size(start_path = '.'):
+    total_size = 0
+    for dirpath, dirnames, filenames in os.walk(start_path):
+        for f in filenames:
+            fp = os.path.join(dirpath, f)
+            total_size += os.path.getsize(fp)
+    return total_size
+
 #hashlib.md5(open(file,'rb').read()).hexdigest()
+
+def forceclose():
+    if xbmc.getCondVisibility('system.platform.android'):
+        try: os._exit(1)
+        except: pass
+        try: os.system('adb shell am force-stop org.xbmc.kodi')
+        except: pass
+        try: os.system('adb shell am force-stop org.kodi')
+        except: pass
+        try: os.system('adb shell am force-stop org.xbmc.xbmc')
+        except: pass
+        try: os.system('adb shell am force-stop org.xbmc')
+        except: pass     
+        try: os.system('adb shell am force-stop com.semperpax.spmc')
+        except: pass
+        try: os.system('adb shell am force-stop com.spmc')
+        except: pass
+        try: os.system('adb shell am force-stop com.semperpax.spmc16')
+        except: pass
+        try: os.system('adb shell am force-stop com.spmc16')
+        except: pass
+        try: os.system('adb shell am force-stop org.xbmc.ftmc')
+        except: pass
+
+    elif xbmc.getCondVisibility('system.platform.windows'):
+        try: os._exit(1)
+        except: pass
+        try:
+            os.system('@ECHO off')
+            os.system('tskill XBMC.exe')
+        except: pass
+        try:
+            os.system('@ECHO off')
+            os.system('tskill Kodi.exe')
+        except: pass
+        try:
+            os.system('@ECHO off')
+            os.system('TASKKILL /im Kodi.exe /f')
+        except: pass
+        try:
+            os.system('@ECHO off')
+            os.system('TASKKILL /im XBMC.exe /f')
+        except: pass
+                
+    elif xbmc.getCondVisibility('system.platform.linux'):
+        try: os._exit(1)
+        except: pass
+        try: os.system('killall XBMC')
+        except: pass
+        try: os.system('killall Kodi')
+        except: pass
+        try: os.system('killall -9 xbmc.bin')
+        except: pass
+        try: os.system('killall -9 kodi.bin')
+        except: pass
+        
+    elif xbmc.getCondVisibility('system.platform.osx'):
+        try: os._exit(1)
+        except: pass
+        try: os.system('killall -9 XBMC')
+        except: pass
+        try: os.system('killall -9 Kodi')
+        except: pass
+
+    else:
+        try: os._exit(1)
+        except: pass
+        try: os.system('killall AppleTV')
+        except: pass
+        try: os.system('sudo initctl stop kodi')
+        except: pass
+        try: os.system('sudo initctl stop xbmc')
+        except: pass
+        
