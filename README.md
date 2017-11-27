@@ -16,4 +16,5 @@
 https://github.com/surebic/plugin.video.torrentin/blob/master/archives/plugin.video.torrentin-0.6.0.zip?raw=true
 
 Instalar en KODI desde Configuración -> AddOns -> instalar desde archivo .zip
-(En Kodi Krypto con skin Estuary picar en addons y leugo al icono de la caja abierta de la esquina superior izquierda).
+
+(En Kodi Krypton con skin Estuary picar en addons y luego al icono de la caja abierta de la esquina superior izquierda).
