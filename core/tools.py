@@ -4,7 +4,7 @@
 # Torrentin - XBMC/Kodi Plugin
 # por ciberus (algunas rutinas tomadas de la web)
 #------------------------------------------------------------
-# v. 0.6.0 - Juilo 2017
+# v. 0.6.1 - Diciembre 2017
 
 ################################################################
 # Este AddOn de KODI no contiene enlaces internos o directos a material protegido por
@@ -18,6 +18,7 @@
 
 import sys,os,xbmc,zipfile,xbmcaddon,xbmcvfs,xbmcgui
 __addon__ = xbmcaddon.Addon( id = 'plugin.video.torrentin' )
+__scriptid__   = __addon__.getAddonInfo('id')
 __cwd__        = __addon__.getAddonInfo('path')
 __language__   = __addon__.getLocalizedString
 addonspath = xbmc.translatePath(os.path.join('special://home', 'addons'))
@@ -218,7 +219,18 @@ def backupkodi(bkp_folder):
                                                                   "el directorio configurado no se encuentra.")
 		return '', borra
 	from time import strftime
-	fichero = os.path.join(bkp_folder,"BackupKodi"+strftime("(%d-%m-%y-%H%M)")+".zip")
+	if __addon__.getSetting('editbkpname') == "true":
+		prefichero="BackupKodi"+strftime("(%d-%m-%y-%H%M)")
+		keyboard = xbmc.Keyboard(prefichero,"Nombre del archivo (respeta la palabra 'Backup' del principio.")
+		keyboard.doModal()
+		if (keyboard.isConfirmed()):
+			prefichero = keyboard.getText()
+		else: return '', borra
+		if prefichero == "" or not prefichero.startswith("Backup"):
+			return '', borra
+		fichero = os.path.join(bkp_folder,prefichero+".zip")
+	else:
+		fichero = os.path.join(bkp_folder,"BackupKodi"+strftime("(%d-%m-%y-%H%M)")+".zip")
 	backup = xbmcgui.DialogProgress()
 	backup.create("Torrentin","Salvando directorios de Kodi.")
 	if xbmcgui.Dialog().yesno("Torrentin" , "[COLOR yellow]Antes de hacer el Backup se pueden borrar los[/COLOR]",
@@ -344,19 +356,15 @@ def latin1_to_ascii (unicrap):
 
 def zip_dir(path_dir, path_file_zip,mode):
     import contextlib
-    #backup2 = xbmcgui.DialogProgress()
-    #backup2.create("Torrentin","Salvando directorios de Kodi.")
     with contextlib.closing(zipfile.ZipFile(path_file_zip, mode, zipfile.ZIP_DEFLATED)) as zip_file:
         try:
             for root, dirs, files in os.walk(path_dir):
                 for file_or_dir in files + dirs:
                     if not file_or_dir.endswith(".pyo"):
-                        #backup2.update(0,"","Espera, No Canceles.","Comprimiendo " + file_or_dir)
                         zip_file.write(os.path.join(root, file_or_dir),os.path.relpath(os.path.join(root, file_or_dir),os.path.join(path_dir, os.path.pardir)))
         except:
             xbmcgui.Dialog().ok("Torrentin" , "Se ha producido un error al comprimir los ficheros","la copia de seguridad no se ha completado.")
             pass
-    #backup2.close()
 
 def StripTags(text):
      finished = 0
@@ -383,34 +391,47 @@ def StripTags2(text):
                  finished = 0
      return text.strip(".")
 
-def chkpchaddon():
-	version = chkaddon()
+def ispelisfork(addon):
+	if addon in ["pelisalacarta","alfa","mitvspain","felisalagarta"]: return True
+	else: return False
+   
+def chkpchaddon(forkname):
+	version = chkaddon(forkname)
 	if version == "42": patchedfile = "platformtools"
 	else: patchedfile = "xbmctools"
-	origen = os.path.join(addonspath,__addon__.getSetting('forkname'),"platformcode",patchedfile+".py")
+	origen = os.path.join(addonspath,forkname,"platformcode",patchedfile+".py.bkp")
 	if os.path.isfile(origen):
-		if __addon__.getSetting('parche') == txtmd5(origen):
-			return 1
-		else: return 0
+		return 1
 	else: return 0
-		
-def pchaddon(tipo):
-	version = chkaddon()
+
+def chkaddon(forkname):
+	try:
+		f = open(os.path.join(addonspath,forkname,"addon.xml"), 'r')
+		AddOnId=f.read()
+		f.close
+	except:
+		return "0"
+	if forkname == "plugin.video.pelisalacarta":
+		if '    version="4.1.' in AddOnId: return "41"
+		elif '    version="4.0.' in AddOnId: return "40"
+	return "42"
+
+def pchaddon(tipo,forkname):
+	version = chkaddon(forkname)
 	if version == "42": patchedfile = "platformtools"
 	elif version == "41": patchedfile = "xbmctools"
 	else: return 3 , ""
 	
-	origen = os.path.join(addonspath,__addon__.getSetting('forkname'),"platformcode",patchedfile+".py")
-	destino = os.path.join(addonspath,__addon__.getSetting('forkname'),"platformcode",patchedfile+".py.pch")
-	backup = os.path.join(addonspath,__addon__.getSetting('forkname'),"platformcode",patchedfile+".py.bkp")
+	origen = os.path.join(addonspath,forkname,"platformcode",patchedfile+".py")
+	destino = os.path.join(addonspath,forkname,"platformcode",patchedfile+".py.pch")
+	backup = os.path.join(addonspath,forkname,"platformcode",patchedfile+".py.bkp")
 	parcheado = False
 	try:
 		fo = open(origen,"r")
 		fd = open(destino,"w")
 	except: return 0 , ""
-
-	fd.writelines('# -*- coding: utf-8 -*-'+'\n'+'# Parcheado por Torrentin'+'\n')
 	line = fo.readline()
+	fd.writelines('# -*- coding: utf-8 -*-'+'\n'+'# Parcheado por Torrentin'+'\n')
 	for line in fo:
 		if line.startswith('# Parcheado por Torrentin'):
 			parcheado = True
@@ -423,9 +444,6 @@ def pchaddon(tipo):
 					fd.writelines('            xbmc.executebuiltin("XBMC.RunPlugin(" + "plugin://plugin.video.torrentin/?uri=%s&image=%s" % (urllib.quote_plus(item.url) , urllib.quote_plus(item.thumbnail) ) + ")")'+'\n'+'            return opciones, video_urls, seleccion, True'+'\n')
 				elif version == "41":
 					fd.writelines('            xbmc.executebuiltin("XBMC.RunPlugin(" + "plugin://plugin.video.torrentin/?uri=%s&image=%s" % (urllib.quote_plus(item.url) , urllib.quote_plus(item.thumbnail) ) + ")")'+'\n'+'            return'+'\n')
-		#elif tipo ==3: #otro tipo de parche, bypass 2º menu, funciona pero no se va a utilizar
-			#if line.startswith('    elif item.server=="torrent":'):
-				#fd.writelines('        xbmc.executebuiltin("XBMC.RunPlugin(" + "plugin://plugin.video.torrentin/?uri=%s&image=%s" % (urllib.quote_plus(item.url) , urllib.quote_plus(item.thumbnail) ) + ")")'+'\n'+'        return'+'\n')
 		elif tipo == 1:
 			if version == "42":
 				if line.startswith('        mediaurl = urllib.quote_plus(item.url)'):
@@ -436,36 +454,16 @@ def pchaddon(tipo):
 	fo.close()
 	fd.close()
 	if not parcheado: #No estaba
-		xbmcvfs.copy(origen , backup)
-		xbmcvfs.copy(destino , origen)
-		os.remove(destino)
+		if os.path.isfile(origen): xbmcvfs.copy(origen , backup)
+		if os.path.isfile(destino): xbmcvfs.copy(destino , origen)
+		if os.path.isfile(destino): os.remove(destino)
+		addconfig(__scriptid__,forkname)
 		return 1, txtmd5(origen)
 	else: #Si estaba
-		xbmcvfs.copy(backup , origen)
-		os.remove(backup)
-		os.remove(destino)
+		if os.path.isfile(backup): xbmcvfs.copy(backup , origen)
+		if os.path.isfile(backup): os.remove(backup)
+		if os.path.isfile(destino): os.remove(destino)
 		return 2 , ""
-
-def addconfig():
-	origen=__addon__.getSetting('prog')
-	fork = __addon__.getSetting('forkname')
-	destino = os.path.join(addonspath, fork ,"channels")
-	if os.path.isfile(os.path.join(origen,"config.zip" )) and os.path.isdir(destino):
-		config = zipfile.ZipFile(os.path.join(origen,"config.zip" ), 'r')
-		config.extractall(destino)
-		xbmc.executebuiltin('XBMC.Notification("", "All Ok.", 1000, ")')
-
-def chkaddon():
-	try:
-		f = open(os.path.join(addonspath,__addon__.getSetting('forkname'),"addon.xml"), 'r')
-		AddOnId=f.read()
-		f.close
-	except:
-		return "0"
-	if '    version="4.1.' in AddOnId: return "41"
-	elif '    version="4.0.' in AddOnId: return "40"
-	else: return "42"
-
 
 def chkpchplexus():
 	destinoace = os.path.join(addonspath,"program.plexus","resources","plexus","acestream.py")
@@ -600,6 +598,27 @@ def chkpchkmedia():
 			return True
 	else:
 		return False
+
+def addconfig(pwd,fork):
+	origen=__addon__.getSetting('prog')
+	destino = os.path.join(addonspath, fork ,"channels")
+	if os.path.isdir(origen) and os.path.isdir(destino):
+		if os.path.isfile(os.path.join(origen,'config.zip')):
+			zipfile.ZipFile(os.path.join(origen,'config.zip'), 'r').extractall(destino,pwd=pwd)
+			xbmc.executebuiltin('XBMC.Notification('+fork+' , "All Ok.", 1500, ")')
+			xbmc.sleep(2000)
+			return
+		dirList=os.listdir( origen )
+		list=[]
+		for fname in dirList:
+			if fname.endswith("-config.zip"):
+				list.append(fname)
+		if len(list)!=0:
+			s = xbmcgui.Dialog().select("Select config for " + fork, list)
+			if s != -1:
+				zipfile.ZipFile(os.path.join(origen,list[s]), 'r').extractall(destino,pwd=pwd)
+				xbmc.executebuiltin('XBMC.Notification('+fork+' , "All Ok.", 1500, ")')
+				xbmc.sleep(2000)
 
 def recursive_overwrite(src, dest, ignore=None):
     import shutil

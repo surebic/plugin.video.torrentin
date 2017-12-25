@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 # Originally coded by Nuismons (thanks)
 # Modified by ciberus for Torrentin Add-On
-# v. 0.6.0 - Julio 2017
+# v. 0.6.1 - Diciembre 2017
 
 ################################################################
 # Este AddOn de KODI no contiene enlaces internos o directos a material protegido por
@@ -664,10 +664,10 @@ class TSServ(threading.Thread):
         elif st=='loading':
             self.label='Cargando' 
         elif st=='dl':
-            self.label='Descargando  (' + params.split(';')[1] + "%) - Semillas: " + params.split(';')[6]
+            self.label='Descargando  (' + params.split(';')[1] + "%) - S: " + params.split(';')[6]
             self.line = 'Vel.Sub: %s Kb/s - Vel.Baj: %s Kb/s'%( params.split(';')[5] , params.split(';')[3] )
         elif st=='buf':
-            self.label='Cargando Buffer  (' + params.split(';')[1] + "%) - Semillas: " + params.split(';')[8]
+            self.label='Cargando Buffer  (' + params.split(';')[1] + "%) - S: " + params.split(';')[8]
             self.line = 'Vel.Sub: %s Kb/s - Vel.Baj: %s Kb/s'%( params.split(';')[7] , params.split(';')[5] )
 
     def end(self):

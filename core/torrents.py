@@ -3,7 +3,7 @@
 # Torrentin - XBMC/Kodi Plugin
 # por ciberus para reproducir por AceStream .torrent descargados o locales y otros Add-Ons o App's
 #------------------------------------------------------------
-# v. 0.6.0 - Julio 2017
+# v. 0.6.1 - Diciembre 2017
 
 ################################################################
 # Este AddOn de KODI no contiene enlaces internos o directos a material protegido por
@@ -283,6 +283,9 @@ def SteeveClones(uri,player="",image=""):
     elif player == 6:
         clon2 = "quasar"
         plugin = 2
+    elif player == 11:
+    	clon2 = "elementum"
+        plugin = 2
     if uri.startswith('magnet:'):
         if plugin == 1:
             xbmc.executebuiltin( "PlayMedia("+"plugin://plugin.video."+clon+"/play/%s" % urllib.quote_plus(uri)+")" )
@@ -303,11 +306,11 @@ def SteeveClones(uri,player="",image=""):
         elif plugin == 2:
             xbmc.executebuiltin( "PlayMedia("+"plugin://plugin.video."+clon2+"/play?uri=%s" % urllib.quote_plus(magnet)+")" )
     else:
-        show_Msg('          ---===[ Torrentin ]===---', 'Enlace no valido para Kmedia/Pulsar/Quasar', 3000)    
+        show_Msg('          ---===[ Torrentin ]===---', 'Enlace no valido para el AddOn seleccionado', 3000)    
 
 def torrent_to_magnet(file):
     try:
-        f = open(file , "rb+")
+        f = open(file , "rb")
         torrent_data=f.read()
         f.close()
     except:
@@ -338,12 +341,17 @@ def torrent_info(uri , infotype):
             title = urllib.unquote_plus(title)
         except: pass
         if title != "":
-            return "[COLOR yellow]Magnet:  [/COLOR][COLOR magenta] Nombre: [/COLOR][COLOR cyan]"+ title + "  [/COLOR][COLOR magenta] Enlace: [/COLOR][COLOR orange]"+uri+"[/COLOR]  "
-        else: return "[COLOR yellow]Magnet:  [/COLOR][COLOR magenta] Enlace: [/COLOR][COLOR cyan]"+uri+"[/COLOR]"
-    elif uri.startswith("acestream://"): return "[COLOR yellow]AceLive:   [/COLOR][COLOR magenta]Enlace: [/COLOR][COLOR cyan]"+uri+"[/COLOR]"
+            if infotype == 0: return "[COLOR yellow]Magnet:  [/COLOR][COLOR magenta] Nombre: [/COLOR][COLOR cyan]"+ title + "  [/COLOR][COLOR magenta] Enlace: [/COLOR][COLOR orange]"+uri+"[/COLOR]  (Click aqui para ExtendedInfo)"
+            elif infotype == 1: return title
+        else:
+            if infotype == 0: return "[COLOR yellow]Magnet:  [/COLOR][COLOR magenta] Enlace: [/COLOR][COLOR cyan]"+uri+"[/COLOR]"
+            elif infotype == 1: return ''
+    elif uri.startswith("acestream://"):
+        if infotype == 0: return "[COLOR yellow]AceLive:   [/COLOR][COLOR magenta]Enlace: [/COLOR][COLOR cyan]"+uri+"[/COLOR]"
+        elif infotype == 1: return ''
     else: return "Enlace no valido para reproducir con Torrentin"
     try:
-        f = open(file, "rb+")
+        f = open(file, "rb")
         torrent_data=f.read()
         f.close()
     except:
@@ -355,7 +363,8 @@ def torrent_info(uri , infotype):
     try:
         metadata = bencode.bdecode(torrent_data)
     except:
-        return "[COLOR red]No se puede extraer la informacion de torrent, metadatos con formato no standard, pero se puede descargar o reproducir con la mayoria de los reproductores.[/COLOR]"
+        if infotype == 0: return "[COLOR red]No se puede extraer la informacion de torrent, metadatos con formato no standard, pero se puede descargar o reproducir con la mayoria de los reproductores.[/COLOR]"
+        elif infotype == 1: return ''
     try:
         bigsize = int(metadata['info']["length"])
         ttype = "(torrent monofichero)"
@@ -377,7 +386,7 @@ def torrent_info(uri , infotype):
     else:
         sizecol = "  [COLOR lime]("+sizegb
 
-    if infotype == 0: return "[COLOR yellow]Torrent:   [/COLOR][COLOR magenta]Video: [/COLOR][COLOR orange]" + tipo +"[/COLOR]" +  sizecol + "[COLOR magenta] Nombre: [/COLOR][COLOR cyan]"+ torrentname + "  [/COLOR][COLOR orange]" + ttype + "[/COLOR]  "
+    if infotype == 0: return "[COLOR yellow]Torrent:   [/COLOR][COLOR magenta]Video: [/COLOR][COLOR orange]" + tipo +"[/COLOR]" +  sizecol + "[COLOR magenta] Nombre: [/COLOR][COLOR cyan]"+ torrentname + "  [/COLOR][COLOR orange]" + ttype + "[/COLOR]  (Click aqui para ExtendedInfo)"
     elif infotype == 1: return torrentname
 
 def chkvideo(title):
