@@ -14,7 +14,7 @@ Tambien puede guardar el video que estamos reproduciendo con el motor AceStream 
 queremos conservar (la grabación se inicia cuando la descarga ha llegado al 100%), guardándolo junto con su carátula,
 todo ello configurable en la pestaña AceStream de la configuración.
 
-Para reproducirlos obviamente tienes que tener instalado alguno(s) de los 22 reproductores soportados, estos son:
+Para reproducirlos obviamente tienes que tener instalado alguno(s) de los 23 reproductores soportados, estos son:
 
  - Motor AceStream [App en android o programa en windows/Linux] (antiguos 3.0.x y nuevos 3.1.x)
 
@@ -24,6 +24,7 @@ Add-Ons de KODI:
  - KmediaTorrent
  - Pulsar
  - Quasar
+ - Elementum
  - p2p-Streams
  - Plexus
  - Torrenter

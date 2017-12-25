@@ -7,6 +7,61 @@ image=pathimage
 ejemplo: plugin://plugin.video.torrentin/?uri=http%3A%2F%2Fwww.elitetorrent.net%2Fget-torrent%2F27233&image=imageurl&player=0'
 
 -------------------------------------------------------------------------------
+Version 0.6.1
+-------------------------------------------------------------------------------
+- Mejorado el scraper de torrents/magnets para encontrar los datos extra en TMDb con nombres
+  complicados de los mismos.
+- Arreglado el problema del "Error al copiar el fichero torrent", (si no se puede copiar al principal
+  como torrentin.torrent por que da error en ciertas plataformas se lanza desde donde este).
+- Ahora se pueden definir dos Addons proveedores de torrents (pelisalacarta o sucesores) en
+  Opciones/General a los que ir desde el menú principal y a los que poder parchear/desparchear.
+- Renombrador de Peliculas: Al renombrar ahora comprueba si ya existe una pelicula con ese
+  mismo nombre en el directorio y pregunta si se quiere sobre-escribir.
+- Nueva opcion de Auto-Parcheo, configurable en Opciones/General, si se actualizan los AddOns
+  proveedores de torrents definidos en AddOn 1 y 2 o plexus, plexus-streams y kmediatorrent y
+  por tanto se desparcheen se auto-parchearan automaticamente sin tener que ir al submenu de
+  Utilidades/Parches para parchearlos a mano.
+
+beta2
+- Modificado el auto-parcheo, se elimina del mismo el kmedia y se ponen ajustes adicionales para
+  auto-parchear plexus y plexus-streams.
+- Modificado auto-parcheo para elegir parche Automático o No automático.
+- Cambiado Semillas: por S: en las estadisticas durante la pausa de la reproduccion de AceStream
+  ya que se ocultaba el numero de semillas en kodi-krypton (Estuary) al ser las letras mas grandes.
+- Añadido nuevo reproductor Elementum. (fork de Quasar, se pueden tener instalados ambos).
+- Añadidos dos nuevos menús contextuales en el listado de peliculas renombradas para actualizar
+  la informacion extra de la que esta bajo el cursor y de todas las del directorio (con aviso), esto se
+  hace ya que la puntuacion, votos, poster fanart, etc, puede haber variado desde que se catalogó y
+  se guardo en caché, con esto se obtiene una informacion mas actualizada, sobre todo de la
+  valoracion que es lo que mas cambia.
+
+beta3
+- Modificado auto-parcheo con opciones individuales para cada Add-On.
+- Añadida comprobacion automatica de actualizaciones del torrentin, solo se comprueba una vez al
+  dia, si hay una version disponible mas reciente que la instalada muestra la utilidad de actualizacion.
+- Añadido el tipo de video al final de la sinopsis en el listado de peliculas renombradas (las que ya esten
+  en el cache no se mostrara, solo las nuevas o cuando se actualicen los datos extra).
+- Añadida opcion en Configuracion/Utilidades/renombrador de peliculas para que no muestre el aviso
+  inicial de directorio y opciones y pase directamente a renombrar.
+- Añadida opcion en Configuracion/Utilidades/Backup de Kodi para poder editar el nombre del archivo de backup.
+- Opciones de Backup se mueven para arriba en Configuracion/Utilidades (despues del Renombrador de P).
+- Añadida llamada al script ExtendedInfo en el menu contextual de los listados de torrents principal y
+  secundario y en el de peliculas renombradas (para que salga hay que tener instalado el script Extendedinfo:
+  Add-Ons, icono de la caja abierta de la esquina sup-izq, buscar , extendedinfo, salen tres, instalar el script).
+  NOTA: Con los antiguos ficheros de informacion de peliculas/torrents que ya se tengan grabados en vuestro kodi
+     se busca solo por nombre, por lo que puede dar error con alguna pelicula que coincida el nombre con otra
+     de otro año, para evitar esto y ya que el extendedinfo no adimite año en la pelicula a buscar he tenido que 
+     añadir el numero de identificacion de la pelicula en los nuevos ficheros de informacion, asi que si os sale
+     alguna cambiada seleccionar "Actualizar informacion extra" en el menu contextual, se creara un nuevo
+     fichero de informacion con el identiicador de la pelicula en tmdb y despues ya la identificara correctamente
+     el script extendedinfo.
+
+-RC1
+- Añadido ExtendedInfo en el menu de reproductores (se accede picando en la primera opcion de Info del torrent)
+  asi podemos ver la informacion de la pelicula/serie, trailers, etc. antes de lanzar un torrent.
+  si se pica y no esta instalado abre dialogo con instrucciones para instalarlo.
+
+-------------------------------------------------------------------------------
 Version 0.6.0
 -------------------------------------------------------------------------------
 - Renombrador de Peliculas: Si la pelicula esta en un subdirectorio y esta activada la opcion preguntar
@@ -18,7 +73,7 @@ Version 0.6.0
 - Añadido ajuste en Opciones/General para configurar el navegador a usar en android para las consultas
   web de TMDb e ir al foro (Navegador nativo o Google Chrome).
 - Arreglado error en el scraper de Peliculas (Renombradas).
-- Eliminados los canales del parche y del git. (ya no se distribuiran con el torrentin ni se auto-actualizaran).
+- Eliminados los canales del asterisco del parche y del git. (ya no se distribuiran con el torrentin ni se auto-actualizaran).
 - Cambios en el addon.xml incluyendo snapshoots para krypton.
 - Eliminada opcion de actualizar/Buscar informacion extra de torrents guardados desde el menu de reproductores
   (solo se puede hacer desde el menu contextual).
