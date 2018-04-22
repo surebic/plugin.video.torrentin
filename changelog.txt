@@ -7,6 +7,30 @@ image=pathimage
 ejemplo: plugin://plugin.video.torrentin/?uri=http%3A%2F%2Fwww.elitetorrent.net%2Fget-torrent%2F27233&image=imageurl&player=0'
 
 -------------------------------------------------------------------------------
+Version 0.6.2
+-------------------------------------------------------------------------------
+beta1
+- Cambios en la rutina de lanzar ExtendedInfo desde el menu de reproductores (1ª opcion del menú):
+    - Cambiada la ventana de aviso por ventana con aviso de espera, título, año, puntuacion y votos,
+      con pregunta si se quiere reproducir o abandonar.
+    - Si no se encuentra ningun titulo de la pelicula a buscar en el torrent/magnet muestra teclado para
+      introducirlo a mano.
+- Nuevas opciones para tener mejor ordenados los torrents: Ahora se pueden crear (y borrar) directorios
+  y subdirectorios en el Principal y Secundario, asi como mover los torrents/magnets de un directorio a otro,
+  todo esto se hace a traves de los menus contextuales.
+
+beta2
+- Añadido Genero de la pelicula en la ventana de espera al lanzar ExtendedInfo.
+- Añadida opcion en configuracion/reproductores para mostrar/activar automaticamente los
+  que esten instalados y activados.
+- Cambiados enlaces de actualizacion a bit.ly por proximo cierre de goo.gl (invisible al usuario).
+- Incluido aviso en backup bajo windows, he detectado que los backups no se hacen completos
+  bajo windows al estar algunos ficheros (.db) bloqueados por kodi y el zip no los puede leer y
+  no los comprime.
+
+- Nuevo grupo en telegram del AddOn:   https://t.me/joinchat/F3B8jhByuijlsnnYthW7VQ  donde podremos 
+  hablar mas rapida y directamente y donde se publicaran la betas y los configs.
+-------------------------------------------------------------------------------
 Version 0.6.1
 -------------------------------------------------------------------------------
 - Mejorado el scraper de torrents/magnets para encontrar los datos extra en TMDb con nombres
