@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 # ------------------------------------------------------------
-# Torrentin - XBMC/Kodi Plugin
-# por ciberus para reproducir por AceStream .torrent descargados o locales y otros Add-Ons o App's
+# Torrentin - XBMC/Kodi AddOn
+# por ciberus  - Para reproducir por AceStream .torrent descargados o locales y otros Add-Ons o App's
 #------------------------------------------------------------
-# v. 0.6.1 - Diciembre 2017
+# v. 0.6.2 - Abril 2018
 
 ################################################################
 # Este AddOn de KODI no contiene enlaces internos o directos a material protegido por
@@ -34,7 +34,7 @@ def cargar():
                 return torrentfile,img
             else: return False,False
 
-def browsear(dir):
+def browsear(dir,subdir=""):
 	itemlist = {}
 	if dir ==1: torr_folder= __addon__.getSetting('torrent_path')
 	elif dir == 2:
@@ -44,26 +44,23 @@ def browsear(dir):
 			xbmcgui.Dialog().ok("Torrentin" , "Directorio secundario de torrents no configurado.")
 			__addon__.openSettings()
 			return itemlist
+	if subdir is not None: torr_folder = subdir
 	if not os.path.isdir(torr_folder):
 		xbmcgui.Dialog().ok("Torrentin" , "ERROR, No se puede acceder al directorio.")
 		return itemlist
 	dirList=os.listdir( torr_folder )
 	for fname in dirList:
-		if os.path.isdir(os.path.join( torr_folder , fname )) or fname.endswith('.meta.torrent') or fname.startswith("torrentin."): continue
+		#if os.path.isdir(os.path.join( torr_folder , fname )) or fname.endswith('.meta.torrent') or fname.startswith("torrentin."): continue
+		if fname.endswith('.meta.torrent') or fname.startswith("torrentin."): continue
+		if os.path.isdir(os.path.join( torr_folder , fname )):
+			img=''
+			itemlist[os.path.join(torr_folder , fname)] = img
 		if fname.endswith('.torrent'):
 			img=""
 			findimg= os.path.join( torr_folder ,  fname.replace('.torrent','.png'))
 			if os.path.isfile(findimg): img=findimg
 			findimg= os.path.join( torr_folder ,  fname.replace('.torrent','.jpg'))
 			if os.path.isfile(findimg): img=findimg
-			'''
-			findimg= os.path.join( torr_folder ,  fname.replace('.torrent','.info'))
-			if os.path.isfile(findimg):
-				fo = open(findimg,"r")
-				lines = fo.read().split("|")
-				fo.close()
-				img = lines[0]
-			'''
 			itemlist[os.path.join(torr_folder , fname)] = img
 		if fname.endswith('.magnet'):
 			img=""
@@ -71,16 +68,7 @@ def browsear(dir):
 			if os.path.isfile(findimg): img=findimg
 			findimg= os.path.join( torr_folder ,  fname.replace('.magnet','.jpg'))
 			if os.path.isfile(findimg): img=findimg
-			'''
-			findimg= os.path.join( torr_folder ,  fname.replace('.magnet','.info'))
-			if os.path.isfile(findimg):
-				fo = open(findimg,"r")
-				lines = fo.read().split("|")
-				fo.close()
-				img = lines[0]
-			'''
 			itemlist[os.path.join(torr_folder , fname)] = img
-		
 	return itemlist
 
 def play_acelive(link,imagen=""):
@@ -385,7 +373,6 @@ def torrent_info(uri , infotype):
         sizecol = "  [COLOR red]("+sizegb
     else:
         sizecol = "  [COLOR lime]("+sizegb
-
     if infotype == 0: return "[COLOR yellow]Torrent:   [/COLOR][COLOR magenta]Video: [/COLOR][COLOR orange]" + tipo +"[/COLOR]" +  sizecol + "[COLOR magenta] Nombre: [/COLOR][COLOR cyan]"+ torrentname + "  [/COLOR][COLOR orange]" + ttype + "[/COLOR]  (Click aqui para ExtendedInfo)"
     elif infotype == 1: return torrentname
 

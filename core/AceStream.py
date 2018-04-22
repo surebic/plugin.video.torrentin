@@ -1,8 +1,8 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
-# Originally coded by Nuismons (thanks)
+# Originally coded by Nuismons (many thanks)
 # Modified by ciberus for Torrentin Add-On
-# v. 0.6.1 - Diciembre 2017
+# v. 0.6.2 - Abril 2018
 
 ################################################################
 # Este AddOn de KODI no contiene enlaces internos o directos a material protegido por

@@ -1,10 +1,10 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 #:-----------------------------------------------------------
-# Torrentin - XBMC/Kodi Plugin
+# Torrentin - XBMC/Kodi AddOn
 # por ciberus (algunas rutinas tomadas de la web)
 #------------------------------------------------------------
-# v. 0.6.1 - Diciembre 2017
+# v. 0.6.2 - Abril 2018
 
 ################################################################
 # Este AddOn de KODI no contiene enlaces internos o directos a material protegido por
