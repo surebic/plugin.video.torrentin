@@ -8,7 +8,9 @@
 
 - Da informacion sobre el video contenido en el torrent (tipo de video, nombre, tamaño, etc.).
 
-- Puede reproducir enlaces AceLive (Video en directo a traves de AceStream) que le lleguen o contenidos en listas propias M3U que esten en el directorio de descarga principal, o guardar en estas listas todos los enlaces que le lleguen para reproducir. (Si no hay listas en el directorio no mostrara esa opcion en el menu).
+- Puede reproducir enlaces AceLive (Video en directo a traves de AceStream) que le lleguen o contenidos en listas propias M3U que esten en el directorio de descarga principal, o guardar en estas listas todos los enlaces que le lleguen para reproducir. (Si no hay listas en el directorio no mostrara esa opcion en el menú. 
+
+- También es un buen renombrador y catalogador de tus películas, puede renombrar las como título (año) y al guardarlas en tu directorio extraerá automáticamente toda la información de las mismas desde tmdb para mostrar tu colección a todo detalle. 
 
 ### Para más información visite el foro: http://www.htcmania.com/showthread.php?t=995348
 
