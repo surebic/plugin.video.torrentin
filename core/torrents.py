@@ -3,7 +3,7 @@
 # Torrentin - XBMC/Kodi AddOn
 # por ciberus  - Para reproducir por AceStream .torrent descargados o locales y otros Add-Ons o App's
 #------------------------------------------------------------
-# v. 0.6.2 - Abril 2018
+# v. 0.6.4 - Mayo 2021
 
 ################################################################
 # Este AddOn de KODI no contiene enlaces internos o directos a material protegido por
@@ -212,7 +212,6 @@ def dltorrent(url , player="" , image=""):
 
 def SaveImgLink(image=""):
     torrent_folder=__addon__.getSetting('torrent_path')
-    #if os.path.isfile(os.path.join( torrent_folder , "torrentin.torrent.img")): os.remove(os.path.join( torrent_folder , "torrentin.torrent.img"))
     if image != "":
         f = open(os.path.join( torrent_folder , "torrentin.torrent.img") , "wb+")
         f.write(image)
@@ -260,6 +259,19 @@ def yatp(uri,player="",image=""):
     if uri.startswith('file://'):uri = uri.replace("file://","")
     xbmc.executebuiltin( "PlayMedia(plugin://plugin.video.yatp/?action=play&torrent=%s" % urllib.quote_plus(uri)+")" )
 
+def torrest(uri,player="",image=""):
+    if uri.startswith('file://'):
+        uri = uri.replace("file://","")
+        xbmc.executebuiltin( "PlayMedia(plugin://plugin.video.torrest/play_path?path=%s" % urllib.quote_plus(uri)+")" )
+    elif uri.startswith('magnet:'):
+        xbmc.executebuiltin( "PlayMedia(plugin://plugin.video.torrest/play_magnet?magnet=%s" % urllib.quote_plus(uri)+")" )
+    elif uri.startswith('http:'):
+        xbmc.executebuiltin( "PlayMedia(plugin://plugin.video.torrest/play_url?url=%s" % urllib.quote_plus(uri)+")" )
+
+# |`plugin://plugin.video.torrest/play_magnet?magnet=<magnet>`|Plays the provided `<magnet>`|
+# |`plugin://plugin.video.torrest/play_url?url=<url>`|Plays the provided torrent file `<url>`|
+# |`plugin://plugin.video.torrest/play_path?path=<path>`|Plays the provided torrent file path `<path>`|
+
 def SteeveClones(uri,player="",image=""):
     plugin = 1
     if player == 2: clon = "xbmctorrent"
@@ -272,7 +284,7 @@ def SteeveClones(uri,player="",image=""):
         clon2 = "quasar"
         plugin = 2
     elif player == 11:
-    	clon2 = "elementum"
+        clon2 = "elementum"
         plugin = 2
     if uri.startswith('magnet:'):
         if plugin == 1:
@@ -329,7 +341,7 @@ def torrent_info(uri , infotype):
             title = urllib.unquote_plus(title)
         except: pass
         if title != "":
-            if infotype == 0: return "[COLOR yellow]Magnet:  [/COLOR][COLOR magenta] Nombre: [/COLOR][COLOR cyan]"+ title + "  [/COLOR][COLOR magenta] Enlace: [/COLOR][COLOR orange]"+uri+"[/COLOR]  (Click aqui para ExtendedInfo)"
+            if infotype == 0: return "[COLOR yellow]Magnet:  [/COLOR][COLOR magenta] Nombre: [/COLOR][COLOR cyan]"+ title + "  [/COLOR][COLOR magenta] Enlace: [/COLOR][COLOR orange]"+uri+"[/COLOR]  (Click aqui para mas Info)"
             elif infotype == 1: return title
         else:
             if infotype == 0: return "[COLOR yellow]Magnet:  [/COLOR][COLOR magenta] Enlace: [/COLOR][COLOR cyan]"+uri+"[/COLOR]"
@@ -373,7 +385,7 @@ def torrent_info(uri , infotype):
         sizecol = "  [COLOR red]("+sizegb
     else:
         sizecol = "  [COLOR lime]("+sizegb
-    if infotype == 0: return "[COLOR yellow]Torrent:   [/COLOR][COLOR magenta]Video: [/COLOR][COLOR orange]" + tipo +"[/COLOR]" +  sizecol + "[COLOR magenta] Nombre: [/COLOR][COLOR cyan]"+ torrentname + "  [/COLOR][COLOR orange]" + ttype + "[/COLOR]  (Click aqui para ExtendedInfo)"
+    if infotype == 0: return "[COLOR yellow]Torrent:   [/COLOR][COLOR magenta]Video: [/COLOR][COLOR orange]" + tipo +"[/COLOR]" +  sizecol + "[COLOR magenta] Nombre: [/COLOR][COLOR cyan]"+ torrentname + "  [/COLOR][COLOR orange]" + ttype + "[/COLOR]  (Click aqui para mas Info)"
     elif infotype == 1: return torrentname
 
 def chkvideo(title):

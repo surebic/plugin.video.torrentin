@@ -4,7 +4,7 @@
 # Torrentin - XBMC/Kodi AddOn
 # por ciberus (algunas rutinas tomadas de la web)
 #------------------------------------------------------------
-# v. 0.6.2 - Abril 2018
+# v. 0.6.4 - Mayo 2021
 
 ################################################################
 # Este AddOn de KODI no contiene enlaces internos o directos a material protegido por
@@ -16,12 +16,14 @@
 # de beneficio economico con el mismo.
 ################################################################
 
-import sys,os,xbmc,zipfile,xbmcaddon,xbmcvfs,xbmcgui
+import sys,os,xbmc,xbmcaddon,xbmcvfs,xbmcgui,contextlib
 __addon__ = xbmcaddon.Addon( id = 'plugin.video.torrentin' )
 __scriptid__   = __addon__.getAddonInfo('id')
 __cwd__        = __addon__.getAddonInfo('path')
 __language__   = __addon__.getLocalizedString
+import zipfilemod as zipfile
 addonspath = xbmc.translatePath(os.path.join('special://home', 'addons'))
+
 
 def ldlst(lista):
 	list_folder=__addon__.getSetting('torrent_path')
@@ -212,50 +214,95 @@ def mover():
 	return lista
 
 def backupkodi(bkp_folder):
-	borra = False
+	#import platform
+	#xbmcgui.Dialog().ok("Torrentin - Copia de seguridad de Kodi" , platform.architecture()[0])
+
+	Ignora = False
 	if not os.path.isdir(bkp_folder):
 		xbmcgui.Dialog().ok("Torrentin" , "Las copias de seguridad usan el directorio",
                                                                   "principal de Torrentin si no se configura uno,",
                                                                   "el directorio configurado no se encuentra.")
-		return '', borra
+		return '', Ignora
 	from time import strftime
 	if __addon__.getSetting('editbkpname') == "true":
-		prefichero="BackupKodi"+strftime("(%d-%m-%y-%H%M)")
+		prefichero = "BackupKodi"+strftime("(%d-%m-%y-%H%M)")
 		keyboard = xbmc.Keyboard(prefichero,"Nombre del archivo (respeta la palabra 'Backup' del principio.")
 		keyboard.doModal()
 		if (keyboard.isConfirmed()):
 			prefichero = keyboard.getText()
-		else: return '', borra
+		else: return '', Ignora
 		if prefichero == "" or not prefichero.startswith("Backup"):
-			return '', borra
+			return '', Ignora
 		fichero = os.path.join(bkp_folder,prefichero+".zip")
 	else:
 		fichero = os.path.join(bkp_folder,"BackupKodi"+strftime("(%d-%m-%y-%H%M)")+".zip")
-	backup = xbmcgui.DialogProgress()
-	backup.create("Torrentin","Salvando directorios de Kodi.")
-	if xbmcgui.Dialog().yesno("Torrentin" , "[COLOR yellow]Antes de hacer el Backup se pueden borrar los[/COLOR]",
-                                                                      "[COLOR yellow]directorios innecesarios (Textures y Packages)[/COLOR]",
-                                                                      "[COLOR lime]Pulsa Si para borrarlos o No para copiarlos.[/COLOR]"):
-		backup.update(10,"","Espera, No Canceles.","Borrando temporales, esto puede tardar...")
-		borra = True
-		tempdel()
-		xbmc.sleep(500)
-	backup.update(20,"","Espera, No Canceles.","Comprimiendo addons, esto puede tardar...")
-	zip_dir(xbmc.translatePath(os.path.join('special://home','addons')), fichero,"w")
-	backup.update(70,"","Espera, No Canceles.","Comprimiendo media, ya queda poco...")
-	zip_dir(xbmc.translatePath(os.path.join('special://home','media')), fichero,"a")
-	backup.update(75,"","Espera, No Canceles.","Comprimiendo system, ya queda poco...")
-	zip_dir(xbmc.translatePath(os.path.join('special://home','system')), fichero,"a")
-	backup.update(80,"","Espera, No Canceles.","Comprimiendo userdata, terminando...")
-	zip_dir(xbmc.translatePath(os.path.join('special://home','userdata')), fichero,"a")
-	backup.close()
-	return fichero, borra
+    
+	if xbmcgui.Dialog().yesno("Torrentin - Copia de seguridad de Kodi",
+                                                                         "[B][COLOR yellow]Quieres incluir en la copia de seguridad los[/COLOR][/B]",
+                                                                         "[B][COLOR yellow]archivos innecesarios (cache de imagenes y Addons)?[/COLOR][/B]","",
+                                                                          "Incluirlos" , "Ignorarlos"):
+		Ignora = True
+   
+	ok = zip_dir(xbmc.translatePath(os.path.join('special://home')), fichero,"w",Ignora)
+	if not ok: return '', Ignora
+	else: return fichero, Ignora
+
+def zip_dir(path_dir, path_file_zip,mode,Ignora):
+    BackupProgress = xbmcgui.DialogProgress()
+    if Ignora: Copia = "[COLOR yellowgreen][B]Comprimiendo archivos... [/COLOR][/B][COLOR limegreen] (Copia sin caches)[/COLOR]"
+    else: Copia = "[COLOR yellowgreen][B]Comprimiendo archivos... [/COLOR][/B][COLOR limegreen] (Copia completa)[/COLOR]"
+    BackupProgress.create("Torrentin - Copia de seguridad de Kodi", Copia, "" , "[B][COLOR green]Espera...[/COLOR][/B]")
+    LogitudDirectorio = len(path_dir)
+    Temporal = ".kodi"+os.sep+"temp"
+    Thumb = "userdata"+os.sep+"Thumbnails"
+    Pack = "addons"+os.sep+"packages"
+    TempPack = "addons"+os.sep+"temp"
+    Procesado = []
+    Ficheros =[]
+    for base, dirs, files in os.walk(path_dir):
+        for file in files + dirs:
+            Ficheros.append(file)
+    Totales =len(Ficheros)
+    with contextlib.closing(zipfile.ZipFile(path_file_zip, mode, zipfile.ZIP_DEFLATED)) as zip_file:
+        try:
+            for root, dirs, files in os.walk(path_dir):
+                for file_or_dir in files + dirs:
+                    if BackupProgress.iscanceled():
+                        if os.path.isfile(path_file_zip):
+                            os.remove(path_file_zip)
+                        return False
+                    Procesado.append(file_or_dir) 
+                    Progreso = len(Procesado) / float(Totales) * 100  
+                    FicheroRoot = os.path.join(root, file_or_dir)
+                    FicheroRootZip = FicheroRoot[LogitudDirectorio:]
+                    BackupProgress.update(int(Progreso),"",FicheroRootZip[:59],"[B][COLOR green]" + str(int(Progreso)) + "% Completado   -   "+str(len(Procesado))+" Archivos procesados[/COLOR][/B]")
+                    if file_or_dir.endswith(".pyo"): continue
+                    if Temporal in root: continue
+                    if Ignora:
+                        if Thumb in root: continue
+                        if "Textures13.db" in file_or_dir: continue
+                        if Pack in root: continue
+                        if TempPack in root: continue
+                    zip_file.write(FicheroRoot, FicheroRootZip)
+            zip_file.close()
+        except:
+            xbmcgui.Dialog().ok("Torrentin" ,
+                                                 "[B][COLOR red]Se ha producido un error al comprimir los ficheros",
+                                                 "la copia de seguridad no se ha completado.[/COLOR][/B]")
+            if os.path.isfile(path_file_zip):
+                os.remove(path_file_zip)
+            return False
+    xbmc.sleep(100)
+    zip_file.close()
+    BackupProgress.close()
+    return True
 
 def restorekodi(bkp_folder):
 	if not os.path.isdir(bkp_folder):
-		xbmcgui.Dialog().ok("Torrentin" , "Las copias de seguridad usan el directorio",
-                                                                  "principal de Torrentin si no se configura uno,",
-                                                                  "el directorio configurado no se encuentra.")
+		xbmcgui.Dialog().ok("Torrentin - Copia de seguridad de Kodi" ,
+                                              "[COLOR red]Las copias de seguridad usan el directorio",
+                                              "principal de Torrentin si no se configura uno,",
+                                              "el directorio configurado no se encuentra.[/COLOR]")
 		return ''
 	backups = []
 	dirList=os.listdir( bkp_folder )
@@ -264,27 +311,51 @@ def restorekodi(bkp_folder):
 		if fname.endswith('.zip') and fname.startswith("Backup"):
 			backups.append(fname)
 	if len(backups)==0:
-		xbmcgui.Dialog().ok("Torrentin" , "No se encuentra ningun fichero de copia",
-                                                                 "de seguridad en el directorio principal.")
+		xbmcgui.Dialog().ok("Torrentin - Copia de seguridad de Kodi" ,
+                                              "[COLOR red]No se encuentra ningun fichero de copia",
+                                              "de seguridad en el directorio configurado",
+                                              "en Ajustes / Utilidades / Copia de seguridad.[/COLOR]")
 		return ''
 	seleccion = xbmcgui.Dialog().select("Selecciona un fichero de Backup" , backups)
 	if seleccion == -1: return ""
 	fichero_seleccionado = backups[seleccion]
 	if not fichero_seleccionado.startswith("BackupKodi("):
-		if not xbmcgui.Dialog().yesno("Torrentin" , "El fichero seleccionado no tiene el nombre",
-                                                                                 "standard de copia de seguridad creado por",
-                                                                                 "Torrentin, seguro que quieres restaurarlo?","Abandonar","Continuar"):
+		if not xbmcgui.Dialog().yesno("Torrentin - Copia de seguridad de Kodi" ,
+                                                              "[COLOR red]El fichero seleccionado no tiene el nombre",
+                                                              "standard de copia de seguridad creado por",
+                                                              "Torrentin, seguro que quieres restaurarlo?[/COLOR]","Abandonar","Continuar"):
 			return ''
 	fichero = os.path.join(bkp_folder,fichero_seleccionado)
 	if os.path.isfile(fichero):
-		dirkodi = xbmc.translatePath('special://home')
-		backup = zipfile.ZipFile(fichero, 'r')
-		backup.extractall(dirkodi)
+		DirKodi = xbmc.translatePath('special://home')
+		RestoreProgress = xbmcgui.DialogProgress()
+		RestoreProgress.create("Torrentin - Copia de seguridad de Kodi","[B][COLOR yellowgreen]Restaurando archivos desde [/COLOR][/B][COLOR limegreen]"+fichero_seleccionado+"[/COLOR]")
+		RestoreProgress.update(0,"","[B][COLOR lime]Obteniendo lista de ficheros.[/COLOR][/B]","")
+		try:
+			backup = zipfile.ZipFile(fichero, 'r')
+			Ficheros = float(len(backup.namelist()))
+			#RestoreProgress.update(0,"","[B][COLOR lime]Espera... [/COLOR][/B]","")
+			Progresado  = 0
+			for Fichero in backup.namelist():
+				if RestoreProgress.iscanceled():
+					RestoreProgress.close()
+					return ""
+				Progresado += 1
+				Progreso = Progresado / Ficheros * 100
+				RestoreProgress.update(int(Progreso),"",Fichero[:59],"[B][COLOR green]" +  str(int(Progreso))+"% Completado   -   "+str(Progresado)+" Archivos restaurados[/COLOR][/B]")
+				backup.extract(Fichero, DirKodi)
+		except:
+			RestoreProgress.close()
+			return ""
+		RestoreProgress.close()
 	else:
-		xbmcgui.Dialog().ok("Torrentin" , "Fichero de copia de seguridad no encontrado.",
-                                                                 "Para restaurar un backup hay que crearlo antes.")
+		xbmcgui.Dialog().ok("Torrentin - Copia de seguridad de Kodi" ,
+                                              "Fichero de copia de seguridad no encontrado.",
+                                               "Para restaurar un backup hay que crearlo antes.")
 		return ''
+	xbmc.sleep(100)
 	return fichero
+
 
 def tempdel():
 	import shutil
@@ -354,17 +425,16 @@ def latin1_to_ascii (unicrap):
             r += str(i)
     return r.replace(":","")
 
-def zip_dir(path_dir, path_file_zip,mode):
-    import contextlib
-    with contextlib.closing(zipfile.ZipFile(path_file_zip, mode, zipfile.ZIP_DEFLATED)) as zip_file:
-        try:
-            for root, dirs, files in os.walk(path_dir):
-                for file_or_dir in files + dirs:
-                    if not file_or_dir.endswith(".pyo"):
-                        zip_file.write(os.path.join(root, file_or_dir),os.path.relpath(os.path.join(root, file_or_dir),os.path.join(path_dir, os.path.pardir)))
-        except:
-            xbmcgui.Dialog().ok("Torrentin" , "Se ha producido un error al comprimir los ficheros","la copia de seguridad no se ha completado.")
-            pass
+def dircopy(src, dst, symlinks=False, ignore=None):
+    import shutil
+    dst = xbmc.translatePath(os.path.join('special://temp','temporal'))
+    for item in os.listdir(src):
+        s = os.path.join(src, item)
+        d = os.path.join(dst, item)
+        if os.path.isdir(s):
+            shutil.copytree(s, d, symlinks, ignore)
+        else:
+            shutil.copy2(s, d)
 
 def StripTags(text):
      finished = 0
@@ -494,7 +564,7 @@ def pchplexus():
 		destino = os.path.join(addonspath,"program.plexus","resources","plexus","acecore.py")
 		if os.path.isfile(destino):
 			if not xbmcvfs.copy(os.path.join(__cwd__ , "resources" , "parches" , "plexus" , "acecore.py") , destino) : return False , md5sum
-	elif 'version="0.1.6.a"' in AddOnId or 'version="0.1.7"' in AddOnId:
+	elif 'version="0.1.6.a"' in AddOnId or 'version="0.1.7"' or 'version="0.1.8"' or 'version="0.1.18"' in AddOnId:
 		destino = os.path.join(addonspath,"program.plexus","resources","settings.xml")
 		if os.path.isfile(destino):
 			if not xbmcvfs.copy(os.path.join(__cwd__ , "resources" , "parches" , "plexus" , "016a" , "settings.xml") , destino) : return False , md5sum
