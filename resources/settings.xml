@@ -1,13 +1,8 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
-<!-- Torrentin version 0.6.4 by ciberus - Mayo 2021 -->
+<!-- Torrentin version 0.6.6 by ciberus - Mayo 2021 -->
 <settings>
  <category label="General">
-	<setting label="[COLOR dodgerblue]Seleccionar AddOn o App a usar como reproductor por defecto[/COLOR]" type="lsep" />
-	<setting type="sep" />
-	<setting id="directplayernew" type="enum" values="Info Torrent|[engine]   AceStream|[add-on]    XBMCtorrent|[add-on]    Stream|[add-on]    KmediaTorrent|[add-on]    Pulsar|[add-on]    Quasar|[add-on]    p2p-Streams|[add-on]    Plexus|[add-on]   Torrenter|[add-on]   Yet Another Torrent Player|[add-on]    Elementum|[Add-on]   Torrest|[app]   Torrent Video Player|[app]   Torrent Video Player Pro|[app]   BitX|[app]   BitFalcon|[app]   Torrent Stream Controller|[app]   AcePlayer|[app]   mTorrent (GP)|[app]   mTorrent (MDC)|[app]   Xtorrent|[app]   Torrent Player|[app]   Torrent Video Streaming|[app]   Turkey torrent video player|Enviar al gestor de descargas|Mostrar menú de selección" label="[COLOR yellow]Forzar Reproductor:[/COLOR]" default="26"/>
-	<setting id="aceplay" type="bool" label="[COLOR yellow]Auto-Reproducir enlaces AceLive con AceStream[/COLOR]" default="true" />
-	<setting label="[COLOR dodgerblue]Configurar directorios para guardar los torrents y magnets:[/COLOR]" type="lsep" /> 
-	<setting type="sep" />
+<setting label="[COLOR dodgerblue]Configurar directorios para guardar los torrents y magnets:[/COLOR]" type="lsep" /> 
 	<setting id="torrent_path" type="folder" label="[COLOR lime]Directorio Principal de torrents y listas M3U:[/COLOR]" default="" />
 	<setting id="torrent_path_tvp" type="folder" label="[COLOR limegreen]Directorio Secundario de torrents:[/COLOR]" default="" />
 	<setting id="saveopt" type="enum" values="[COLOR lime]Principal[/COLOR]|[COLOR limegreen]Secundario[/COLOR]" label="[COLOR orange]Los Torrents/Magnets se guardan en el:[/COLOR]" default="0"  />
@@ -17,15 +12,17 @@
 	<setting id="pelis_path" type="folder" label="[COLOR yellowgreen]Directorio de Otras Películas (sin info):[/COLOR]" default="" />
     <setting id="pelis_ren_path" type="folder" label="[COLOR chartreuse]Directorio de Mi colección de Películas: [/COLOR]" default="No configurado" />
     <!-- setting id="scraper" type="enum" values="[COLOR lime]Torrentin[/COLOR]|Kodi" label="[COLOR chartreuse]Información al listarlas desde el menú principal[/COLOR]" default="0"  / -->
+	<setting id="dbindir" type="bool" label="[COLOR chartreuse]Usar el directorio de Mi colección para la base de datos[/COLOR]" default="false" />
 	<setting id="incsubdirlist" type="bool" label="[COLOR chartreuse]Incluir subdirectorios al listarlas[/COLOR]" default="true" />
 	<setting id="showignored" type="bool" label="[COLOR chartreuse]Mostrar archivos y películas ignoradas tras listarlas[/COLOR]" default="false" />
-	<setting type="action" label="[COLOR chartreuse]Limpiar base de datos de Mi Colección de Películas[/COLOR]" action="XBMC.RunPlugin(plugin://plugin.video.torrentin/?funcion=cleandb)" />
+	<!--setting type="action" label="[COLOR magenta]Click aquí para Limpiar base de datos de Mi Colección de Películas[/COLOR]" action="XBMC.RunPlugin(plugin://plugin.video.torrentin/?funcion=cleandb)" / -->
 	<setting type="sep" />
 	<setting label="[COLOR dodgerblue]AddOns proveedores de torrents: Definir / Añadir enlaces en el menú[/COLOR]" type="lsep" />
     <setting id="forkname" type="text" label="[COLOR khaki]AddOn 1[/COLOR]" default="plugin.video.alfa" />
-    <setting id="forkname2" type="text" label="[COLOR khaki]AddOn 2[/COLOR]" default="plugin.video.pelisalacarta" />
-	<setting id="autopatch" type="bool" label="[COLOR yellow]Auto-Parchear los AddOns proveedores si se actualizan[/COLOR]" default="true" />
-	<setting id="autopatchtype" type="enum" values="[COLOR lime]Automático[/COLOR]|[COLOR orange]No Automático[/COLOR]" label="[COLOR yellow]Auto-parchear AddOns proveedores con el modo:[/COLOR]" default="0"  visible="eq(-1 ,true)"/>
+    <setting id="forkname2" type="text" label="[COLOR khaki]AddOn 2[/COLOR]" default="plugin.video.balandro" />
+	<setting id="autopatch" type="bool" label="[COLOR yellow]Auto-Parchear los AddOns proveedores para obtener el poster[/COLOR]" default="true" />
+	<setting id="autopatchtype" type="enum" values="[COLOR lime]Auto Reproducir[/COLOR]|[COLOR orange]Solo poster[/COLOR]" label="[COLOR yellow]Auto-parchear Alfa con el modo:[/COLOR]" default="1"  visible="eq(-1 ,true)"/>
+	<setting type="action" label="[COLOR magenta]Click Aquí para Auto-Configurar AddOns proveedores actuales[/COLOR]" action="XBMC.RunPlugin(plugin://plugin.video.torrentin/?funcion=AutoConfProveedores)" />
 	<!-- setting id="autopatchpl" type="bool" label="[COLOR yellow]Auto-Parchear plexus si se actualiza[/COLOR]" default="true" / -->
 	<!-- setting id="autopatchps" type="bool" label="[COLOR yellow]Auto-Parchear plexus-streams si se actualiza[/COLOR]" default="true" / -->
 	<setting type="sep" />
@@ -37,13 +34,19 @@
   </category>
 
  <category label="Reproductores">
+	<setting label="[COLOR dodgerblue]Seleccionar AddOn o App a usar como reproductor por defecto[/COLOR]" type="lsep" />
+	<setting id="directplayernew" type="enum" values="Info Torrent|[engine]   AceStream|[add-on]    XBMCtorrent|[add-on]    Stream|[add-on]    KmediaTorrent|[add-on]    Pulsar|[add-on]    Quasar|[add-on]    p2p-Streams|[add-on]    Plexus|[add-on]   Torrenter|[add-on]   Yet Another Torrent Player|[add-on]    Elementum|[Add-on]   Torrest|[app]   Torrent Video Player|[app]   Torrent Video Player Pro|[app]   BitX|[app]   BitFalcon|[app]   Torrent Stream Controller|[app]   AcePlayer|[app]   mTorrent (GP)|[app]   mTorrent (MDC)|[app]   Xtorrent|[app]   Torrent Player|[app]   Torrent Video Streaming|[app]   Turkey torrent video player|Enviar al gestor de descargas|Mostrar menú de selección" label="[COLOR yellow]Forzar Reproductor:[/COLOR]" default="26"/>
+	<setting id="aceplay" type="bool" label="[COLOR yellow]Auto-Reproducir enlaces AceLive con AceStream[/COLOR]" default="true" />
+    <setting label="[COLOR dodgerblue]Al picar en la primera opción (o Información extra) del menu de reproductores[/COLOR]" type="lsep" />
+	<setting id="infotorrent" type="enum" values="[COLOR lime]Navegador[/COLOR]|[COLOR orange]ExtendedInfo[/COLOR]" label="[COLOR aquamarine]Mostrar información extra de la película con[/COLOR]" default="0" />
     <setting label="[COLOR dodgerblue]Añadir App de descarga de torrents al menú de reproductores[/COLOR]" type="lsep" visible="System.Platform.Android" />
-    <setting id="tordown" type="enum" values="Ninguno|Custom o Menú del sistema|uTorrent|uTorrent Pro|tTorrent|tTorrent Pro|BitTorrent|Flud|Vuze|aTorrent" label="Gestor de descargas:" default="0" visible="System.Platform.Android" />
+    <setting id="tordown" type="enum" values="Ninguno|Custom o Menú del sistema|uTorrent|uTorrent Pro|tTorrent|tTorrent Pro|BitTorrent|Flud|Vuze|aTorrent" label="[COLOR aquamarine]Gestor de descargas:[/COLOR]" default="0" visible="System.Platform.Android" />
     <setting id="tordowncust" type="text" label="Nombre (package) del gestor Custom:" default="com.teeonsoft.ztorrent" visible="eq(-1 ,1)" />
+<setting type="sep" />
     <setting label="[COLOR dodgerblue]Seleccionar reproductores que se mostrarán en el menú[/COLOR]" type="lsep" />
     <setting id="aces" type="bool" label="[engine]      AceStream" default="true" />
     <setting type="sep" />
-    <setting id="automenu" type="bool" label="[COLOR lime]Auto seleccionar Add-Ons (activa solo los instalados)[/COLOR]" default="false" />
+    <setting id="automenu" type="bool" label="[COLOR lime]Auto seleccionar Add-Ons (activa solo los instalados)[/COLOR]" default="true" />
     <setting id="elem" type="bool" label="[add-on]      Elementum" default="true" visible="eq(-1 ,false)" />
     <setting id="quasar" type="bool" label="[add-on]      Quasar" default="true" visible="eq(-2 ,false)" />
     <setting id="pulsar" type="bool" label="[add-on]      Pulsar" default="true" visible="eq(-3 ,false)" />
@@ -74,7 +77,7 @@
   <category label="AceStream">
     <setting label="[COLOR dodgerblue]Configuración del reproductor AceStream (engine) interno[/COLOR]" type="lsep" />
     <setting id="estadisticas" type="enum" values="Nunca|Durante la pausa (1 vez)|Durante la pausa (Continuo)|Durante el OSD (Continuo)|Durante la pausa y el OSD (Continuo)" label="Mostrar estadísticas:" default="2"/>
-    <setting id="aceold" type="enum" values="Antiguo 3.0.x|Nuevo 3.1.x" label="Versión del motor AceStream instalado" visible="System.Platform.Android" default="1"/>
+    <setting id="aceold" type="enum" values="Antiguo 3.0.x|Acestrem Media|Acestream Engine (core)|Acestream LiveTV|No lo se" label="Versión de AceStream instalado" visible="System.Platform.Android" default="4"/>
     <setting id="iplocal" type="text" label="IP del servidor AceStream:" default="127.0.0.1" />
     <setting id="portace" type="text" label="Puerto del servidor AceStream:" default="62062" />
     <setting id="prog" type="text" label="Nombre del proceso del motor AceStream (Linux)" default="" />
