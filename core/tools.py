@@ -4,7 +4,7 @@
 # Torrentin - XBMC/Kodi AddOn
 # por ciberus (algunas rutinas tomadas de la web)
 #------------------------------------------------------------
-# v. 0.6.4 - Mayo 2021
+# v. 0.6.7 - Diciembre 2021
 
 ################################################################
 # Este AddOn de KODI no contiene enlaces internos o directos a material protegido por
@@ -214,9 +214,6 @@ def mover():
 	return lista
 
 def backupkodi(bkp_folder):
-	#import platform
-	#xbmcgui.Dialog().ok("Torrentin - Copia de seguridad de Kodi" , platform.architecture()[0])
-
 	Ignora = False
 	if not os.path.isdir(bkp_folder):
 		xbmcgui.Dialog().ok("Torrentin" , "Las copias de seguridad usan el directorio",
@@ -224,9 +221,11 @@ def backupkodi(bkp_folder):
                                                                   "el directorio configurado no se encuentra.")
 		return '', Ignora
 	from time import strftime
+	import platform
 	if __addon__.getSetting('editbkpname') == "true":
-		prefichero = "BackupKodi"+strftime("(%d-%m-%y-%H%M)")
-		keyboard = xbmc.Keyboard(prefichero,"Nombre del archivo (respeta la palabra 'Backup' del principio.")
+		#prefichero = "BackupKodi"+strftime("(%d-%m-%y-%H%M)")
+		prefichero  = "Backup" + xbmc.getInfoLabel("System.FriendlyName" ).split(" ",1)[0]  + "(" + xbmc.getInfoLabel("System.BuildVersion" )[0:4] + "-" + platform.architecture()[0] + strftime(")(%d-%m-%y.%H%M)")
+		keyboard = xbmc.Keyboard(prefichero,"Nombre del archivo, respeta la palabra 'Backup' del principio.")
 		keyboard.doModal()
 		if (keyboard.isConfirmed()):
 			prefichero = keyboard.getText()
@@ -235,7 +234,7 @@ def backupkodi(bkp_folder):
 			return '', Ignora
 		fichero = os.path.join(bkp_folder,prefichero+".zip")
 	else:
-		fichero = os.path.join(bkp_folder,"BackupKodi"+strftime("(%d-%m-%y-%H%M)")+".zip")
+		fichero = os.path.join(bkp_folder,"Backup" + xbmc.getInfoLabel("System.FriendlyName" ).split(" ",1)[0]  + "(" + xbmc.getInfoLabel("System.BuildVersion" )[0:4] + "-" + platform.architecture()[0] + strftime(")(%d-%m-%y.%H%M)")+".zip")
     
 	if xbmcgui.Dialog().yesno("Torrentin - Copia de seguridad de Kodi",
                                                                          "[B][COLOR yellow]Quieres incluir en la copia de seguridad los[/COLOR][/B]",
@@ -251,7 +250,7 @@ def zip_dir(path_dir, path_file_zip,mode,Ignora):
     BackupProgress = xbmcgui.DialogProgress()
     if Ignora: Copia = "[COLOR yellowgreen][B]Comprimiendo archivos... [/COLOR][/B][COLOR limegreen] (Copia sin caches)[/COLOR]"
     else: Copia = "[COLOR yellowgreen][B]Comprimiendo archivos... [/COLOR][/B][COLOR limegreen] (Copia completa)[/COLOR]"
-    BackupProgress.create("Torrentin - Copia de seguridad de Kodi", Copia, "" , "[B][COLOR green]Espera...[/COLOR][/B]")
+    BackupProgress.create("Torrentin - Copia de seguridad de Kodi", Copia, "" , "[B][COLOR green]Espera, obteniendo lista de ficheros...[/COLOR][/B]")
     LogitudDirectorio = len(path_dir)
     Temporal = ".kodi"+os.sep+"temp"
     Thumb = "userdata"+os.sep+"Thumbnails"
@@ -270,12 +269,13 @@ def zip_dir(path_dir, path_file_zip,mode,Ignora):
                     if BackupProgress.iscanceled():
                         if os.path.isfile(path_file_zip):
                             os.remove(path_file_zip)
+                        BackupProgress.close()
                         return False
                     Procesado.append(file_or_dir) 
                     Progreso = len(Procesado) / float(Totales) * 100  
                     FicheroRoot = os.path.join(root, file_or_dir)
                     FicheroRootZip = FicheroRoot[LogitudDirectorio:]
-                    BackupProgress.update(int(Progreso),"",FicheroRootZip[:59],"[B][COLOR green]" + str(int(Progreso)) + "% Completado   -   "+str(len(Procesado))+" Archivos procesados[/COLOR][/B]")
+                    BackupProgress.update(int(Progreso),"",FicheroRootZip[:57],"[B][COLOR green]" + str(int(Progreso)) + "% Completado   -   "+str(len(Procesado))+" Archivos procesados[/COLOR][/B]")
                     if file_or_dir.endswith(".pyo"): continue
                     if Temporal in root: continue
                     if Ignora:
@@ -292,7 +292,7 @@ def zip_dir(path_dir, path_file_zip,mode,Ignora):
             if os.path.isfile(path_file_zip):
                 os.remove(path_file_zip)
             return False
-    xbmc.sleep(100)
+    xbmc.sleep(500)
     zip_file.close()
     BackupProgress.close()
     return True
@@ -330,11 +330,10 @@ def restorekodi(bkp_folder):
 		DirKodi = xbmc.translatePath('special://home')
 		RestoreProgress = xbmcgui.DialogProgress()
 		RestoreProgress.create("Torrentin - Copia de seguridad de Kodi","[B][COLOR yellowgreen]Restaurando archivos desde [/COLOR][/B][COLOR limegreen]"+fichero_seleccionado+"[/COLOR]")
-		RestoreProgress.update(0,"","[B][COLOR lime]Obteniendo lista de ficheros.[/COLOR][/B]","")
+		RestoreProgress.update(0,"","[B][COLOR lime]Espera, obteniendo lista de ficheros...[/COLOR][/B]","")
 		try:
 			backup = zipfile.ZipFile(fichero, 'r')
 			Ficheros = float(len(backup.namelist()))
-			#RestoreProgress.update(0,"","[B][COLOR lime]Espera... [/COLOR][/B]","")
 			Progresado  = 0
 			for Fichero in backup.namelist():
 				if RestoreProgress.iscanceled():
@@ -347,32 +346,52 @@ def restorekodi(bkp_folder):
 		except:
 			RestoreProgress.close()
 			return ""
+		xbmc.sleep(500)
 		RestoreProgress.close()
 	else:
 		xbmcgui.Dialog().ok("Torrentin - Copia de seguridad de Kodi" ,
                                               "Fichero de copia de seguridad no encontrado.",
                                                "Para restaurar un backup hay que crearlo antes.")
 		return ''
-	xbmc.sleep(100)
 	return fichero
-
+   
+def clear_folder(dir):
+    if os.path.exists(dir):
+        for Fichero in os.listdir(dir):
+            if 'torrentin' in dir: continue
+            file_path = os.path.join(dir, Fichero)
+            try:
+                if os.path.isfile(file_path):
+                    os.unlink(file_path)
+                else:
+                    clear_folder(file_path)
+                    os.rmdir(file_path)
+            except:
+                pass
 
 def tempdel():
 	import shutil
+	Imagenes = False
+	if xbmcgui.Dialog().yesno("Torrentin - Limpiador","[B][COLOR cyan]Quieres borrar tambien el cache de imagenes?[/COLOR]","[COLOR yellow]Si pulsas en NO puedes mantenerlas y borrar solo temporales y cache de Addons[/COLOR][/B]" ):
+		Imagenes = True
 	if xbmc.getCondVisibility('system.platform.android'):
-		if os.path.isfile(xbmc.translatePath(os.path.join('special://home','userdata','Database','Textures13.db'))):
+		if Imagenes and os.path.isfile(xbmc.translatePath(os.path.join('special://home','userdata','Database','Textures13.db'))):
 			try: os.remove(xbmc.translatePath(os.path.join('special://home','userdata','Database','Textures13.db')))
 			except: pass
 		if os.path.isdir(xbmc.translatePath(os.path.join('special://home','temp'))):
 			try: shutil.rmtree(xbmc.translatePath(os.path.join('special://home','temp')))
 			except: pass
-	if os.path.isdir(xbmc.translatePath(os.path.join('special://home','userdata','Thumbnails'))):
+	if Imagenes and os.path.isdir(xbmc.translatePath(os.path.join('special://home','userdata','Thumbnails'))):
 		try: shutil.rmtree(xbmc.translatePath(os.path.join('special://home','userdata','Thumbnails')))
 		except: pass
 	if os.path.isdir(xbmc.translatePath(os.path.join('special://home','addons','packages'))):
 		try: shutil.rmtree(xbmc.translatePath(os.path.join('special://home','addons','packages')))
 		except: pass
-	xbmc.sleep(10000)
+	if os.path.isdir(xbmc.translatePath(os.path.join('special://home','addons','temp'))):
+		try: shutil.rmtree(xbmc.translatePath(os.path.join('special://home','addons','temp')))
+		except: pass
+	xbmc.sleep(2000)
+	return Imagenes
 
 def chklst():
 	list_folder=__addon__.getSetting('torrent_path')
@@ -425,16 +444,12 @@ def latin1_to_ascii (unicrap):
             r += str(i)
     return r.replace(":","")
 
-def dircopy(src, dst, symlinks=False, ignore=None):
+def dircopy(src, dst):
     import shutil
-    dst = xbmc.translatePath(os.path.join('special://temp','temporal'))
     for item in os.listdir(src):
         s = os.path.join(src, item)
         d = os.path.join(dst, item)
-        if os.path.isdir(s):
-            shutil.copytree(s, d, symlinks, ignore)
-        else:
-            shutil.copy2(s, d)
+        shutil.copyfile(s, d)
 
 def StripTags(text):
      finished = 0
@@ -462,7 +477,7 @@ def StripTags2(text):
      return text.strip(".")
 
 def ispelisfork(addon):
-	if addon in ["pelisalacarta","alfa","mitvspain","felisalagarta"]: return True
+	if addon in ["pelisalacarta","alfa","mitvspain","felisalagarta","balandro"]: return True
 	else: return False
    
 def chkpchaddon(forkname):
@@ -485,6 +500,68 @@ def chkaddon(forkname):
 		if '    version="4.1.' in AddOnId: return "41"
 		elif '    version="4.0.' in AddOnId: return "40"
 	return "42"
+
+def ParcheTorrentPy(forkname):
+	origen = os.path.join(addonspath,forkname,"servers","torrent.json")
+	destino = os.path.join(addonspath,forkname,"servers","torrent.json.pch")
+	backup = os.path.join(addonspath,forkname,"servers","torrent.json.bkp")
+	try:
+		fo = open(origen,"r")
+		fd = open(destino,"w")
+	except: return False
+	for line in fo:
+		#line = fo.readline()
+		if line.startswith('      "url": "plugin://plugin.video.torrentin/?uri=%s&image="'):
+			fd.writelines('      "url": "plugin://plugin.video.torrentin/?uri=%s"\n')
+			continue
+		fd.writelines(line)
+	fo.close()
+	fd.close()
+	if os.path.isfile(origen): xbmcvfs.copy(origen , backup)
+	if os.path.isfile(destino): xbmcvfs.copy(destino , origen)
+	if os.path.isfile(destino): os.remove(destino)
+	return True
+
+def newpchaddon(tipo,forkname):  #2 auto y des
+	patchedfile = "platformtools"
+	origen = os.path.join(addonspath,forkname,"platformcode",patchedfile+".py")
+	destino = os.path.join(addonspath,forkname,"platformcode",patchedfile+".py.pch")
+	backup = os.path.join(addonspath,forkname,"platformcode",patchedfile+".py.bkp")
+	parcheado = False
+	try:
+		fo = open(origen,"r")
+		fd = open(destino,"w")
+	except: return 0 , ""
+	line = fo.readline()
+	fd.writelines('# -*- coding: utf-8 -*-'+'\n'+'# Parcheado por Torrentin'+'\n')
+	for line in fo:
+		if line.startswith('# Parcheado por Torrentin'):
+			parcheado = True
+			break
+		fd.writelines(line)
+		if tipo == 2:
+			if line.startswith('    if puedes:'):
+				fd.writelines('\n        #Parche Torrentin para autoreproducir en Alfa\n        if item.server == "torrent":'+'\n')
+				fd.writelines('            xbmc.executebuiltin("XBMC.RunPlugin(" + "plugin://plugin.video.torrentin/?uri=%s&image=%s" % (urllib.quote_plus(item.url) , urllib.quote_plus(item.thumbnail) ) + ")")'+'\n'+'            return opciones, video_urls, seleccion, True'+'\n        #Parche Torrentin para autoreproducir en Alfa\n\n')
+		if line.startswith('                        mediaurl += "&library=&tmdb=%s&type=movie" % (item.infoLabels['):
+			fd.writelines("\n                #Parche Torrentin para obtener la caratula en Alfa\n                if torr_client in ['torrentin'] and item.infoLabels['thumbnail']:\n                    mediaurl += '&image=%s' % (urllib.quote_plus(item.infoLabels['thumbnail']))\n                elif torr_client in ['torrentin'] and item.thumbnail !='':\n                    mediaurl += '&image=%s' % (urllib.quote_plus(item.thumbnail))\n                #Parche Torrentin para obtener la caratula en Alfa\n")
+		if line.startswith('            mediaurl += "&library=&tmdb=%s&type=movie" % (parent_item.infoLabels['):
+			fd.writelines("\n    #Parche Torrentin para obtener la caratula en Baladro\n    if cliente_torrent in ['torrentin'] and parent_item.infoLabels['thumbnail']:\n        mediaurl += '&image=%s' % (quote_plus(parent_item.infoLabels['thumbnail']))\n    #Parche Torrentin para obtener la caratula en Baladro\n")
+	fo.close()
+	fd.close()
+	if not parcheado: #No estaba
+		if os.path.isfile(origen): xbmcvfs.copy(origen , backup)
+		if os.path.isfile(destino): xbmcvfs.copy(destino , origen)
+		if os.path.isfile(destino): os.remove(destino)
+		addconfig(__scriptid__,forkname)
+		ParcheTorrentPy(forkname)
+		return 1, txtmd5(origen)
+	else: #Si estaba
+		if os.path.isfile(backup): xbmcvfs.copy(backup , origen)
+		if os.path.isfile(backup): os.remove(backup)
+		if os.path.isfile(destino): os.remove(destino)
+		return 2 , ""
+
 
 def pchaddon(tipo,forkname):
 	version = chkaddon(forkname)
@@ -514,6 +591,8 @@ def pchaddon(tipo,forkname):
 					fd.writelines('            xbmc.executebuiltin("XBMC.RunPlugin(" + "plugin://plugin.video.torrentin/?uri=%s&image=%s" % (urllib.quote_plus(item.url) , urllib.quote_plus(item.thumbnail) ) + ")")'+'\n'+'            return opciones, video_urls, seleccion, True'+'\n')
 				elif version == "41":
 					fd.writelines('            xbmc.executebuiltin("XBMC.RunPlugin(" + "plugin://plugin.video.torrentin/?uri=%s&image=%s" % (urllib.quote_plus(item.url) , urllib.quote_plus(item.thumbnail) ) + ")")'+'\n'+'            return'+'\n')
+			if line.startswith('            mediaurl += "&library=&tmdb=%s&type=movie" % (parent_item.infoLabels['):
+				fd.writelines("\n    #Parche Torrentin para obtener la caratula\n    if cliente_torrent in ['torrentin'] and parent_item.infoLabels['thumbnail']:\n        mediaurl += '&image=%s' % (parent_item.infoLabels['thumbnail'])\n")
 		elif tipo == 1:
 			if version == "42":
 				if line.startswith('        mediaurl = urllib.quote_plus(item.url)'):

@@ -3,7 +3,7 @@
 # Torrentin - XBMC/Kodi AddOn
 # por ciberus  - Para reproducir por AceStream .torrent descargados o locales y otros Add-Ons o App's
 #------------------------------------------------------------
-# v. 0.6.4 - Mayo 2021
+# v. 0.6.7 - Dicicembre 2021
 
 ################################################################
 # Este AddOn de KODI no contiene enlaces internos o directos a material protegido por
@@ -117,10 +117,12 @@ def play_torrent_from_file(fichero, imagen = ""):
 	except:
 		xbmcgui.Dialog().ok("Reproductor AceStream" , "No se ha podido cargar el fichero torrent")
 		return
+	"""
 	check = acewarn(data)
 	if not check:
 		sel = xbmcgui.Dialog().yesno("Reproductor AceStream" , "AceStream tiene un error interno y no reproduce","correctamente videos de mas de 2Gb. contenidos","en archivos torrent multifichero.  Reproducir?")
 		if not sel: return
+	"""
 	from AceStream import TSengine as tsengine
 	videos = {}
 	if imagen == "": imagen = os.path.join( __cwd__ ,"resources","images","acestreamlogo.png")
@@ -265,12 +267,8 @@ def torrest(uri,player="",image=""):
         xbmc.executebuiltin( "PlayMedia(plugin://plugin.video.torrest/play_path?path=%s" % urllib.quote_plus(uri)+")" )
     elif uri.startswith('magnet:'):
         xbmc.executebuiltin( "PlayMedia(plugin://plugin.video.torrest/play_magnet?magnet=%s" % urllib.quote_plus(uri)+")" )
-    elif uri.startswith('http:'):
+    elif uri.startswith('http'):
         xbmc.executebuiltin( "PlayMedia(plugin://plugin.video.torrest/play_url?url=%s" % urllib.quote_plus(uri)+")" )
-
-# |`plugin://plugin.video.torrest/play_magnet?magnet=<magnet>`|Plays the provided `<magnet>`|
-# |`plugin://plugin.video.torrest/play_url?url=<url>`|Plays the provided torrent file `<url>`|
-# |`plugin://plugin.video.torrest/play_path?path=<path>`|Plays the provided torrent file path `<path>`|
 
 def SteeveClones(uri,player="",image=""):
     plugin = 1
@@ -295,12 +293,12 @@ def SteeveClones(uri,player="",image=""):
         global original_torrentin_uri
         magnet = torrent_to_magnet(uri.replace("file://",""))
         if not magnet:
-            if original_torrentin_uri.startswith("http:"): 
+            if original_torrentin_uri.startswith("http"): 
                 magnet = original_torrentin_uri
             else:
                 show_Msg('          ---===[ Torrentin ]===---', 'Error al transformar torrent en magnet', 3000)    
                 return
-        if original_torrentin_uri.startswith("http:") and player == 6: magnet = original_torrentin_uri
+        if original_torrentin_uri.startswith("http") and player == 6: magnet = original_torrentin_uri
         if plugin == 1:
             xbmc.executebuiltin( "PlayMedia("+"plugin://plugin.video."+clon+"/play/%s" % urllib.quote_plus(magnet)+")" )
         elif plugin == 2:

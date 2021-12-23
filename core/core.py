@@ -5,7 +5,7 @@
 # by ciberus (Spain)
 # You can copy, distribute, modify blablabla.....
 # Don't work in Kodi Matrix 
-# v. 0.6.4 - Mayo 2021
+# v. 0.6.7 - Diciembre 2021
 
 ################################################################
 # Este AddOn de KODI no contiene enlaces internos o directos a material protegido por
@@ -77,6 +77,13 @@ addons = {
 
 gestornames = gestores.get(int(__addon__.getSetting("tordown")),["",""])
 menu = 26
+
+if __addon__.getSetting('dbindir') == "true":
+    torrentindb = xbmc.translatePath(os.path.join(__addon__.getSetting('pelis_ren_path') , "TorrentinDB"))
+else:
+    torrentindb = xbmc.translatePath(os.path.join('special://home','userdata','addon_data',__scriptid__,'renombradas'))
+	
+
 #print "[Torrentin] v"+ __version__ + " by " + __author__ + " - SYS ARGV: " + str(sys.argv)
 
 def main():
@@ -259,7 +266,6 @@ def get_params():
       return param
 
 def askplayer(uri,player,image):
-    #xbmcgui.Dialog().ok("Torrentin menu" , str(menu))
     torrent_folder = __addon__.getSetting('torrent_path')
     torrent_folder2 = __addon__.getSetting('torrent_path_tvp')
     colorace = "lime"
@@ -318,7 +324,7 @@ def askplayer(uri,player,image):
             if __addon__.getSetting("tvs") == "true":       players.append("[COLOR " + colornormal + "][app]          Torrent Video Streaming[/COLOR]")
             if __addon__.getSetting("turk") == "true":       players.append("[COLOR " + colornormal + "][app]          Turkey torrent video player[/COLOR]")
     if oswin: players.append("[COLOR deepskyblue][programa] Asociado a torrent/magnet/acestream (Win)[/COLOR]")
-    #players.append("[COLOR orange]     ----====[  ExtendedInfo  ]====----[/COLOR]")
+    players.append("[COLOR orange]     ----====[  Información Extra  ]====----[/COLOR]")
     if descargar and int(__addon__.getSetting("tordown")) != 0 and xbmc.getCondVisibility('System.Platform.Android') : players.append("[COLOR orange]     ----====[  Descargar con "+gestornames[0]+"  ]====----[/COLOR]")
     if guardar:
         players.append("[COLOR orange]     ----====[  Guardar el "+tipo+"  ]====----[/COLOR]")
@@ -327,7 +333,7 @@ def askplayer(uri,player,image):
         #players.append("[COLOR orange]     ----====[  Actualizar información extra  ]====----[/COLOR]")
         players.append("[COLOR orange]     ----====[  Borrar el "+tipo+"  ]====----[/COLOR]")
     if "RAR" in info:
-        if not xbmcgui.Dialog().yesno("Torrentin" , "[COLOR red][B]¡¡¡ ATENCIÓN !!![/COLOR][/B][COLOR orange]    El vídeo está comprimido en RAR[/COLOR]","[COLOR orange]Solo Quasar y sucesores son capaces de descargarlo entero y descomprimirlo.[/COLOR]","[COLOR lime]¿ Quieres continuar para guardarlo o descargarlo ?[/COLOR]"): return menu
+        if not xbmcgui.Dialog().yesno("Torrentin" , "[COLOR red][B]¡¡¡ ATENCIÓN !!![/COLOR][/B][COLOR orange]    El vídeo está comprimido en RAR[/COLOR]","[COLOR orange]Solo Quasar, Elementum y Torrest son capaces de descargarlo entero y descomprimirlo.[/COLOR]","[COLOR lime]¿ Quieres continuar para guardarlo o descargarlo ?[/COLOR]"): return menu
     if "No Video" in info:
         if not xbmcgui.Dialog().yesno("Torrentin" , "[COLOR red][B]¡¡¡ ATENCIÓN !!![/COLOR][/B]","[COLOR orange]No se ha encontrado ningún archivo de video en el torrent.[/COLOR]","       [COLOR lime]¿ Quieres continuar para guardarlo o descargarlo ?[/COLOR]"): return menu
     seleccion = xbmcgui.Dialog().select("Torrentin - Seleccionar Reproductor", players)
@@ -335,18 +341,6 @@ def askplayer(uri,player,image):
     if seleccion != -1:
         if seleccion == 0:
             einfo_torrent(uri,player,image)
-            '''
-            if xbmc.getCondVisibility('System.HasAddon(script.extendedinfo)'):
-                einfo_torrent(uri,player,image)
-            else:
-                if xbmcgui.Dialog().yesno("Torrentin - Información del torrent" , info,"","","[COLOR lime]Menú[/COLOR]","[COLOR yellow]ExtendedInfo[/COLOR]"):
-                    if xbmc.getCondVisibility('System.HasAddon(script.extendedinfo)'):
-                        einfo_torrent(uri,player,image)
-                    else:
-                        xbmcgui.Dialog().ok("Torrentin - ExtendedInfo No encontrado" , "[COLOR yellow]Necesario AddOn externo para usar esta opción:[/COLOR]","[COLOR lime]AddOns -> Instalar desde repositorio -> KODI add-on repository -> Add-ons de programas -> ExtendedInfo Script[/COLOR]\n[COLOR orange](despés de instalarlo configúralo para español).[/COLOR]")
-                        principal(uri,player,image)
-                else: principal(uri,player,image)
-                '''
         elif "]    AceStream" in reproductor: return 1
         elif "]    XBMCtorrent" in reproductor: return 2
         elif "]    Stream" in reproductor: return 3
@@ -379,8 +373,8 @@ def askplayer(uri,player,image):
         elif "[programa] Asociado" in reproductor:
             os.startfile(uri)
             return menu
-        #elif "[  ExtendedInfo" in reproductor:
-            #einfo_torrent(uri,player,image)
+        elif "[  Información" in reproductor:
+            einfo_torrent(uri,player,image)
         #elif "[  Actualizar" in reproductor:
             #catalogar_torrent(uri)
             #return menu
@@ -668,25 +662,49 @@ def einfo_torrent(uri,player,image):
 		if re.search("\d{1,2}[x]\d{2}",title) or re.search("Cap.\d+",title) or re.search("S\d{2}E\d{2}",title):
 			poster,fanart,infoLabels=MetaTorrent(title,"tv",0) 
 			if poster != "" and fanart != "" and infoLabels != "":
-				if not xbmc.getCondVisibility('System.HasAddon(script.extendedinfo)'):
+				if __addon__.getSetting("infotorrent") == "0":
 					browsewebpeli(infoLabels['tmdb_id'],'','')
+					ShowProgress = xbmcgui.DialogProgress()
+					ShowProgress.create("Torrentin - Información Web",
+					"[B][COLOR yellow]" + infoLabels['title'] + " (" + infoLabels['year'] + ")[/COLOR][/B]",
+					"[COLOR magenta]" + infoLabels['genre'] + "[COLOR cyan]  Valoración: " + infoLabels['rating'] + " (" + infoLabels['votes'] + " votos)[/COLOR]",
+					"[B][COLOR green]Esc o Cancelar para volver al menú...[/COLOR][/B]")
+					while not ShowProgress.iscanceled():
+						xbmc.sleep(200)
+					ShowProgress.close()
 				else: 
-					xbmc.executebuiltin( "RunScript(script.extendedinfo,info=extendedtvinfo,id=%s" % infoLabels['tmdb_id']+")" )
-					if xbmcgui.Dialog().yesno("Torrentin - ExtendedInfo" , "[COLOR limegreen]Espere, mostrando información extendida de la serie:[/COLOR]" , "[B][COLOR orange]" + infoLabels['title'] + " (" + infoLabels['year'] + ")[/COLOR][/B]","[COLOR cyan]" + infoLabels['genre'] + "\n[COLOR magenta]Valoración: " + infoLabels['rating'] + " (" + infoLabels['votes'] + " votos)[/COLOR]","Reproducir","Cancelar"):
-						return
+					if CheckExtInfo():
+						xbmc.executebuiltin( "RunScript(script.extendedinfo,info=extendedtvinfo,id=%s" % infoLabels['tmdb_id']+")" )
+						if xbmcgui.Dialog().yesno("Torrentin - ExtendedInfo" , "[COLOR limegreen]Espere, mostrando información extendida de la serie:[/COLOR]" , "[B][COLOR orange]" + infoLabels['title'] + " (" + infoLabels['year'] + ")[/COLOR][/B]","[COLOR cyan]" + infoLabels['genre'] + "\n[COLOR magenta]Valoración: " + infoLabels['rating'] + " (" + infoLabels['votes'] + " votos)[/COLOR]","Reproducir","Cancelar"):
+							return
 		else:
 			poster,fanart,infoLabels=MetaTorrent(title,"movie",0) 
 			if poster != "" and fanart != "" and infoLabels != "":
-				if not xbmc.getCondVisibility('System.HasAddon(script.extendedinfo)'):
+				if __addon__.getSetting("infotorrent") == "0":
 					browsewebpeli(infoLabels['tmdb_id'],'','')
+					ShowProgress = xbmcgui.DialogProgress()
+					ShowProgress.create("Torrentin - Información Web",
+					"[B][COLOR yellow]" + infoLabels['title'] + " (" + infoLabels['year'] + ")[/COLOR][/B]",
+					"[COLOR magenta]" + infoLabels['genre'] + "[COLOR cyan]  Valoración: " + infoLabels['rating'] + " (" + infoLabels['votes'] + " votos)[/COLOR]",
+					"[B][COLOR green]Esc o Cancelar para volver al menú...[/COLOR][/B]")
+					while not ShowProgress.iscanceled():
+						xbmc.sleep(200)
+					ShowProgress.close()
 				else:
-					xbmc.executebuiltin( "RunScript(script.extendedinfo,info=extendedinfo,id=%s" % infoLabels['tmdb_id']+")" )
-					if xbmcgui.Dialog().yesno("Torrentin - ExtendedInfo" , "[COLOR limegreen]Espere, mostrando información extendida de la película:[/COLOR]" , "[B][COLOR yellow]" + infoLabels['title'] + " (" + infoLabels['year'] + ")[/COLOR][/B]","[COLOR cyan]" + infoLabels['genre'] + "\n[COLOR magenta]Valoración: " + infoLabels['rating'] + " (" + infoLabels['votes'] + " votos)[/COLOR]","Reproducir","Cancelar"):
-						return
-	#else:
-		#show_Msg("ExtendedInfo","No se ha encontrado ningún título",1000)
+					if CheckExtInfo():
+						xbmc.executebuiltin( "RunScript(script.extendedinfo,info=extendedinfo,id=%s" % infoLabels['tmdb_id']+")" )
+						if xbmcgui.Dialog().yesno("Torrentin - ExtendedInfo" , "[COLOR limegreen]Espere, mostrando información extendida de la película:[/COLOR]" , "[B][COLOR yellow]" + infoLabels['title'] + " (" + infoLabels['year'] + ")[/COLOR][/B]","[COLOR cyan]" + infoLabels['genre'] + "\n[COLOR magenta]Valoración: " + infoLabels['rating'] + " (" + infoLabels['votes'] + " votos)[/COLOR]","Reproducir","Cancelar"):
+							return
+	else:
+		show_Msg("ExtendedInfo","No se ha encontrado ningún título",1000)
 	principal(uri,player,image)
 	return
+
+def CheckExtInfo():
+	if not xbmc.getCondVisibility('System.HasAddon(script.extendedinfo)'):
+		xbmcgui.Dialog().ok("Torrentin - ExtendedInfo No instalado" , "[B][COLOR yellow]Necesario AddOn externo para usar esta opción:[/COLOR][/B]","[COLOR lime]AddOns -> Instalar desde repositorio -> KODI add-on repository -> Add-ons de programas -> ExtendedInfo Script[/COLOR]\n[COLOR orange](despés de instalarlo configúralo para español).[/COLOR]")
+		return False
+	else: return True
 
 def MetaTorrent(title,tipo,modo):
 	generos = {28:"Acción",12:"Aventura",16:"Animación",35:"Comedia",80:"Crimen",99:"Documental",18:"Drama",10751:"Familia",14:"Fantasía",36:"Historia",27:"Terror",10402:"Música",9648:"Misterio",10749:"Romance",878:"Ciencia ficción",10770:"Película de la televisión",53:"Suspense",10752:"Guerra",37:"Western"}
@@ -930,7 +948,7 @@ def browselocal(uri="",player="",image=""):
                 fan = lines[1]
                 infoLabels['rating'] = lines[2]
                 infoLabels['votes'] = lines[3]
-                infoLabels['plot'] = lines[4] + "\n[COLOR lime]Valoración: " + lines[2] + "  (" + lines[3] + " votos)[/COLOR]"
+                infoLabels['plot'] = lines[4] + "\n[COLOR khaki]Año: " +lines[8] + "[/COLOR]\n[COLOR lime]Valoración: " + lines[2] + "  (" + lines[3] + " votos)[/COLOR]"
                 infoLabels['genre'] = lines[5]
                 #infoLabels['sorttitle'] = lines[6]
                 infoLabels['originaltitle'] = lines[7] + " - (Esp: " + lines[6] + ")"
@@ -997,7 +1015,7 @@ def browselocaltvp(uri="",player="",image=""):
                 fan = lines[1]
                 infoLabels['rating'] = lines[2]
                 infoLabels['votes'] = lines[3]
-                infoLabels['plot'] = lines[4] + "\n[COLOR limegreen]Valoración: " + lines[2] + "  (" + lines[3] + " votos)[/COLOR]"
+                infoLabels['plot'] = lines[4] + "\n[COLOR khaki]Año: " +lines[8] + "[/COLOR]\n[COLOR lime]Valoración: " + lines[2] + "  (" + lines[3] + " votos)[/COLOR]"
                 infoLabels['genre'] = lines[5]
                 #infoLabels['sorttitle'] = lines[6]
                 infoLabels['originaltitle'] = lines[7] + " - (Esp: " + lines[6] + ")"
@@ -1082,7 +1100,6 @@ def mensaje(mensaje,time):
     show_Msg('  ---===[ Torrentin ]===---',mensaje,time)
 
 def principal(uri,player,image):
-    #xbmcgui.Dialog().ok("Torrentin menu" ,'principal 1', str(menu))
     torrent_folder=__addon__.getSetting('torrent_path')
     destino = os.path.join( torrent_folder , "torrentin.torrent" )
     bajado = False
@@ -1101,7 +1118,6 @@ def principal(uri,player,image):
             if player == 0:
                 if xbmcgui.Dialog().yesno("Torrentin" , torrents.torrent_info(uri , 0),"¿ Reproducir ?"): player = menu
                 else: return
-            #xbmcgui.Dialog().ok("Torrentin menu" ,'principal 2', str(menu))
             if (oswin and player >=13): player = askplayer(uri,player,image)
             elif (not oswin and player==menu): player = askplayer(uri,player,image)
             if player == menu: return
@@ -1114,6 +1130,15 @@ def principal(uri,player,image):
             else: mensaje('Enlace no valido', 3000)
         else: mensaje('Ningun enlace a reproducir', 3000)
     else: xbmcgui.Dialog().ok("Torrentin" , "Este Add-On no funciona en versiones Frodo","Actualiza tu XBMC....")
+
+def AutoConfProveedores(uri,player,image):
+	if xbmc.getCondVisibility('System.HasAddon("plugin.video.alfa")'):
+		__addon__.setSetting('forkname',"plugin.video.alfa")
+	else: xbmcgui.Dialog().ok("Torrentin" , "[B][COLOR red]Addon Alfa No instalado[/COLOR]\n[COLOR yellow]Instálalo y vuelve a dar a la auto-configuración[/COLOR][/B]")
+
+	if xbmc.getCondVisibility('System.HasAddon("plugin.video.balandro")'):
+		__addon__.setSetting('forkname2',"plugin.video.balandro")
+	else: xbmcgui.Dialog().ok("Torrentin" , "[B][COLOR red]Addon Balandro No instalado[/COLOR]\n[COLOR yellow]Instálalo y vuelve a dar a la auto-configuración[/COLOR][/B]")
 
 def primer(uri,player,image):
     if uri:
@@ -1131,32 +1156,31 @@ def primer(uri,player,image):
     if len(shortforkname2)==3: forkname2=shortforkname2[2]
     else: forkname2=''
 
-    if xbmc.getCondVisibility('System.HasAddon("plugin.video.felisalagarta")'):
-        img=xbmc.translatePath(os.path.join('special://home', 'addons', 'plugin.video.felisalagarta','icon.png'))
-        li = xbmcgui.ListItem("[B][COLOR khaki]Ir a canales torrent de felisalagarta[/COLOR][/B]",img,img)
-        command = 'plugin://plugin.video.felisalagarta/?action=filterchannels&category=torrent&channel=channelselector&channel_type=torrent'
-        li.setProperty('fanart_image',fanartimage)
-        xbmcplugin.addDirectoryItem(addon_handle, command, li, True)        
-    
     #if xbmc.getCondVisibility('System.HasAddon("' + __addon__.getSetting('forkname') + '")') and tools.chkpchaddon(__addon__.getSetting('forkname')) == 1 and tools.ispelisfork(forkname):
     if xbmc.getCondVisibility('System.HasAddon("' + __addon__.getSetting('forkname') + '")') and tools.ispelisfork(forkname):
         if "alfa" in forkname:
-            img=xbmc.translatePath(os.path.join('special://home', 'addons', __addon__.getSetting('forkname'),"resources",'icono_3.png'))
+            img=xbmc.translatePath(os.path.join('special://home', 'addons', __addon__.getSetting('forkname'),"resources",'icon.png'))
         else:
             img=xbmc.translatePath(os.path.join('special://home', 'addons', __addon__.getSetting('forkname'),'icon.png'))
         li = xbmcgui.ListItem("[B][COLOR khaki]Ir a canales torrent de "+forkname+"[/COLOR][/B]",img,img)
-        command = 'plugin://' + __addon__.getSetting('forkname') + '/?action=filterchannels&category=torrent&channel=channelselector&channel_type=torrent'
+        if 'balandro' in forkname:
+            command = 'plugin://' + __addon__.getSetting('forkname') + '/?action=ch_groups&category=Agrupaciones de Canales&channel=groups&extra=groups&group=torrents&thumbnail=""'
+        else: 
+            command = 'plugin://' + __addon__.getSetting('forkname') + '/?action=filterchannels&category=torrent&channel=channelselector&channel_type=torrent'
         li.setProperty('fanart_image',fanartimage)
         xbmcplugin.addDirectoryItem(addon_handle, command, li, True)        
     
     #if xbmc.getCondVisibility('System.HasAddon("' + __addon__.getSetting('forkname2') + '")') and tools.chkpchaddon(__addon__.getSetting('forkname2')) == 1 and tools.ispelisfork(forkname2):
     if xbmc.getCondVisibility('System.HasAddon("' + __addon__.getSetting('forkname2') + '")') and tools.ispelisfork(forkname2):
         if "alfa" in forkname2:
-            img=xbmc.translatePath(os.path.join('special://home', 'addons', __addon__.getSetting('forkname2'),"resources",'icono_3.png'))
+            img=xbmc.translatePath(os.path.join('special://home', 'addons', __addon__.getSetting('forkname2'),"resources",'icon.png'))
         else:
             img=xbmc.translatePath(os.path.join('special://home', 'addons', __addon__.getSetting('forkname2'),'icon.png'))
         li = xbmcgui.ListItem("[B][COLOR khaki]Ir a canales torrent de "+forkname2+"[/COLOR][/B]",img,img)
-        command = 'plugin://' + __addon__.getSetting('forkname2') + '/?action=filterchannels&category=torrent&channel=channelselector&channel_type=torrent'
+        if 'balandro' in forkname2:
+            command = 'plugin://' + __addon__.getSetting('forkname2') + '/?action=ch_groups&category=Agrupaciones de Canales&channel=groups&extra=groups&group=torrents&thumbnail=""'
+        else: 
+            command = 'plugin://' + __addon__.getSetting('forkname2') + '/?action=filterchannels&category=torrent&channel=channelselector&channel_type=torrent'
         li.setProperty('fanart_image',fanartimage)
         xbmcplugin.addDirectoryItem(addon_handle, command, li, True)        
     
@@ -1277,6 +1301,12 @@ def submenu(uri="",player="",image=""):
     xbmcplugin.addDirectoryItem(addon_handle, command, li, False)
 
     img=os.path.join( __cwd__ ,"resources","images","filetools.png")
+    li = xbmcgui.ListItem("[B][COLOR chartreuse]Utilidades de la Base de datos de Mi Colección de Películas[/COLOR][/B]",img,img)
+    command = '%s?funcion=menumantpelis&uri=%s' % (sys.argv[0], sys.argv[2])
+    li.setProperty('fanart_image',fanartimage)
+    xbmcplugin.addDirectoryItem(addon_handle, command, li, True)
+
+    img=os.path.join( __cwd__ ,"resources","images","filetools.png")
     li = xbmcgui.ListItem("[B][COLOR yellow]Utilidades de archivos[/COLOR][/B]",img,img)
     command = '%s?funcion=menurenombradores&uri=%s' % (sys.argv[0], sys.argv[2])
     li.setProperty('fanart_image',fanartimage)
@@ -1306,22 +1336,28 @@ def menuparches(uri="",player="",image=""):
     fanartimage = os.path.join(__cwd__,"fanart.jpg")
     addon_handle = int(sys.argv[1])
     shortforkname = __addon__.getSetting('forkname').split('.')
-    if len(shortforkname)==3: forkname=shortforkname[2]
+    if len(shortforkname)==3:
+        forkname=shortforkname[2]
+        #if forkname == "balandro": forkname=""
     else: forkname=''
+
     shortforkname2 = __addon__.getSetting('forkname2').split('.')
-    if len(shortforkname2)==3: forkname2=shortforkname2[2]
+    if len(shortforkname2)==3:
+        forkname2=shortforkname2[2]
+        #if forkname2 == "balandro": forkname2=""
     else: forkname2=''
 
     if tools.chkpchaddon(__addon__.getSetting('forkname')) == 0:
         if tools.ispelisfork(forkname) and xbmc.getCondVisibility('System.HasAddon("'+__addon__.getSetting('forkname')+'")'):
+            if forkname == "alfa":
+                img=os.path.join( __cwd__ ,"resources","images","tirita.png")
+                li = xbmcgui.ListItem("[B][COLOR orange]Parchear "+forkname+" para auto-reproducir con Torrentin (Automático)[/COLOR][/B]",img,img)
+                command = '%s?funcion=pchaddon&uri=%s' % (sys.argv[0], __addon__.getSetting('forkname'))
+                li.setProperty('fanart_image',fanartimage)
+                xbmcplugin.addDirectoryItem(addon_handle, command, li, False)
+            
             img=os.path.join( __cwd__ ,"resources","images","tirita.png")
-            li = xbmcgui.ListItem("[B][COLOR orange]Parchear "+forkname+" para auto-reproducir con Torrentin (Automático)[/COLOR][/B]",img,img)
-            command = '%s?funcion=pchaddon&uri=%s' % (sys.argv[0], __addon__.getSetting('forkname'))
-            li.setProperty('fanart_image',fanartimage)
-            xbmcplugin.addDirectoryItem(addon_handle, command, li, False)
-
-            img=os.path.join( __cwd__ ,"resources","images","tirita.png")
-            li = xbmcgui.ListItem("[B][COLOR orange]Parchear "+forkname+" para obtener las carátulas (No automático)[/COLOR][/B]",img,img)
+            li = xbmcgui.ListItem("[B][COLOR orange]Parchear "+forkname+" para obtener las carátulas de los videos[/COLOR][/B]",img,img)
             command = '%s?funcion=pchaddon2&uri=%s' % (sys.argv[0], __addon__.getSetting('forkname'))
             li.setProperty('fanart_image',fanartimage)
             xbmcplugin.addDirectoryItem(addon_handle, command, li, False)
@@ -1335,14 +1371,15 @@ def menuparches(uri="",player="",image=""):
 
     if tools.chkpchaddon(__addon__.getSetting('forkname2')) == 0:
         if tools.ispelisfork(forkname2) and xbmc.getCondVisibility('System.HasAddon("'+__addon__.getSetting('forkname2')+'")'):
+            if forkname2 == "alfa":
+                img=os.path.join( __cwd__ ,"resources","images","tirita.png")
+                li = xbmcgui.ListItem("[B][COLOR orange]Parchear "+forkname2+" para auto-reproducir con Torrentin (Automático)[/COLOR][/B]",img,img)
+                command = '%s?funcion=pchaddon&uri=%s' % (sys.argv[0], __addon__.getSetting('forkname2'))
+                li.setProperty('fanart_image',fanartimage)
+                xbmcplugin.addDirectoryItem(addon_handle, command, li, False)
+            
             img=os.path.join( __cwd__ ,"resources","images","tirita.png")
-            li = xbmcgui.ListItem("[B][COLOR orange]Parchear "+forkname2+" para auto-reproducir con Torrentin (Automático)[/COLOR][/B]",img,img)
-            command = '%s?funcion=pchaddon&uri=%s' % (sys.argv[0], __addon__.getSetting('forkname2'))
-            li.setProperty('fanart_image',fanartimage)
-            xbmcplugin.addDirectoryItem(addon_handle, command, li, False)
-
-            img=os.path.join( __cwd__ ,"resources","images","tirita.png")
-            li = xbmcgui.ListItem("[B][COLOR orange]Parchear "+forkname2+" para obtener las carátulas (No automático)[/COLOR][/B]",img,img)
+            li = xbmcgui.ListItem("[B][COLOR orange]Parchear "+forkname2+" para obtener las carátulas de los videos[/COLOR][/B]",img,img)
             command = '%s?funcion=pchaddon2&uri=%s' % (sys.argv[0], __addon__.getSetting('forkname2'))
             li.setProperty('fanart_image',fanartimage)
             xbmcplugin.addDirectoryItem(addon_handle, command, li, False)
@@ -1380,16 +1417,51 @@ def menuparches(uri="",player="",image=""):
 
     xbmcplugin.endOfDirectory(addon_handle)
 
+def menumantpelis(uri="",player="",image=""):
+    fanartimage = os.path.join(__cwd__,"fanart.jpg")
+    addon_handle = int(sys.argv[1])
+
+    if __addon__.getSetting('dbindir') == "true":
+        base = "Películas"
+    else:
+        base = "Kodi"
+
+    img=os.path.join( __cwd__ ,"resources","images","interact.png")
+    li = xbmcgui.ListItem("[B][COLOR chartreuse]Base de datos en uso: [COLOR yellow]Directorio de " + base + "[COLOR magenta][I]  (Click para cambiar)[/I][/COLOR][/B]",img,img)
+    command = '%s?funcion=changedb&uri=%s' % (sys.argv[0], sys.argv[2])
+    li.setProperty('fanart_image',fanartimage)
+    xbmcplugin.addDirectoryItem(addon_handle, command, li, False)
+
+    img=os.path.join( __cwd__ ,"resources","images","move.png")
+    li = xbmcgui.ListItem("[B][COLOR chartreuse]Copiar base de datos del directorio de Kodi al de las Películas[/COLOR][/B]",img,img)
+    command = '%s?funcion=movetolocalpelis&uri=%s' % (sys.argv[0], sys.argv[2])
+    li.setProperty('fanart_image',fanartimage)
+    xbmcplugin.addDirectoryItem(addon_handle, command, li, False)
+
+    img=os.path.join( __cwd__ ,"resources","images","move.png")
+    li = xbmcgui.ListItem("[B][COLOR chartreuse]Copiar base de datos del directorio de las Películas al de Kodi[/COLOR][/B]",img,img)
+    command = '%s?funcion=movetokodi&uri=%s' % (sys.argv[0], sys.argv[2])
+    li.setProperty('fanart_image',fanartimage)
+    xbmcplugin.addDirectoryItem(addon_handle, command, li, False)
+
+    img=os.path.join( __cwd__ ,"resources","images","clean.png")
+    li = xbmcgui.ListItem("[B][COLOR yellow]Limpiar la base de datos de Mi Colección (directorio de "+base+")[/COLOR][/B]",img,img)
+    command = '%s?funcion=cleandb&uri=%s' % (sys.argv[0], sys.argv[2])
+    li.setProperty('fanart_image',fanartimage)
+    xbmcplugin.addDirectoryItem(addon_handle, command, li, False)
+
+    img=os.path.join( __cwd__ ,"resources","images","clean.png")
+    li = xbmcgui.ListItem("[B][COLOR orange]Borrar la base de datos de Mi Colección (directorio de "+base+")[/COLOR][/B]",img,img)
+    command = '%s?funcion=recatalogar_todas&uri=%s' % (sys.argv[0], sys.argv[2])
+    li.setProperty('fanart_image',fanartimage)
+    xbmcplugin.addDirectoryItem(addon_handle, command, li, False)
+
+    xbmcplugin.endOfDirectory(addon_handle)
+
 def menurenombradores(uri="",player="",image=""):
     fanartimage = os.path.join(__cwd__,"fanart.jpg")
     addon_handle = int(sys.argv[1])
-    '''
-    img=os.path.join( __cwd__ ,"resources","images","filmrename.png")
-    li = xbmcgui.ListItem("[B][COLOR chartreuse]Renombrador de películas [COLOR yellow]cambia a: Título de la película (año)[/COLOR][/B]",img,img)
-    command = '%s?funcion=renombrador5&uri=%s' % (sys.argv[0], sys.argv[2])
-    li.setProperty('fanart_image',fanartimage)
-    xbmcplugin.addDirectoryItem(addon_handle, command, li, False)
-    '''
+
     img=os.path.join( __cwd__ ,"resources","images","move.png")
     li = xbmcgui.ListItem("[B][COLOR khaki]Movedor de archivos [COLOR yellow]mueve archivos de un directorio a otro[/COLOR][/B]",img,img)
     command = '%s?funcion=movedor&uri=%s' % (sys.argv[0], sys.argv[2])
@@ -1431,6 +1503,13 @@ def menurenombradores(uri="",player="",image=""):
 def menumantenimiento(uri="",player="",image=""):
     fanartimage = os.path.join(__cwd__,"fanart.jpg")
     addon_handle = int(sys.argv[1])
+
+    img=os.path.join( __cwd__ ,"resources","images","clean.png")
+    li = xbmcgui.ListItem("[B][COLOR orangered]Reset de Kodi[/COLOR][/B]",img,img)
+    command = '%s?funcion=resetkodi&uri=%s' % (sys.argv[0], sys.argv[2])
+    li.setProperty('fanart_image',fanartimage)
+    xbmcplugin.addDirectoryItem(addon_handle, command, li, False)
+
     img=os.path.join( __cwd__ ,"resources","images","clean.png")
     li = xbmcgui.ListItem("[B][COLOR orange]Limpieza de cachés de imágenes, addons y temporales de Kodi[/COLOR][/B]",img,img)
     command = '%s?funcion=cleankodi&uri=%s' % (sys.argv[0], sys.argv[2])
@@ -1476,10 +1555,17 @@ def menumantenimiento(uri="",player="",image=""):
     
     xbmcplugin.endOfDirectory(addon_handle)
 
+def changedb(uri="",player="",image=""):
+    if __addon__.getSetting('dbindir') == "true":
+        __addon__.setSetting('dbindir',"false")
+    else:
+        __addon__.setSetting('dbindir',"true")
+    xbmc.executebuiltin('Container.Refresh')
+
 def browselocalpelis(uri="",player="",image=""):
 	ignoradas = ""
 	generos = {28:"Acción",12:"Aventura",16:"Animación",35:"Comedia",80:"Crimen",99:"Documental",18:"Drama",10751:"Familia",14:"Fantasía",36:"Historia",27:"Terror",10402:"Música",9648:"Misterio",10749:"Romance",878:"Ciencia ficción",10770:"Película de la televisión",53:"Suspense",10752:"Guerra",37:"Western"}
-	torrentindb = xbmc.translatePath(os.path.join('special://home','userdata','addon_data',__scriptid__,'renombradas'))
+	
 	if not os.path.isdir(torrentindb): os.mkdir(torrentindb)
 	list_folder=uri
 	if not os.path.isdir(list_folder):
@@ -1493,6 +1579,7 @@ def browselocalpelis(uri="",player="",image=""):
 	start = time.time()
 	for fname in dirList:
 		if os.path.isdir(os.path.join( list_folder , fname )):
+			if fname == "TorrentinDB": continue
 			if __addon__.getSetting('incsubdirlist') == "true":
 				li = xbmcgui.ListItem("[COLOR yellow][B]" + fname + "[/COLOR][/B]", iconImage="DefaultFolder.png", thumbnailImage="DefaultFolder.png")
 				command = '%s?funcion=browselocalpelis&uri=%s&' % (sys.argv[0], urllib.quote_plus(os.path.join( list_folder , fname )) )
@@ -1564,7 +1651,6 @@ def browselocalpelis(uri="",player="",image=""):
 					infoLabels['sorttitle'] = title
 					if s['original_title']: infoLabels['originaltitle'] = s['original_title'].encode('utf-8')
 					infoLabels['year'] = yearfromtitle
-					#xbmcgui.Dialog().ok("Torrentin - Archivos renombrados:",genero.strip(" - "))
 					if s['id']: infoLabels['tmdb_id'] = str(s['id'])
 					else: infoLabels['tmdb_id'] = ""
 			else:
@@ -1704,7 +1790,7 @@ def notfound(name):
 	return img,fanartimage,infoLabels
 
 def checkpeli(name):
-	fo = open(xbmc.translatePath(os.path.join('special://home','userdata','addon_data',__scriptid__,'renombradas',name+".info")),"r")
+	fo = open(xbmc.translatePath(os.path.join(torrentindb,name+".info")),"r")
 	lines = fo.read().split("|")
 	fo.close()
 	if len(lines) >= 9:
@@ -1725,45 +1811,58 @@ def checkpeli(name):
 	else: return '','',''
 	
 def addpeli(name,poster,fanart,infoLabels):
-	basedir = xbmc.translatePath(os.path.join('special://home','userdata','addon_data',__scriptid__,'renombradas'))
-	file = open(os.path.join(basedir,name + ".info"),"w")
+	file = open(os.path.join(torrentindb,name + ".info"),"w")
 	file.write(poster + "|" + fanart + "|" + infoLabels['rating'] + "|" + infoLabels['votes'] + "|" + infoLabels['plot'] + "|" + infoLabels['genre'] + "|" + infoLabels['sorttitle'] + "|" + infoLabels['originaltitle'] + "|" + infoLabels['year'] + "|" + infoLabels['tmdb_id'])
-	file.close()
+	#file.close()
 
 def cleandb(uri="",player="",image=""):
-	if not xbmcgui.Dialog().yesno("Torrentin - scraper" , "[COLOR lime]¿Limpiar la base de datos de TMDb de Mi Colección de Películas?[/COLOR]","[COLOR yellow]Se borrarán de la base de datos sólo las que ya no estén en el directorio de Mi Colección de Películas[/COLOR]"):
+	if not xbmcgui.Dialog().yesno("Torrentin - scraper" , "[COLOR lime]¿Limpiar la base de datos de TMDb de Mi Colección de Películas?[/COLOR]","[COLOR yellow]Se borrarán de la base de datos sólo los de las películas que ya no estén en el directorio de Mi Colección de Películas y sus directorios de primer nivel.[/COLOR]"):
 		return
-	basedir = xbmc.translatePath(os.path.join('special://home','userdata','addon_data',__scriptid__,'renombradas'))
-	list_folder=__addon__.getSetting('pelis_ren_path')
-	if not os.path.isdir(basedir): return
-	if not os.path.isdir(list_folder): return
-	dirList=os.listdir(basedir)
-	for fname in dirList:
-		if not os.path.isfile(os.path.join(list_folder,fname.rsplit(".",1)[0])):
-			try: os.remove(os.path.join(basedir,fname))
+	DirectorioPeliculas=__addon__.getSetting('pelis_ren_path')
+	if not os.path.isdir(torrentindb): return
+	if not os.path.isdir(DirectorioPeliculas): return
+	ListaPelisEnBase=os.listdir(torrentindb)
+	Ficheros = 0
+	for fname in ListaPelisEnBase:
+		NombrePeli = fname.rsplit(".",1)[0]
+		if not os.path.isfile(os.path.join(DirectorioPeliculas,NombrePeli)):
+			if MiraEnDirs(DirectorioPeliculas,NombrePeli): continue
+			Ficheros += 1
+			try: os.remove(os.path.join(torrentindb,fname))
 			except: pass
-	mensaje("Base de datos limpiada.",2000)
+	mensaje("Base de datos limpiada (" + str(Ficheros) + " Eliminados)",3000)
 
+def MiraEnDirs(DirectorioPeliculas,NombrePeli):
+	for dirpath, dirnames, filenames in os.walk(DirectorioPeliculas):
+		for dirs in dirnames:
+			if os.path.isfile(os.path.join(DirectorioPeliculas,dirs,NombrePeli)):
+				return True
+			else:
+				continue
+	return False
+	
 def recatalogar_peli(uri="",player="",image=""):
-	if os.path.isfile(xbmc.translatePath(os.path.join('special://home','userdata','addon_data',__scriptid__,'renombradas',uri+".info")) ):
-		os.remove(xbmc.translatePath(os.path.join('special://home','userdata','addon_data',__scriptid__,'renombradas',uri+".info")) )
+	if os.path.isfile(xbmc.translatePath(os.path.join(torrentindb,uri+".info")) ):
+		os.remove(xbmc.translatePath(os.path.join(torrentindb,uri+".info")) )
 	xbmc.executebuiltin('Container.Refresh')
 
 def recatalogar_todas(uri="",player="",image=""):
-	if not xbmcgui.Dialog().yesno("Torrentin - scraper","[COLOR chartreuse]Actualizar información extra de todas las peliculas de Mi Colección.[/COLOR]" , "[COLOR orange]Se borrará la base de datos y se buscarán todas en TMDb.[/COLOR]" ,"[COLOR red]¡ ATENCION !, Esto puede tardar bastante si hay muchas.[/COLOR]","Abandonar","Continuar"):
+	if not xbmcgui.Dialog().yesno("Torrentin - scraper","[COLOR chartreuse]Actualizar información de todas las peliculas de Mi Colección.[/COLOR]" , "[COLOR orange]Se borrará la base de datos y se buscarán todas en TMDb.[/COLOR]" ,"[COLOR red]¡ ATENCION !, Esto puede tardar bastante si hay muchas.[/COLOR]","Abandonar","Continuar"):
 		return
-	basedir = xbmc.translatePath(os.path.join('special://home','userdata','addon_data',__scriptid__,'renombradas'))
-	dirList=os.listdir(basedir)
+	dirList=os.listdir(torrentindb)
+	Ficheros = 0
 	for fname in dirList:
-		try: os.remove(os.path.join(basedir,fname))
+		Ficheros += 1
+		try: os.remove(os.path.join(torrentindb,fname))
 		except: pass
+	mensaje("Base de datos borrada (" + str(Ficheros) + " Archivos)",2000)
 	xbmc.executebuiltin('Container.Refresh')
 
 def exerar(uri="",player="",image=""):
     xbmc.executebuiltin('XBMC.StartAndroidActivity("com.rarlab.rar","android.intent.action.VIEW","rar","file:///null.rar")')
 
-def pchaddon(uri="",player="",image=""):
-    parche,crc = tools.pchaddon(2,uri)
+def pchaddon(uri="",player="",image=""):  #auto y des
+    parche,crc = tools.newpchaddon(2,uri)
     __addon__.setSetting('parche.'+uri,crc)
     shortforkname = uri.split('.')
     if len(shortforkname)==3: forkname=shortforkname[2]
@@ -1780,8 +1879,8 @@ def pchaddon(uri="",player="",image=""):
         xbmc.executebuiltin('Container.Refresh')
     else: xbmc.sleep(100)
 
-def pchaddon2(uri="",player="",image=""):
-    parche,crc = tools.pchaddon(1,uri)
+def pchaddon2(uri="",player="",image=""):  #no auto
+    parche,crc = tools.newpchaddon(1,uri)
     __addon__.setSetting('parche.'+uri,crc)
     shortforkname = uri.split('.')
     if len(shortforkname)==3: forkname=shortforkname[2]
@@ -1790,7 +1889,7 @@ def pchaddon2(uri="",player="",image=""):
         if parche == 0:
             xbmcgui.Dialog().ok("Error al parchear" , "[COLOR red]El parche no se ha aplicado,[COLOR yellow] No está instalado [COLOR lime]"+forkname+"[/COLOR]","[COLOR yellow]o es versión antigua o fichero a parchear no encontrado.[/COLOR]","[COLOR aquamarine]Instala la última versión de [COLOR lime]"+forkname+"[COLOR aquamarine] y vuelve a parchear.[/COLOR]")
         elif parche == 1:
-            xbmcgui.Dialog().ok("Torrentin" , "[COLOR yellow]El AddOn [COLOR aquamarine]"+forkname+"[COLOR lime] ha sido parcheado con éxito,[COLOR yellow] se añadirán las carátulas a los videos por torrent y se auto-arrancarán con Torrentin.[/COLOR]")
+            xbmcgui.Dialog().ok("Torrentin" , "[COLOR yellow]El AddOn [COLOR aquamarine]"+forkname+"[COLOR lime] ha sido parcheado con éxito,[COLOR yellow] se añadirán las carátulas a los videos por torrent.[/COLOR]")
         elif parche == 2:
             xbmcgui.Dialog().ok("Torrentin" , "[COLOR yellow]El Addon [COLOR lime]"+forkname+"[COLOR yellow] ya ha sido parcheado anteriormente,[/COLOR]", "[COLOR aquamarine]se ha restaurado una copia de seguridad y el parche","ha sido eliminado.[/COLOR]")
         elif parche == 3:
@@ -1947,7 +2046,7 @@ def bkpkodi(uri="",player="",image=""):
     else: aviso = "[B][COLOR chartreuse]\nCachés de imágenes y Addons incluidos en la copia.[/COLOR][/B]"
     if Completado !="":
         xbmcgui.Dialog().ok("Torrentin - Copia de seguridad de Kodi" , "[B][COLOR lime]Copia de seguridad salvada con éxito[/COLOR][/B] [COLOR deepskyblue](" + tools.convert_size(os.path.getsize(Completado)) +") [COLOR lime]en:[/COLOR]", "[COLOR yellow]" + Completado + "[/COLOR]", aviso)
-    else: xbmcgui.Dialog().ok("Torrentin - Copia de seguridad de Kodi" , "[B][COLOR red]Ha ocurrido un error o has cancelado el proceso, la copia de seguridad no se ha completado.[/COLOR][/B]")
+    else: xbmcgui.Dialog().ok("Torrentin - Copia de seguridad de Kodi" , "[B][COLOR red]Ha ocurrido un error o has cancelado el proceso,\nla copia de seguridad no se ha completado.[/COLOR][/B]")
 
 def restkodi(uri="",player="",image=""):
     if oswin:
@@ -1957,11 +2056,7 @@ def restkodi(uri="",player="",image=""):
     else:
         bkp_folder=__addon__.getSetting('bkpdest_path')
     if not xbmcgui.Dialog().yesno("Torrentin - Copia de seguridad de Kodi" , "[COLOR yellow]Se va a restaurar una copia de seguridad creada previamente.[/COLOR]","[COLOR cyan]Desde: [COLOR lime]" + bkp_folder + "[/COLOR]","[COLOR orange]Se restaurará sobre el Kodi actual, es recomendable hacerlo sobre un Kodi limpio o recién instalado.[/COLOR]","Abandonar","Continuar"): return
-#    backup = xbmcgui.DialogProgress()
-#    backup.create("Torrentin - Copia de seguridad de Kodi","[B][COLOR yellow]Restaurando directorios de Kodi.[/COLOR][/B]")
-#    backup.update(0,"","[B][COLOR lime]Espera, No Canceles.[/COLOR][/B]","[B][COLOR orange]Esto puede tardar (la barra de progreso no se mueve).[/COLOR][/B]")
     mov = tools.restorekodi(bkp_folder)
-#    backup.close() 
     if mov !="":
         req = 0
         while req == 0:
@@ -1972,7 +2067,7 @@ def restkodi(uri="",player="",image=""):
                 try: os.system("su -c 'reboot'")
                 except: pass
             xbmcgui.Dialog().ok("Torrentin - Copia de seguridad de Kodi" ,  "[COLOR yellow]No se ha conseguido el cierre forzado de Kodi, [COLOR lime]desconecte la alimentación[COLOR yellow] o salga con ALT+TAB o CASA y después use un 'task-killer' para cerrarlo, si no tiene un 'task-killer' instalado y usa Android vaya a Ajustes del sistema->Aplicaciones->Kodi->Forzar cierre.[/COLOR]")
-    else: xbmcgui.Dialog().ok("Torrentin - Copia de seguridad de Kodi" , "[B][COLOR red]Ha ocurrido un error o has cancelado el proceso, no se ha finalizado correctamente la restauración de la copia de seguridad.[/COLOR][/B]")
+    else: xbmcgui.Dialog().ok("Torrentin - Copia de seguridad de Kodi" , "[B][COLOR red]Ha ocurrido un error o has cancelado el proceso,\nno se ha finalizado correctamente la restauración de la copia de seguridad.[/COLOR][/B]")
 
 def cleankodi(uri="",player="",image=""):
     try:
@@ -1981,19 +2076,41 @@ def cleankodi(uri="",player="",image=""):
         sizethumb = sizethumb + os.path.getsize(xbmc.translatePath(os.path.join('special://home','userdata','Database','Textures13.db')))
         sizepack =  tools.get_size(xbmc.translatePath(os.path.join('special://home','addons','packages')))
         sizetmp = tools.get_size(xbmc.translatePath(os.path.join('special://home','temp')))
-        ocupado = "[COLOR yellow]Caché de imágenes: [/COLOR]" + tools.convert_size(sizethumb) + "\n[COLOR yellow]Caché de AddOns: [/COLOR]" + tools.convert_size(sizepack) + "\n[COLOR yellow]Archivos temporales: [/COLOR]" + tools.convert_size(sizetmp) + "\n[COLOR yellow]Total espacio ocupado: [/COLOR]" + tools.convert_size(sizethumb+sizepack+sizetmp)
+        sizetmp = sizetmp + tools.get_size(xbmc.translatePath(os.path.join('special://home','addons','temp')))
+        ocupado = "[B][COLOR cyan]Caché de imágenes: [/COLOR]" + tools.convert_size(sizethumb) + "\n[COLOR chocolate]Caché de AddOns: [/COLOR]" + tools.convert_size(sizepack) + "\n[COLOR lime]Archivos temporales: [/COLOR]" + tools.convert_size(sizetmp) + "\n[COLOR yellow]Total espacio ocupado: [/COLOR]" + tools.convert_size(sizethumb+sizepack+sizetmp) + "[/B]"
     except:
         ocupado = "[COLOR yellow]No se pudo determinar el espacio ocupado por los cachés y temporales.[/COLOR]"
         pass
     if xbmcgui.Dialog().yesno("Torrentin - Limpiador" , ocupado,'','','Descartar','Limpiar'):
         clean = xbmcgui.DialogProgress()
-        clean.create("Torrentin","Borrando directorios temporales de Kodi.")
-        clean.update(0,"","Espera, No Canceles.","Esto puede tardar...")
+        clean.create("Torrentin","[B]Haciendo limpieza de Kodi...[/B]")
+        clean.update(0,"","[B]Espera, No Canceles.[/B]","[B]Esto puede tardar...[/B]")
         mov = tools.tempdel()
+        if mov: Limpieza = "[COLOR orange]Se borró el caché de imágenes[/COLOR]"
+        else: Limpieza = "[COLOR cyan]Se mantuvo el caché de imágenes[/COLOR]"
         clean.close()
-        xbmcgui.Dialog().ok("Torrentin - Limpiador" , "[COLOR lime]Limpieza terminada con éxito.[/COLOR]","[COLOR red]           ¡¡¡¡ ATENCIÓN !!!![/COLOR]","[COLOR orange]Kodi necesita reiniciarse, [COLOR yellow]se cerrará...[/COLOR]")
+        xbmcgui.Dialog().ok("Torrentin - Limpiador" , "[B][COLOR lime]Limpieza terminada con éxito.[/COLOR]", Limpieza , "[COLOR red]¡¡¡¡ ATENCIÓN !!!!  [COLOR orange]Kodi necesita reiniciarse, [COLOR yellow]se cerrará...[/COLOR][/B]")
         tools.forceclose()
         xbmc.executebuiltin('Quit')
+
+def resetkodi(uri="",player="",image=""):
+        ok = ResetKodi()
+        if ok:
+            xbmcgui.Dialog().ok("Torrentin - Reset de Kodi" , "[B][COLOR lime]Limpieza total terminada con éxito.[/COLOR]", "[COLOR yellow]Kodi reseteado como recien instalado[/COLOR]" , "[COLOR red]¡¡¡¡ ATENCIÓN !!!!  [COLOR orange]Kodi necesita reiniciarse, [COLOR yellow]se cerrará...[/COLOR][/B]")
+            tools.forceclose()
+            xbmc.executebuiltin('Quit')
+        else:
+            xbmcgui.Dialog().ok("Torrentin - Reset de Kodi" , "[B][COLOR lime]El reseteado de Kodi no se ha ejecutado.[/COLOR]", "[COLOR yellow]Has cancelado el proceso.[/COLOR][/B]")
+
+def ResetKodi():
+    Basedir = xbmc.translatePath(os.path.join('special://home'))
+    if xbmcgui.Dialog().yesno("Torrentin - Reset de Kodi" ,
+    "[B][COLOR red]ATENCION, [COLOR yellow]Se borrarán TODOS los archivos y Addons",
+    "(menos Torrentin) de Kodi y lo dejará como recién instalado, recomendable tener una copia de seguridad.",
+    "[COLOR lime]¿ Seguro que quieres proceder con el borrado ?[/COLOR][/B]","[COLOR lime]Abandonar[/COLOR]","[COLOR orangered]Continuar[/COLOR]"): 
+        tools.clear_folder(Basedir)
+        return True
+    else: return False
 
 def chkupdate(uri="",player="",image=""):
 	descarga = xbmcgui.DialogProgress()
@@ -2046,15 +2163,14 @@ def chkupdate(uri="",player="",image=""):
 				update.extractall(xbmc.translatePath(os.path.join('special://home', 'addons')))
 				descarga.update(80,"","","Actualizando Add-On...")
 				xbmc.sleep(2000)
-				xbmc.executebuiltin('Container.Refresh')
-				xbmc.executebuiltin( 'UpdateLocalAddons' )
 				descarga.update(100,"","Espera, No Canceles.","Terminado.")
 				xbmc.sleep(1000)
+				xbmc.executebuiltin('Container.Refresh')
+				xbmc.executebuiltin( 'UpdateLocalAddons' )
 				descarga.close()
 				navegar("[COLOR lime]¡¡¡ Torrentin actualizado a la versión " + remote + " !!![/COLOR]","[COLOR yellow]¿ Quieres ir al foro de htcmania para ver la","información del AddOn o los reproductores ?[/COLOR]")
-				#  xbmcgui.Dialog().ok("Torrentin - Actualizador" , "[COLOR lime]Actualización terminada con éxito.[/COLOR]","[COLOR red]           ¡¡¡¡ ATENCIÓN !!!![/COLOR]","[COLOR orange]Kodi necesita reiniciarse, [COLOR yellow]espere, se cerrará...[/COLOR]")
 				#tools.forceclose()
-				#  xbmc.executebuiltin('Quit')
+				#xbmc.executebuiltin('Quit')
 			except:
 				descarga.close()
 				navegar("[COLOR red]Ha ocurrido un error durante la actualización (4)","[COLOR orange]Tienes que buscar manuálmente la nueva versión.","[COLOR yellow]¿ Quieres ir al foro de htcmania para descargarla ?[/COLOR]")
@@ -2080,7 +2196,8 @@ def navegar(uno,dos,tres):
 		elif xbmc.getCondVisibility('system.platform.windows'):
 			os.startfile(urlhtcm)
 		else: xbmcgui.Dialog().ok("Torrentin" , "[COLOR cyan]Abre tu navegador y visita:[COLOR yellow]",urlhtcm,"[COLOR lime]o busca  torrentin  en Google y ve al primer enlace.[/COLOR]")
-	
+	xbmcgui.Dialog().ok("Torrentin - Actualizador" , "[B][COLOR lime]Hoy en dia los foros estan en desuso por su lentitud.[/COLOR][/B]","[COLOR yellow]Si tienes alguna duda sobre el funcionamiento del Addon estamos en Telegram, usa la lupa y busca [COLOR cyan]TorrentinAddOn[COLOR yellow] o en el enlace:[COLOR cyan] https://t.me/TorrentinAddOn[/COLOR]")
+
 def renamer5(list_folder):
 	#list_folder = unicode(list_folder,'utf-8')
 	#parent_folder=__addon__.getSetting('ren_path5')
@@ -2265,14 +2382,14 @@ def autoparche():
         shortforkname2 = __addon__.getSetting('forkname2').split('.')
         if len(shortforkname2)==3: forkname2=shortforkname2[2]
         else: forkname2=''
-        if xbmc.getCondVisibility('System.HasAddon("' + __addon__.getSetting('forkname') + '")'):
+        if xbmc.getCondVisibility('System.HasAddon("' + __addon__.getSetting('forkname') + '")'): #and forkname != "balandro":
             if tools.chkpchaddon(__addon__.getSetting('forkname')) == 0 and tools.ispelisfork(forkname):
                 mensaje("Auto-parche: "+forkname,2000)
                 xbmc.sleep(2000)
                 if __addon__.getSetting('autopatchtype') == "0": pchaddon(__addon__.getSetting('forkname'),"silent")
                 else: pchaddon2(__addon__.getSetting('forkname'),"silent")
                 xbmc.executebuiltin('Container.Refresh')
-        if xbmc.getCondVisibility('System.HasAddon("' + __addon__.getSetting('forkname2') + '")'):
+        if xbmc.getCondVisibility('System.HasAddon("' + __addon__.getSetting('forkname2') + '")'): # and forkname2 != "balandro":
             if tools.chkpchaddon(__addon__.getSetting('forkname2')) == 0 and tools.ispelisfork(forkname2):
                 mensaje("Auto-parche: "+forkname2,2000)
                 xbmc.sleep(2000)
@@ -2280,6 +2397,7 @@ def autoparche():
                 else: pchaddon2(__addon__.getSetting('forkname2'),"silent")
                 xbmc.executebuiltin('Container.Refresh')
     '''
+    # Autoparcheo de plexus y plexus streams, se desactiva definitivamente ya que son viejos y no se actualizan
     if __addon__.getSetting('autopatchpl') == "true":
         if xbmc.getCondVisibility("System.HasAddon(program.plexus)"):
             if not tools.chkpchplexus():
@@ -2292,6 +2410,46 @@ def autoparche():
                 pchplexusstreams("silent")
     '''
     return
+
+def movetolocalpelis(uri="",player="",image=""):
+    mensaje("Copiando base de datos.",2000)
+    PelisDir = xbmc.translatePath(os.path.join(__addon__.getSetting('pelis_ren_path') ))
+    PelisDirDb = xbmc.translatePath(os.path.join(__addon__.getSetting('pelis_ren_path') , "TorrentinDB"))
+    KodiDirDb = xbmc.translatePath(os.path.join('special://home','userdata','addon_data',__scriptid__,'renombradas'))
+    if not os.path.isdir(PelisDir):
+        if xbmcgui.Dialog().yesno( "Torrentin", "[COLOR yellow]Esta opción del menú usa el directorio de  [COLOR dodgerblue]Mi Colección de películas[COLOR yellow]  y no está configurado o no se encuentra.[/COLOR]","[COLOR lime]¿Configurar directorio? (General -> Mi Colección de Películas)[/COLOR]"):
+            __addon__.openSettings()
+            return
+    if not os.path.isdir(PelisDirDb): os.mkdir(PelisDirDb)
+    if not os.path.isdir(KodiDirDb): os.mkdir(KodiDirDb)
+    import shutil
+    Ficheros =0
+    for item in os.listdir(KodiDirDb):
+        s = os.path.join(KodiDirDb, item)
+        d = os.path.join(PelisDirDb, item)
+        shutil.copyfile(s, d)
+        Ficheros += 1
+    xbmcgui.Dialog().ok("Torrentin - Copiar Base de datos","[COLOR lime]Copia de base de datos de TMDB de películas terminado.","[COLOR yellow]" + str(Ficheros) + " Archivos de datos de películas de Mi colección copiados","al directorio de Películas[/COLOR]")
+    
+def movetokodi(uri="",player="",image=""):
+    mensaje("Copiando base de datos.",2000)
+    PelisDir = xbmc.translatePath(os.path.join(__addon__.getSetting('pelis_ren_path') ))
+    PelisDirDb = xbmc.translatePath(os.path.join(__addon__.getSetting('pelis_ren_path') , "TorrentinDB"))
+    KodiDirDb = xbmc.translatePath(os.path.join('special://home','userdata','addon_data',__scriptid__,'renombradas'))
+    if not os.path.isdir(PelisDir):
+        if xbmcgui.Dialog().yesno( "Torrentin", "[COLOR yellow]Esta opción del menú usa el directorio de  [COLOR dodgerblue]Mi Colección de películas[COLOR yellow]  y no está configurado o no se encuentra.[/COLOR]","[COLOR lime]¿Configurar directorio? (General -> Mi Colección de Películas)[/COLOR]"):
+            __addon__.openSettings()
+            return
+    if not os.path.isdir(PelisDirDb): os.mkdir(PelisDirDb)
+    if not os.path.isdir(KodiDirDb): os.mkdir(KodiDirDb)
+    import shutil
+    Ficheros =0
+    for item in os.listdir(PelisDirDb):
+        s = os.path.join(PelisDirDb, item)
+        d = os.path.join(KodiDirDb, item)
+        shutil.copyfile(s, d)
+        Ficheros += 1
+    xbmcgui.Dialog().ok("Torrentin - Copiar Base de datos","[COLOR lime]Copia de base de datos de TMDB de películas terminado.","[COLOR yellow]" + str(Ficheros) + " Archivos de datos de películas de Mi colección copiados","al directorio de Kodi[/COLOR]")
 
 def findact():
     if  __addon__.getSetting('autoupdate') == "true":
@@ -2315,4 +2473,4 @@ def findact():
         if int(remote.replace(".","")) > int(actual.replace(".","")):
             chkupdate()
 
-# EOF (02-2018) - (05-2021)
+# EOF (02-2018) - (06-2021)
