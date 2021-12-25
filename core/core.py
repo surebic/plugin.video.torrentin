@@ -33,6 +33,7 @@ if (sys.platform == 'win32') or (sys.platform == 'win64'): oswin = True
 else: oswin = False
 import torrents
 import tools
+import zipfilemod as zipfile
 
 if not __addon__.getSetting('torrent_path'):
     if xbmc.getCondVisibility('system.platform.Android'):
@@ -1627,6 +1628,7 @@ def browselocalpelis(uri="",player="",image=""):
 				for s in datadict['results']:
 					titul = s['title'].encode('utf-8').replace(":",",").replace("*","").replace("?","¿").replace("<","[").replace(">","]").replace('"',"'").replace("/","").replace("\\","").replace("|","")
 					if datadict['total_results'] > 1 and not titul.strip() in title.strip(): continue
+					if s['release_date'].split('-')[0] != yearfromtitle: continue
 					infoLabels = {}
 					if s['poster_path']: img = "https://image.tmdb.org/t/p/original" +  s['poster_path'].encode('utf-8')
 					else: img  = os.path.join(__cwd__ , "icon.png")
@@ -2156,7 +2158,10 @@ def chkupdate(uri="",player="",image=""):
 				f = open(os.path.join( destino , "plugin.video.torrentin-" + remote + ".zip") , "wb")
 				f.write(bajada)
 				f.close()
-				import zipfile
+			except:
+				descarga.close()
+				navegar("[COLOR red]Ha ocurrido un error durante la actualización (4)","[COLOR orange]Tienes que buscar manuálmente la nueva versión.","[COLOR yellow]¿ Quieres ir al foro de htcmania para descargarla ?[/COLOR]")
+			try:
 				update = zipfile.ZipFile(os.path.join( destino , "plugin.video.torrentin-" + remote + ".zip"), 'r')
 				descarga.update(60,"","Espera, No Canceles.","Extrayendo ficheros...")
 				xbmc.sleep(500)
@@ -2169,11 +2174,9 @@ def chkupdate(uri="",player="",image=""):
 				xbmc.executebuiltin( 'UpdateLocalAddons' )
 				descarga.close()
 				navegar("[COLOR lime]¡¡¡ Torrentin actualizado a la versión " + remote + " !!![/COLOR]","[COLOR yellow]¿ Quieres ir al foro de htcmania para ver la","información del AddOn o los reproductores ?[/COLOR]")
-				#tools.forceclose()
-				#xbmc.executebuiltin('Quit')
 			except:
 				descarga.close()
-				navegar("[COLOR red]Ha ocurrido un error durante la actualización (4)","[COLOR orange]Tienes que buscar manuálmente la nueva versión.","[COLOR yellow]¿ Quieres ir al foro de htcmania para descargarla ?[/COLOR]")
+				xbmcgui.Dialog().ok("Torrentin - Actualizador" , "[B][COLOR red]Error, no se puede escribir en el directorio de kodi (5)[/COLOR][/B]","[COLOR yellow]Tienes que instalar a mano la actualización desde Addons / Instalar desde un archivo .zip[/COLOR]","[B][COLOR lime]El AddOn estará en el directorio de packages de Kodi[/COLOR][/B]")
 	elif int(remote.replace(".","")) < int(actual.replace(".","")):
 		descarga.close()
 		xbmcgui.Dialog().ok("Torrentin" , "[COLOR cyan]Versión actual: " + remote,"Versión instalada: " + actual,"[COLOR lime]Tu versión es más nueva que la última publicada.[/COLOR]")
