@@ -5,7 +5,7 @@
 # by ciberus (Spain)
 # You can copy, distribute, modify blablabla.....
 # Don't work in Kodi Matrix 
-# v. 0.6.7 - Diciembre 2021
+# v. 0.6.8 - Diciembre 2021
 
 ################################################################
 # Este AddOn de KODI no contiene enlaces internos o directos a material protegido por
@@ -325,14 +325,18 @@ def askplayer(uri,player,image):
             if __addon__.getSetting("tvs") == "true":       players.append("[COLOR " + colornormal + "][app]          Torrent Video Streaming[/COLOR]")
             if __addon__.getSetting("turk") == "true":       players.append("[COLOR " + colornormal + "][app]          Turkey torrent video player[/COLOR]")
     if oswin: players.append("[COLOR deepskyblue][programa] Asociado a torrent/magnet/acestream (Win)[/COLOR]")
-    players.append("[COLOR orange]     ----====[  Información Extra  ]====----[/COLOR]")
+    players.append("[COLOR yellowgreen]     ----====[  Información Web  ]====----[/COLOR]")
+    if xbmc.getCondVisibility('System.HasAddon(script.extendedinfo)'):
+        players.append("[COLOR yellowgreen]     ----====[  ExtendedInfo  ]====----[/COLOR]")
+    if xbmc.getCondVisibility('System.HasAddon(script.embuary.info)'):
+        players.append("[COLOR yellowgreen]     ----====[  EmbuaryInfo  ]====----[/COLOR]")
     if descargar and int(__addon__.getSetting("tordown")) != 0 and xbmc.getCondVisibility('System.Platform.Android') : players.append("[COLOR orange]     ----====[  Descargar con "+gestornames[0]+"  ]====----[/COLOR]")
     if guardar:
-        players.append("[COLOR orange]     ----====[  Guardar el "+tipo+"  ]====----[/COLOR]")
+        players.append("[COLOR limegreen]     ----====[  Guardar el "+tipo+"  ]====----[/COLOR]")
     elif torr :
         #if tipo == "Torrent": 
         #players.append("[COLOR orange]     ----====[  Actualizar información extra  ]====----[/COLOR]")
-        players.append("[COLOR orange]     ----====[  Borrar el "+tipo+"  ]====----[/COLOR]")
+        players.append("[COLOR crimson]     ----====[  Borrar el "+tipo+"  ]====----[/COLOR]")
     if "RAR" in info:
         if not xbmcgui.Dialog().yesno("Torrentin" , "[COLOR red][B]¡¡¡ ATENCIÓN !!![/COLOR][/B][COLOR orange]    El vídeo está comprimido en RAR[/COLOR]","[COLOR orange]Solo Quasar, Elementum y Torrest son capaces de descargarlo entero y descomprimirlo.[/COLOR]","[COLOR lime]¿ Quieres continuar para guardarlo o descargarlo ?[/COLOR]"): return menu
     if "No Video" in info:
@@ -341,7 +345,7 @@ def askplayer(uri,player,image):
     reproductor = players[seleccion]
     if seleccion != -1:
         if seleccion == 0:
-            einfo_torrent(uri,player,image)
+            einfo_torrent(uri,player,"3",info)
         elif "]    AceStream" in reproductor: return 1
         elif "]    XBMCtorrent" in reproductor: return 2
         elif "]    Stream" in reproductor: return 3
@@ -374,8 +378,12 @@ def askplayer(uri,player,image):
         elif "[programa] Asociado" in reproductor:
             os.startfile(uri)
             return menu
-        elif "[  Información" in reproductor:
-            einfo_torrent(uri,player,image)
+        elif "[  Información Web" in reproductor:
+            einfo_torrent(uri,player,"0","")
+        elif "[  ExtendedInfo" in reproductor:
+            einfo_torrent(uri,player,"1","")
+        elif "[  EmbuaryInfo" in reproductor:
+            einfo_torrent(uri,player,"2","")
         #elif "[  Actualizar" in reproductor:
             #catalogar_torrent(uri)
             #return menu
@@ -647,7 +655,7 @@ def savetorrent(uri,image,torr_folder,modo):
     else: return "nocarat"+title
     return title
 
-def einfo_torrent(uri,player,image):
+def einfo_torrent(uri,player,image,info):
 	title = torrents.torrent_info(uri , 1)
 	if title=="":
 		keyboard = xbmc.Keyboard(title,"No se ha encontrado ningún título en el torrent/magnet, introdúcelo...")
@@ -660,11 +668,11 @@ def einfo_torrent(uri,player,image):
 		global busca
 		savetit=title
 		busca=''
-		if re.search("\d{1,2}[x]\d{2}",title) or re.search("Cap.\d+",title) or re.search("S\d{2}E\d{2}",title):
+		if re.search("\d{1,2}[x]\d{2}",title) or re.search("Cap.\d+",title) or re.search("S\d{2}E\d{2}",title):   # SERIE
 			poster,fanart,infoLabels=MetaTorrent(title,"tv",0) 
 			if poster != "" and fanart != "" and infoLabels != "":
-				if __addon__.getSetting("infotorrent") == "0":
-					browsewebpeli(infoLabels['tmdb_id'],'','')
+				if image == "0": 
+					browsewebpeli(infoLabels['tmdb_id'],'',"tv")
 					ShowProgress = xbmcgui.DialogProgress()
 					ShowProgress.create("Torrentin - Información Web",
 					"[B][COLOR yellow]" + infoLabels['title'] + " (" + infoLabels['year'] + ")[/COLOR][/B]",
@@ -673,16 +681,19 @@ def einfo_torrent(uri,player,image):
 					while not ShowProgress.iscanceled():
 						xbmc.sleep(200)
 					ShowProgress.close()
-				else: 
-					if CheckExtInfo():
-						xbmc.executebuiltin( "RunScript(script.extendedinfo,info=extendedtvinfo,id=%s" % infoLabels['tmdb_id']+")" )
-						if xbmcgui.Dialog().yesno("Torrentin - ExtendedInfo" , "[COLOR limegreen]Espere, mostrando información extendida de la serie:[/COLOR]" , "[B][COLOR orange]" + infoLabels['title'] + " (" + infoLabels['year'] + ")[/COLOR][/B]","[COLOR cyan]" + infoLabels['genre'] + "\n[COLOR magenta]Valoración: " + infoLabels['rating'] + " (" + infoLabels['votes'] + " votos)[/COLOR]","Reproducir","Cancelar"):
-							return
-		else:
+				elif image == "1": 
+					xbmc.executebuiltin( "RunScript(script.extendedinfo,info=extendedtvinfo,id=%s" % infoLabels['tmdb_id']+")" )
+					#if xbmcgui.Dialog().yesno("Torrentin - ExtendedInfo" , "[COLOR limegreen]Espere, mostrando información extendida de la serie:[/COLOR]" , "[B][COLOR orange]" + infoLabels['title'] + " (" + infoLabels['year'] + ")[/COLOR][/B]","[COLOR cyan]" + infoLabels['genre'] + "\n[COLOR magenta]Valoración: " + infoLabels['rating'] + " (" + infoLabels['votes'] + " votos)[/COLOR]","Reproducir","Cancelar"):
+						#return
+				elif image == "2": 
+					xbmc.executebuiltin( "RunScript(script.embuary.info,call=tv,tmdb_id=%s" % infoLabels['tmdb_id']+")" )
+				elif image =="3":
+					xbmcgui.Dialog().ok("Torrentin" , info, "[B][COLOR orange]Serie: " + infoLabels['title'] + " (" + infoLabels['year'] + ")[/COLOR][/B]","[COLOR magenta]Género: " + infoLabels['genre'] + "\n[COLOR lime]Valoración: " + infoLabels['rating'] + " (" + infoLabels['votes'] + " votos)[/COLOR]")
+		else:   # PELICULA
 			poster,fanart,infoLabels=MetaTorrent(title,"movie",0) 
 			if poster != "" and fanart != "" and infoLabels != "":
-				if __addon__.getSetting("infotorrent") == "0":
-					browsewebpeli(infoLabels['tmdb_id'],'','')
+				if image == "0":
+					browsewebpeli(infoLabels['tmdb_id'],'',"movie")
 					ShowProgress = xbmcgui.DialogProgress()
 					ShowProgress.create("Torrentin - Información Web",
 					"[B][COLOR yellow]" + infoLabels['title'] + " (" + infoLabels['year'] + ")[/COLOR][/B]",
@@ -691,21 +702,19 @@ def einfo_torrent(uri,player,image):
 					while not ShowProgress.iscanceled():
 						xbmc.sleep(200)
 					ShowProgress.close()
-				else:
-					if CheckExtInfo():
-						xbmc.executebuiltin( "RunScript(script.extendedinfo,info=extendedinfo,id=%s" % infoLabels['tmdb_id']+")" )
-						if xbmcgui.Dialog().yesno("Torrentin - ExtendedInfo" , "[COLOR limegreen]Espere, mostrando información extendida de la película:[/COLOR]" , "[B][COLOR yellow]" + infoLabels['title'] + " (" + infoLabels['year'] + ")[/COLOR][/B]","[COLOR cyan]" + infoLabels['genre'] + "\n[COLOR magenta]Valoración: " + infoLabels['rating'] + " (" + infoLabels['votes'] + " votos)[/COLOR]","Reproducir","Cancelar"):
-							return
+				elif image =="1":
+					xbmc.executebuiltin( "RunScript(script.extendedinfo,info=extendedinfo,id=%s" % infoLabels['tmdb_id']+")" )
+					#if xbmcgui.Dialog().yesno("Torrentin - ExtendedInfo" , "[COLOR limegreen]Espere, mostrando información extendida de la película:[/COLOR]" , "[B][COLOR yellow]" + infoLabels['title'] + " (" + infoLabels['year'] + ")[/COLOR][/B]","[COLOR cyan]" + infoLabels['genre'] + "\n[COLOR magenta]Valoración: " + infoLabels['rating'] + " (" + infoLabels['votes'] + " votos)[/COLOR]","Reproducir","Cancelar"):
+						#return
+				elif image =="2":
+					xbmc.executebuiltin( "RunScript(script.embuary.info,call=movie,tmdb_id=%s" % infoLabels['tmdb_id'] + ")" )
+				elif image =="3":
+					xbmcgui.Dialog().ok("Torrentin" , info, "[B][COLOR orange]Película: " + infoLabels['title'] + " (" + infoLabels['year'] + ")[/COLOR][/B]","[COLOR magenta]Género: " + infoLabels['genre'] + "\n[COLOR lime]Valoración: " + infoLabels['rating'] + " (" + infoLabels['votes'] + " votos)[/COLOR]")
+					
 	else:
-		show_Msg("ExtendedInfo","No se ha encontrado ningún título",1000)
+		show_Msg("Extended Info","No se ha encontrado ningún título",1000)
 	principal(uri,player,image)
 	return
-
-def CheckExtInfo():
-	if not xbmc.getCondVisibility('System.HasAddon(script.extendedinfo)'):
-		xbmcgui.Dialog().ok("Torrentin - ExtendedInfo No instalado" , "[B][COLOR yellow]Necesario AddOn externo para usar esta opción:[/COLOR][/B]","[COLOR lime]AddOns -> Instalar desde repositorio -> KODI add-on repository -> Add-ons de programas -> ExtendedInfo Script[/COLOR]\n[COLOR orange](despés de instalarlo configúralo para español).[/COLOR]")
-		return False
-	else: return True
 
 def MetaTorrent(title,tipo,modo):
 	generos = {28:"Acción",12:"Aventura",16:"Animación",35:"Comedia",80:"Crimen",99:"Documental",18:"Drama",10751:"Familia",14:"Fantasía",36:"Historia",27:"Terror",10402:"Música",9648:"Misterio",10749:"Romance",878:"Ciencia ficción",10770:"Película de la televisión",53:"Suspense",10752:"Guerra",37:"Western"}
@@ -916,6 +925,10 @@ def browselocal(uri="",player="",image=""):
     for k,v in lista.iteritems():
         if not oswin: titulo = k.split("/")[-1]
         else: titulo = k.split("\\")[-1]
+        if re.search("\d{1,2}[x]\d{2}",titulo) or re.search("Cap.\d+",titulo) or re.search("S\d{2}E\d{2}",titulo):
+        	tipo="tv"
+        else:
+        	tipo="movie"
         if k.endswith(".magnet"):
             tipoExt=".magnet"
             esdir = False
@@ -961,9 +974,14 @@ def browselocal(uri="",player="",image=""):
                 li.setArt({'thumb': img, 'poster': img, 'fanart': fan})
             li.setInfo("video", infoLabels)
             commands.append(( '[B][COLOR yellow]Actualizar Información Extra[/COLOR][/B]',  'XBMC.RunPlugin(plugin://plugin.video.torrentin/?funcion=catalogar_torrent&uri=%s)' % urllib.quote_plus(k) ))
-            commands.append(( '[B][COLOR limegreen]Información Web[/COLOR][/B]',  'XBMC.RunPlugin(plugin://plugin.video.torrentin/?funcion=browsewebpeli&uri=%s)' % urllib.quote_plus(infoLabels['tmdb_id']) ))
+            commands.append(( '[B][COLOR limegreen]Información Web[/COLOR][/B]',  'XBMC.RunPlugin(plugin://plugin.video.torrentin/?funcion=browsewebpeli&uri=%s&image=%s)' % (urllib.quote_plus(infoLabels['tmdb_id']),tipo) ))
             if xbmc.getCondVisibility('System.HasAddon(script.extendedinfo)'):
-                commands.append(("[B][COLOR limegreen]ExtendedInfo[/COLOR][/B]","XBMC.RunScript(script.extendedinfo,info=extendedinfo,name=%s,id=%s)" % (lines[6],infoLabels['tmdb_id']) ))
+            	if tipo == "movie":
+                    commands.append(("[B][COLOR limegreen]ExtendedInfo[/COLOR][/B]","XBMC.RunScript(script.extendedinfo,info=extendedinfo,name=%s,id=%s)" % (lines[6],infoLabels['tmdb_id']) ))
+                elif tipo == "tv":
+                	commands.append(("[B][COLOR limegreen]ExtendedInfo[/COLOR][/B]","XBMC.RunScript(script.extendedinfo,info=extendedtvinfo,name=%s,id=%s)" % (lines[6],infoLabels['tmdb_id']) ))
+            if xbmc.getCondVisibility('System.HasAddon(script.embuary.info)'):
+                commands.append(("[B][COLOR limegreen]EmbuaryInfo[/COLOR][/B]","XBMC.RunScript(script.embuary.info,call=%s,tmdb_id=%s)" % (tipo,infoLabels['tmdb_id']) ))
         else:
             if tipoExt != ".dirctorio": commands.append(( '[B][COLOR lime]Buscar Información Extra[/COLOR][/B]' ,  'XBMC.RunPlugin(plugin://plugin.video.torrentin/?funcion=catalogar_torrent&uri=%s)' % urllib.quote_plus(k) ))
         commands.append(( '[B][COLOR red]Borrar el '+tipoExt.strip('.')+'[/COLOR][/B]',  'XBMC.RunPlugin(plugin://plugin.video.torrentin/?funcion=borrar_torrent&uri=file://%s&image=%s)' % (urllib.quote_plus(k),urllib.quote_plus(v)) ))
@@ -983,6 +1001,10 @@ def browselocaltvp(uri="",player="",image=""):
     for k,v in lista.iteritems():
         if not oswin: titulo = k.split("/")[-1]
         else: titulo = k.split("\\")[-1]
+        if re.search("\d{1,2}[x]\d{2}",titulo) or re.search("Cap.\d+",titulo) or re.search("S\d{2}E\d{2}",titulo):
+        	tipo="tv"
+        else:
+        	tipo="movie"
         if k.endswith(".magnet"):
             tipoExt=".magnet"
             esdir = False
@@ -1028,9 +1050,14 @@ def browselocaltvp(uri="",player="",image=""):
                 li.setArt({'thumb': img, 'poster': img, 'fanart': fan})
             li.setInfo("video", infoLabels)
             commands.append(( '[B][COLOR yellow]Actualizar Información Extra[/COLOR][/B]',  'XBMC.RunPlugin(plugin://plugin.video.torrentin/?funcion=catalogar_torrent&uri=%s)' % urllib.quote_plus(k) ))
-            commands.append(( '[B][COLOR limegreen]Información Web[/COLOR][/B]',  'XBMC.RunPlugin(plugin://plugin.video.torrentin/?funcion=browsewebpeli&uri=%s)' % urllib.quote_plus(infoLabels['tmdb_id']) ))
+            commands.append(( '[B][COLOR limegreen]Información Web[/COLOR][/B]',  'XBMC.RunPlugin(plugin://plugin.video.torrentin/?funcion=browsewebpeli&uri=%s&image=%s)' % (urllib.quote_plus(infoLabels['tmdb_id']),tipo) ))
             if xbmc.getCondVisibility('System.HasAddon(script.extendedinfo)'):
-                commands.append(("[B][COLOR limegreen]ExtendedInfo[/COLOR][/B]","XBMC.RunScript(script.extendedinfo,info=extendedinfo,name=%s,id=%s)" % (lines[6],infoLabels['tmdb_id']) ))
+            	if tipo == "movie":
+                    commands.append(("[B][COLOR limegreen]ExtendedInfo[/COLOR][/B]","XBMC.RunScript(script.extendedinfo,info=extendedinfo,name=%s,id=%s)" % (lines[6],infoLabels['tmdb_id']) ))
+                elif tipo == "tv":
+                	commands.append(("[B][COLOR limegreen]ExtendedInfo[/COLOR][/B]","XBMC.RunScript(script.extendedinfo,info=extendedtvinfo,name=%s,id=%s)" % (lines[6],infoLabels['tmdb_id']) ))
+            if xbmc.getCondVisibility('System.HasAddon(script.embuary.info)'):
+                commands.append(("[B][COLOR limegreen]EmbuaryInfo[/COLOR][/B]","XBMC.RunScript(script.embuary.info,call=%s,tmdb_id=%s)" % (tipo,infoLabels['tmdb_id']) ))
         else:
             if tipoExt != ".dirctorio": commands.append(( '[B][COLOR limegreen]Buscar Información Extra[/COLOR][/B]',  'XBMC.RunPlugin(plugin://plugin.video.torrentin/?funcion=catalogar_torrent&uri=%s)' % urllib.quote_plus(k) ))
         commands.append(( '[B][COLOR red]Borrar el '+tipoExt.strip('.')+'[/COLOR][/B]',  'XBMC.RunPlugin(plugin://plugin.video.torrentin/?funcion=borrar_torrent&uri=file://%s&image=%s)' % (urllib.quote_plus(k),urllib.quote_plus(v)) ))
@@ -1676,6 +1703,8 @@ def browselocalpelis(uri="",player="",image=""):
 		commands.append(( '[B][COLOR limegreen]Información Web[/COLOR][/B]',  'XBMC.RunPlugin(plugin://plugin.video.torrentin/?funcion=browsewebpeli&uri=%s)' % urllib.quote_plus(infoLabels['tmdb_id']) ))
 		if xbmc.getCondVisibility('System.HasAddon(script.extendedinfo)'):
 			commands.append(("[B][COLOR limegreen]ExtendedInfo[/COLOR][/B]","XBMC.RunScript(script.extendedinfo,info=extendedinfo,name=%s,id=%s)" % (title,infoLabels['tmdb_id']) ))
+		if xbmc.getCondVisibility('System.HasAddon(script.embuary.info)'):
+			commands.append(("[B][COLOR limegreen]EmbuaryInfo[/COLOR][/B]","XBMC.RunScript(script.embuary.info,call=movie,tmdb_id=%s)" % infoLabels['tmdb_id'] ))
 		commands.append(( '[B][COLOR yellow]Crear Directorio[/COLOR][/B]',  'XBMC.RunPlugin(plugin://plugin.video.torrentin/?funcion=crear_dir&uri=%s)' % urllib.quote_plus(list_folder) ))
 		commands.append(( '[B][COLOR orange]Mover Película a Directorio[/COLOR][/B]',  'XBMC.RunPlugin(plugin://plugin.video.torrentin/?funcion=mover_torrent&uri=file://%s)' % (urllib.quote_plus(os.path.join( list_folder , fname ))) ))
 		commands.append(( '[B][COLOR red]Borrar la Película[/COLOR][/B]',  'XBMC.RunPlugin(plugin://plugin.video.torrentin/?funcion=borrar_torrent&uri=file://%s)' % (urllib.quote_plus(os.path.join( list_folder , fname )) ) ))
@@ -1687,19 +1716,20 @@ def browselocalpelis(uri="",player="",image=""):
 	if __addon__.getSetting('showignored') == "true" and ignoradas != "":
 		xbmcgui.Dialog().ok("Torrentin - Archivos ignorados al listar" , ignoradas)
 
-def browsewebpeli(TMDb_id="",player="",image=""):
+def browsewebpeli(TMDb_id="",player="",tipo=""):
+    if tipo == "": tipo = "movie"
     if TMDb_id !=  "":
         if xbmc.getCondVisibility('system.platform.Android'):
             if __addon__.getSetting('browser') == '0':
-                xbmc.executebuiltin('XBMC.StartAndroidActivity("com.android.browser","android.intent.action.VIEW","","'+"https://www.themoviedb.org/movie/" + TMDb_id +'")')
+                xbmc.executebuiltin('XBMC.StartAndroidActivity("com.android.browser","android.intent.action.VIEW","","'+"https://www.themoviedb.org/"+tipo+"/" + TMDb_id +'")')
             elif __addon__.getSetting('browser') == '1':
-                xbmc.executebuiltin('XBMC.StartAndroidActivity("com.android.chrome","android.intent.action.VIEW","","'+"https://www.themoviedb.org/movie/" + TMDb_id +'")')
+                xbmc.executebuiltin('XBMC.StartAndroidActivity("com.android.chrome","android.intent.action.VIEW","","'+"https://www.themoviedb.org/"+tipo+"/" + TMDb_id +'")')
             elif __addon__.getSetting('browser') == '2':
-                xbmc.executebuiltin('XBMC.StartAndroidActivity("com.cloudmosa.puffinFree","android.intent.action.VIEW","","'+"https://www.themoviedb.org/movie/" + TMDb_id +'")')
+                xbmc.executebuiltin('XBMC.StartAndroidActivity("com.cloudmosa.puffinFree","android.intent.action.VIEW","","'+"https://www.themoviedb.org/"+tipo+"/" + TMDb_id +'")')
             elif __addon__.getSetting('browser') == '3':
-                xbmc.executebuiltin('XBMC.StartAndroidActivity("com.cloudmosa.puffin","android.intent.action.VIEW","","'+"https://www.themoviedb.org/movie/" + TMDb_id +'")')
+                xbmc.executebuiltin('XBMC.StartAndroidActivity("com.cloudmosa.puffin","android.intent.action.VIEW","","'+"https://www.themoviedb.org/"+tipo+"/" + TMDb_id +'")')
             elif xbmc.getCondVisibility('system.platform.windows'):
-                os.startfile("https://www.themoviedb.org/movie/" + TMDb_id)
+                os.startfile("https://www.themoviedb.org/"+tipo+"/" + TMDb_id)
         else:
             mensaje('Opción disponible en Windows y Android', 3000)
     else:
@@ -2057,7 +2087,7 @@ def restkodi(uri="",player="",image=""):
         bkp_folder=__addon__.getSetting('torrent_path')
     else:
         bkp_folder=__addon__.getSetting('bkpdest_path')
-    if not xbmcgui.Dialog().yesno("Torrentin - Copia de seguridad de Kodi" , "[COLOR yellow]Se va a restaurar una copia de seguridad creada previamente.[/COLOR]","[COLOR cyan]Desde: [COLOR lime]" + bkp_folder + "[/COLOR]","[COLOR orange]Se restaurará sobre el Kodi actual, es recomendable hacerlo sobre un Kodi limpio o recién instalado.[/COLOR]","Abandonar","Continuar"): return
+    if not xbmcgui.Dialog().yesno("Torrentin - Copia de seguridad de Kodi" , "[COLOR yellow]Se va a restaurar una copia de seguridad creada previamente.[/COLOR]","[COLOR cyan]Desde: [COLOR lime]" + bkp_folder + "[/COLOR]","[COLOR orange]Se restaurará todo excepto Torrentin sobre el Kodi actual, recomendable hacerlo sobre un Kodi limpio o recien instalado.[/COLOR]","Abandonar","Continuar"): return
     mov = tools.restorekodi(bkp_folder)
     if mov !="":
         req = 0

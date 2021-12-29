@@ -4,7 +4,7 @@
 # Torrentin - XBMC/Kodi AddOn
 # por ciberus (algunas rutinas tomadas de la web)
 #------------------------------------------------------------
-# v. 0.6.7 - Diciembre 2021
+# v. 0.6.8 - Diciembre 2021
 
 ################################################################
 # Este AddOn de KODI no contiene enlaces internos o directos a material protegido por
@@ -336,6 +336,7 @@ def restorekodi(bkp_folder):
 			Ficheros = float(len(backup.namelist()))
 			Progresado  = 0
 			for Fichero in backup.namelist():
+				if 'torrentin' in Fichero: continue
 				if RestoreProgress.iscanceled():
 					RestoreProgress.close()
 					return ""
