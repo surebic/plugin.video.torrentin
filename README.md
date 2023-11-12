@@ -21,4 +21,4 @@ Instalar en KODI desde Configuración -> AddOns -> instalar desde archivo .zip
 
 (En Kodi Krypton con skin Estuary picar en addons y luego al icono de la caja abierta de la esquina superior izquierda).
 
-Torrentin NO FUNCIONA EN KODI 19 MATRIX por el momento, así que si usas esta version no lo instales.
+Torrentin NO FUNCIONA EN KODI 19 MATRIX y posteriores versiones que usan python3 de lenguaje de programacion de los AddOns, así que si usas estas versiones no lo instales.
